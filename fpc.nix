@@ -53,27 +53,28 @@ in
     in ''
       export PATH="$PATH:${ndkToolchain}";
       #export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH";
+      make clean all
       make clean all CROSSOPT="-Fl${ndkLib}" NDK=${androidNdk} NOGDB=1 OS_TARGET=android CPU_TARGET=arm FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     '';
 
     installPhase =
       ''
-        #make install NOGDB=1 INSTALL_PREFIX=$out
+        make install NOGDB=1 INSTALL_PREFIX=$out
         make crossinstall NOGDB=1 OS_TARGET=android CPU_TARGET=arm INSTALL_PREFIX=$out
       ''
       + ''
         for i in $out/lib/fpc/*/ppc*; do
           ln -fs $i $out/bin/$(basename $i)
         done
+
+        mkdir -p $out/lib/fpc/etc/
+        $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/lib/fpc/etc/
+
+        # Generate config files in /etc since on darwin, ppc* does not follow symlinks
+        # to resolve the location of /etc
+        mkdir -p $out/etc
+        $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/etc
       '';
-
-    #mkdir -p $out/lib/fpc/etc/
-    #$out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/lib/fpc/etc/
-
-    # Generate config files in /etc since on darwin, ppc* does not follow symlinks
-    # to resolve the location of /etc
-    #mkdir -p $out/etc
-    #$out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/etc
 
     meta = with lib; {
       description = "Free Pascal Compiler from a source distribution";
