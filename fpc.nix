@@ -48,18 +48,22 @@ in
     #make all NOGDB=1 FPC="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     buildPhase = let
       androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-      ndkToolchain = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
-      ndkLib = "${androidNdk}/platforms/android-16/arch-arm/usr/lib";
+      ndkToolchainAarch = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
+      ndkToolchainArm32 = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
+      ndkLibArm32 = "${androidNdk}/platforms/android-28/arch-arm/usr/lib";
+      ndkLibAarch = "${androidNdk}/platforms/android-28/arch-arm64/usr/lib";
     in ''
-      export PATH="$PATH:${ndkToolchain}";
+      export PATH="$PATH:${ndkToolchainArm32}:${ndkToolchainAarch}";
       #export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH";
       make clean all
-      make clean all CROSSOPT="-Fl${ndkLib}" NDK=${androidNdk} NOGDB=1 OS_TARGET=android CPU_TARGET=arm FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
+      make clean all OS_TARGET=android CPU_TARGET=aarch64 CROSSOPT="-Fl${ndkLibAarch}" NDK=${androidNdk} NOGDB=1 FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
+      make clean all OS_TARGET=android CPU_TARGET=arm CROSSOPT="-Fl${ndkLibArm32}" NDK=${androidNdk} NOGDB=1 FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     '';
 
     installPhase =
       ''
         make install NOGDB=1 INSTALL_PREFIX=$out
+        make crossinstall NOGDB=1 OS_TARGET=android CPU_TARGET=aarch64 INSTALL_PREFIX=$out
         make crossinstall NOGDB=1 OS_TARGET=android CPU_TARGET=arm INSTALL_PREFIX=$out
       ''
       + ''
