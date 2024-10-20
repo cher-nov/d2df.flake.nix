@@ -25,6 +25,7 @@
         abiVersions = ["armeabi-v7a" "arm64-v8a"];
         cmakeVersions = [cmakeVersion];
         includeNDK = true;
+        ndkVersions = ["21.4.7075529"];
 
         includeSources = false;
         includeSystemImages = false;
@@ -34,7 +35,7 @@
       };
       androidSdk = androidComposition.androidsdk;
     in {
-      packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};  
+      packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};
       devShell = with pkgs;
         mkShell rec {
           ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
