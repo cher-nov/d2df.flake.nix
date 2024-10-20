@@ -36,6 +36,10 @@
       androidSdk = androidComposition.androidsdk;
     in {
       packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};
+      packages.doom2df-android = pkgs.callPackage ./doom2df-android.nix {
+        inherit androidSdk;
+        fpc-android = self.packages.${system}.fpc-android;
+      };
       devShell = with pkgs;
         mkShell rec {
           ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";

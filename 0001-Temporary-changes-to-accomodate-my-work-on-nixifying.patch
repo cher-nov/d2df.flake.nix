@@ -1,0 +1,599 @@
+From 877dcdffd045a3af0fe4b1be2546910119832be4 Mon Sep 17 00:00:00 2001
+From: polybluez <163671824+polybluez@users.noreply.github.com>
+Date: Sun, 20 Oct 2024 14:38:22 +0000
+Subject: [PATCH] Temporary changes to accomodate my work on nixifying the
+ build process
+
+Make the game compile with fpc 3.3.1
+Remove unused native libraries (crystax is obsolete; mpg123, SDL2_mixer and miniupnpc will be used in the future)
+Change minimal Android SDK versions
+Remove CopyAssets usage because it crashes the game
+
+An application with SDL can be built now, but it won't load the game in the form of a native library.
+---
+ android/AndroidManifest.xml                   |   2 +-
+ android/src/org/d2df/app/Doom2DF.java         |  13 -
+ android/src/org/libsdl/app/SDLActivity.java   | 243 ++++++++++++------
+ .../org/libsdl/app/SDLControllerManager.java  |   5 +-
+ src/shared/xparser.pas                        |   8 +-
+ 5 files changed, 170 insertions(+), 101 deletions(-)
+
+diff --git a/android/AndroidManifest.xml b/android/AndroidManifest.xml
+index 58aad2d..6a1211b 100644
+--- a/android/AndroidManifest.xml
++++ b/android/AndroidManifest.xml
+@@ -6,7 +6,7 @@
+       android:installLocation="auto">
+ 
+     <!-- min Android 4.0, target Android 4.4 -->
+-    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
++    <uses-sdk android:minSdkVersion="28" android:targetSdkVersion="28" />
+ 
+     <!-- OpenGL ES 2.0 -->
+     <!-- <uses-feature android:glEsVersion="0x00020000" /> -->
+diff --git a/android/src/org/d2df/app/Doom2DF.java b/android/src/org/d2df/app/Doom2DF.java
+index c1e48ff..e6c3ee0 100644
+--- a/android/src/org/d2df/app/Doom2DF.java
++++ b/android/src/org/d2df/app/Doom2DF.java
+@@ -27,12 +27,8 @@ public class Doom2DF extends SDLActivity {
+   @Override
+   protected String[] getLibraries () {
+     return new String[] {
+-      "crystax",
+       "SDL2",
+-      "mpg123",
+-      "SDL2_mixer",
+       "enet",
+-      "miniupnpc",
+       "Doom2DF"
+     };
+   }
+@@ -48,15 +44,6 @@ public class Doom2DF extends SDLActivity {
+   @Override
+   protected void onCreate(Bundle savedInstanceState) {
+     super.onCreate(savedInstanceState);
+-
+-    CopyAssets.copyAssets(SDL.getContext(), "");
+-    CopyAssets.copyAssets(SDL.getContext(), "data");
+-    CopyAssets.copyAssets(SDL.getContext(), "data/models");
+-    CopyAssets.copyAssets(SDL.getContext(), "maps");
+-    CopyAssets.copyAssets(SDL.getContext(), "maps/megawads");
+-    CopyAssets.copyAssets(SDL.getContext(), "wads");
+-    CopyAssets.copyAssets(SDL.getContext(), "instruments");
+-    CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
+   }
+ 
+   @Override
+diff --git a/android/src/org/libsdl/app/SDLActivity.java b/android/src/org/libsdl/app/SDLActivity.java
+index 585ad30..8c363ed 100644
+--- a/android/src/org/libsdl/app/SDLActivity.java
++++ b/android/src/org/libsdl/app/SDLActivity.java
+@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
+ 
+ import android.app.*;
+ import android.content.*;
++import android.content.res.Configuration;
+ import android.text.InputType;
+ import android.view.*;
+ import android.view.inputmethod.BaseInputConnection;
+@@ -18,12 +19,15 @@ import android.widget.Button;
+ import android.widget.LinearLayout;
+ import android.widget.TextView;
+ import android.os.*;
++import android.util.DisplayMetrics;
+ import android.util.Log;
+ import android.util.SparseArray;
+ import android.graphics.*;
+ import android.graphics.drawable.Drawable;
+ import android.hardware.*;
+ import android.content.pm.ActivityInfo;
++import android.content.pm.PackageManager;
++import android.content.pm.ApplicationInfo;
+ 
+ /**
+     SDL Activity
+@@ -35,7 +39,7 @@ public class SDLActivity extends Activity {
+ 
+     // Handle the state of the native layer
+     public enum NativeState {
+-           INIT, RESUMED, PAUSED 
++           INIT, RESUMED, PAUSED
+     }
+ 
+     public static NativeState mNextNativeState;
+@@ -163,6 +167,7 @@ public class SDLActivity extends Activity {
+ 
+         if (mBrokenLibraries)
+         {
++            mSingleton = this;
+             AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+             dlgAlert.setMessage("An error occurred while trying to start the application. Please try again and/or reinstall."
+                   + System.getProperty("line.separator")
+@@ -207,7 +212,9 @@ public class SDLActivity extends Activity {
+         mLayout.addView(mSurface);
+ 
+         setContentView(mLayout);
+-        
++
++        setWindowStyle(false);
++
+         // Get filename from "Open with" of another application
+         Intent intent = getIntent();
+         if (intent != null && intent.getData() != null) {
+@@ -217,8 +224,6 @@ public class SDLActivity extends Activity {
+                 SDLActivity.onNativeDropFile(filename);
+             }
+         }
+-
+-	hideNavigationBar();
+     }
+ 
+     // Events
+@@ -243,8 +248,6 @@ public class SDLActivity extends Activity {
+         mNextNativeState = NativeState.RESUMED;
+         mIsResumedCalled = true;
+ 
+-	hideNavigationBar();
+-
+         if (SDLActivity.mBrokenLibraries) {
+            return;
+         }
+@@ -268,7 +271,7 @@ public class SDLActivity extends Activity {
+         } else {
+            mNextNativeState = NativeState.PAUSED;
+         }
+-        
++
+         SDLActivity.handleNativeState();
+     }
+ 
+@@ -358,7 +361,8 @@ public class SDLActivity extends Activity {
+         // Try a transition to paused state
+         if (mNextNativeState == NativeState.PAUSED) {
+             nativePause();
+-            mSurface.handlePause();
++            if (mSurface != null)
++                mSurface.handlePause();
+             mCurrentNativeState = mNextNativeState;
+             return;
+         }
+@@ -371,27 +375,8 @@ public class SDLActivity extends Activity {
+                     // Start up the C app thread and enable sensor input for the first time
+                     // FIXME: Why aren't we enabling sensor input at start?
+ 
+-                    final Thread sdlThread = new Thread(new SDLMain(), "SDLThread");
++                    mSDLThread = new Thread(new SDLMain(), "SDLThread");
+                     mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+-                    sdlThread.start();
+-
+-                    // Set up a listener thread to catch when the native thread ends
+-                    mSDLThread = new Thread(new Runnable() {
+-                        @Override
+-                        public void run() {
+-                            try {
+-                                sdlThread.join();
+-                            } catch (Exception e) {
+-                                // Ignore any exception
+-                            } finally {
+-                                // Native thread has finished
+-                                if (!mExitCalledFromJava) {
+-                                    handleNativeExit();
+-                                }
+-                            }
+-                        }
+-                    }, "SDLThreadListener");
+-
+                     mSDLThread.start();
+                 }
+ 
+@@ -411,7 +396,7 @@ public class SDLActivity extends Activity {
+ 
+     // Messages from the SDLMain thread
+     static final int COMMAND_CHANGE_TITLE = 1;
+-    static final int COMMAND_UNUSED = 2;
++    static final int COMMAND_CHANGE_WINDOW_STYLE = 2;
+     static final int COMMAND_TEXTEDIT_HIDE = 3;
+     static final int COMMAND_SET_KEEP_SCREEN_ON = 5;
+ 
+@@ -450,6 +435,36 @@ public class SDLActivity extends Activity {
+                     Log.e(TAG, "error handling message, getContext() returned no Activity");
+                 }
+                 break;
++            case COMMAND_CHANGE_WINDOW_STYLE:
++                if (Build.VERSION.SDK_INT < 19) {
++                    // This version of Android doesn't support the immersive fullscreen mode
++                    break;
++                }
++/* This needs more testing, per bug 4096 - Enabling fullscreen on Android causes the app to toggle fullscreen mode continuously in a loop
++ ***
++                if (context instanceof Activity) {
++                    Window window = ((Activity) context).getWindow();
++                    if (window != null) {
++                        if ((msg.obj instanceof Integer) && (((Integer) msg.obj).intValue() != 0)) {
++                            int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
++                                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
++                                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
++                                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
++                                        View.SYSTEM_UI_FLAG_FULLSCREEN |
++                                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
++                            window.getDecorView().setSystemUiVisibility(flags);        
++                            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
++                        } else {
++                            int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
++                            window.getDecorView().setSystemUiVisibility(flags);        
++                            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
++                        }
++                    }
++                } else {
++                    Log.e(TAG, "error handling message, getContext() returned no Activity");
++                }
++***/
++                break;
+             case COMMAND_TEXTEDIT_HIDE:
+                 if (mTextEdit != null) {
+                     // Note: On some devices setting view to GONE creates a flicker in landscape.
+@@ -460,8 +475,6 @@ public class SDLActivity extends Activity {
+                     InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                     imm.hideSoftInputFromWindow(mTextEdit.getWindowToken(), 0);
+                     
+-                    hideNavigationBar();
+-
+                     mScreenKeyboardShown = false;
+                 }
+                 break;
+@@ -519,6 +532,7 @@ public class SDLActivity extends Activity {
+     public static native void onNativeSurfaceChanged();
+     public static native void onNativeSurfaceDestroyed();
+     public static native String nativeGetHint(String name);
++    public static native void nativeSetenv(String name, String value);
+ 
+     /**
+      * This method is called by SDL using JNI.
+@@ -528,6 +542,14 @@ public class SDLActivity extends Activity {
+         return mSingleton.sendCommand(COMMAND_CHANGE_TITLE, title);
+     }
+ 
++    /**
++     * This method is called by SDL using JNI.
++     */
++    public static void setWindowStyle(boolean fullscreen) {
++        // Called from SDLMain() thread and can't directly affect the view
++        mSingleton.sendCommand(COMMAND_CHANGE_WINDOW_STYLE, fullscreen ? 1 : 0);
++    }
++
+     /**
+      * This method is called by SDL using JNI.
+      * This is a static method for JNI convenience, it calls a non-static method
+@@ -545,41 +567,39 @@ public class SDLActivity extends Activity {
+      */
+     public void setOrientationBis(int w, int h, boolean resizable, String hint) 
+     {
+-      int orientation = -1;
++        int orientation = -1;
+ 
+-      if (hint != null && !hint.equals("")) {
+-         if (hint.contains("LandscapeRight") && hint.contains("LandscapeLeft")) {
++        if (hint.contains("LandscapeRight") && hint.contains("LandscapeLeft")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+-         } else if (hint.contains("LandscapeRight")) {
++        } else if (hint.contains("LandscapeRight")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+-         } else if (hint.contains("LandscapeLeft")) {
++        } else if (hint.contains("LandscapeLeft")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+-         } else if (hint.contains("Portrait") && hint.contains("PortraitUpsideDown")) {
++        } else if (hint.contains("Portrait") && hint.contains("PortraitUpsideDown")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+-         } else if (hint.contains("Portrait")) {
++        } else if (hint.contains("Portrait")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+-         } else if (hint.contains("PortraitUpsideDown")) {
++        } else if (hint.contains("PortraitUpsideDown")) {
+             orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+-         }
+-      }
+-
+-      /* no valid hint */
+-      if (orientation == -1) {
+-         if (resizable) {
+-            /* no fixed orientation */
+-         } else {
+-            if (w > h) {
+-               orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
++        }
++
++        /* no valid hint */
++        if (orientation == -1) {
++            if (resizable) {
++                /* no fixed orientation */
+             } else {
+-               orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
++                if (w > h) {
++                    orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
++                } else {
++                    orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
++                }
+             }
+-         }
+-      }
++        }
+ 
+-      Log.v("SDL", "setOrientation() orientation=" + orientation + " width=" + w +" height="+ h +" resizable=" + resizable + " hint=" + hint);
+-      if (orientation != -1) {
+-         mSingleton.setRequestedOrientation(orientation);
+-      }
++        Log.v("SDL", "setOrientation() orientation=" + orientation + " width=" + w +" height="+ h +" resizable=" + resizable + " hint=" + hint);
++        if (orientation != -1) {
++            mSingleton.setRequestedOrientation(orientation);
++        }
+     }
+ 
+ 
+@@ -618,6 +638,48 @@ public class SDLActivity extends Activity {
+         return SDL.getContext();
+     }
+ 
++    /**
++     * This method is called by SDL using JNI.
++     */
++    public static boolean isAndroidTV() {
++        UiModeManager uiModeManager = (UiModeManager) getContext().getSystemService(UI_MODE_SERVICE);
++        return (uiModeManager.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION);
++    }
++
++    /**
++     * This method is called by SDL using JNI.
++     */
++    public static DisplayMetrics getDisplayDPI() {
++        return getContext().getResources().getDisplayMetrics();
++    }
++
++    /**
++     * This method is called by SDL using JNI.
++     */
++    public static boolean getManifestEnvironmentVariables() {
++        try {
++            ApplicationInfo applicationInfo = getContext().getPackageManager().getApplicationInfo(getContext().getPackageName(), PackageManager.GET_META_DATA);
++            Bundle bundle = applicationInfo.metaData;
++            if (bundle == null) {
++                return false;
++            }
++            String prefix = "SDL_ENV.";
++            final int trimLength = prefix.length();
++            for (String key : bundle.keySet()) {
++                if (key.startsWith(prefix)) {
++                    String name = key.substring(trimLength);
++                    String value = bundle.get(key).toString();
++                    nativeSetenv(name, value);
++                }
++            }
++            /* environment variables set! */
++            return true; 
++        } catch (Exception e) {
++           Log.v("SDL", "exception " + e.toString());
++        }
++        return false;
++    }
++
+     static class ShowTextInputTask implements Runnable {
+         /*
+          * This is used to regulate the pan&scan method to have some offset from
+@@ -670,7 +732,7 @@ public class SDLActivity extends Activity {
+     public static boolean isTextInputEvent(KeyEvent event) {
+       
+         // Key pressed with Ctrl should be sent as SDL_KEYDOWN/SDL_KEYUP and not SDL_TEXTINPUT
+-        if (android.os.Build.VERSION.SDK_INT >= 11) {
++        if (Build.VERSION.SDK_INT >= 11) {
+             if (event.isCtrlPressed()) {
+                 return false;
+             }  
+@@ -849,15 +911,6 @@ public class SDLActivity extends Activity {
+         return messageboxSelection[0];
+     }
+ 
+-    public static void hideNavigationBar() {
+-        if (Build.VERSION.SDK_INT >= 19) {
+-            int opt = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+-            mSingleton.getWindow().getDecorView().setSystemUiVisibility(opt);
+-        }
+-    }
+-
+     @Override
+     protected Dialog onCreateDialog(int ignore, Bundle args) {
+ 
+@@ -1012,7 +1065,6 @@ public class SDLActivity extends Activity {
+     public static void clipboardSetText(String string) {
+         mClipboardHandler.clipboardSetText(string);
+     }
+-
+ }
+ 
+ /**
+@@ -1030,6 +1082,11 @@ class SDLMain implements Runnable {
+         SDLActivity.nativeRunMain(library, function, arguments);
+ 
+         Log.v("SDL", "Finished main function");
++
++        // Native thread has finished, let's finish the Activity
++        if (!SDLActivity.mExitCalledFromJava) {
++            SDLActivity.handleNativeExit();
++        }
+     }
+ }
+ 
+@@ -1166,7 +1223,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
+         SDLActivity.onNativeResize(width, height, sdlFormat, mDisplay.getRefreshRate());
+         Log.v("SDL", "Window size: " + width + "x" + height);
+ 
+- 
++
+         boolean skip = false;
+         int requestedOrientation = SDLActivity.mSingleton.getRequestedOrientation();
+ 
+@@ -1189,7 +1246,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
+         if (skip) {
+            double min = Math.min(mWidth, mHeight);
+            double max = Math.max(mWidth, mHeight);
+-           
++
+            if (max / min < 1.20) {
+               Log.v("SDL", "Don't skip on such aspect-ratio. Could be a square resolution.");
+               skip = false;
+@@ -1201,7 +1258,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
+            SDLActivity.mIsSurfaceReady = false;
+            return;
+         }
+-        
++
+         /* Surface is ready */
+         SDLActivity.mIsSurfaceReady = true;
+ 
+@@ -1237,6 +1294,9 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
+         if ((event.getSource() & InputDevice.SOURCE_KEYBOARD) != 0) {
+             if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                 //Log.v("SDL", "key down: " + keyCode);
++                if (SDLActivity.isTextInputEvent(event)) {
++                    SDLInputConnection.nativeCommitText(String.valueOf((char) event.getUnicodeChar()), 1);
++                }
+                 SDLActivity.onNativeKeyDown(keyCode);
+                 return true;
+             }
+@@ -1424,6 +1484,7 @@ class DummyEdit extends View implements View.OnKeyListener {
+         if (event.getAction() == KeyEvent.ACTION_DOWN) {
+             if (SDLActivity.isTextInputEvent(event)) {
+                 ic.commitText(String.valueOf((char) event.getUnicodeChar()), 1);
++                return true;
+             }
+             SDLActivity.onNativeKeyDown(keyCode);
+             return true;
+@@ -1473,26 +1534,42 @@ class SDLInputConnection extends BaseInputConnection {
+     @Override
+     public boolean sendKeyEvent(KeyEvent event) {
+         /*
+-         * This handles the keycodes from soft keyboard (and IME-translated input from hardkeyboard)
++         * This used to handle the keycodes from soft keyboard (and IME-translated input from hardkeyboard)
++         * However, as of Ice Cream Sandwich and later, almost all soft keyboard doesn't generate key presses
++         * and so we need to generate them ourselves in commitText.  To avoid duplicates on the handful of keys
++         * that still do, we empty this out.
+          */
+-        int keyCode = event.getKeyCode();
+-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+-            if (SDLActivity.isTextInputEvent(event)) {
+-                commitText(String.valueOf((char) event.getUnicodeChar()), 1);
++
++        /*
++         * Return DOES still generate a key event, however.  So rather than using it as the 'click a button' key
++         * as we do with physical keyboards, let's just use it to hide the keyboard.
++         */
++
++        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
++            String imeHide = SDLActivity.nativeGetHint("SDL_RETURN_KEY_HIDES_IME");
++            if ((imeHide != null) && imeHide.equals("1")) {
++                Context c = SDL.getContext();
++                if (c instanceof SDLActivity) {
++                    SDLActivity activity = (SDLActivity)c;
++                    activity.sendCommand(SDLActivity.COMMAND_TEXTEDIT_HIDE, null);
++                    return true;
++                }
+             }
+-            SDLActivity.onNativeKeyDown(keyCode);
+-            return true;
+-        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+-            SDLActivity.onNativeKeyUp(keyCode);
+-            return true;
+         }
++
++
+         return super.sendKeyEvent(event);
+     }
+ 
+     @Override
+     public boolean commitText(CharSequence text, int newCursorPosition) {
+ 
+-        nativeCommitText(text.toString(), newCursorPosition);
++        for (int i = 0; i < text.length(); i++) {
++            char c = text.charAt(i);
++            nativeGenerateScancodeForUnichar(c);
++        }
++
++        SDLInputConnection.nativeCommitText(text.toString(), newCursorPosition);
+ 
+         return super.commitText(text, newCursorPosition);
+     }
+@@ -1505,7 +1582,9 @@ class SDLInputConnection extends BaseInputConnection {
+         return super.setComposingText(text, newCursorPosition);
+     }
+ 
+-    public native void nativeCommitText(String text, int newCursorPosition);
++    public static native void nativeCommitText(String text, int newCursorPosition);
++
++    public native void nativeGenerateScancodeForUnichar(char c);
+ 
+     public native void nativeSetComposingText(String text, int newCursorPosition);
+ 
+diff --git a/android/src/org/libsdl/app/SDLControllerManager.java b/android/src/org/libsdl/app/SDLControllerManager.java
+index 1f21eab..7b82c0e 100644
+--- a/android/src/org/libsdl/app/SDLControllerManager.java
++++ b/android/src/org/libsdl/app/SDLControllerManager.java
+@@ -88,6 +88,8 @@ public class SDLControllerManager
+         }
+         int sources = device.getSources();
+ 
++        /* This is called for every button press, so let's not spam the logs */
++        /**
+         if ((sources & InputDevice.SOURCE_CLASS_JOYSTICK) == InputDevice.SOURCE_CLASS_JOYSTICK) {
+             Log.v(TAG, "Input device " + device.getName() + " is a joystick.");
+         }
+@@ -97,6 +99,7 @@ public class SDLControllerManager
+         if ((sources & InputDevice.SOURCE_GAMEPAD) == InputDevice.SOURCE_GAMEPAD) {
+             Log.v(TAG, "Input device " + device.getName() + " is a gamepad.");
+         }
++        **/
+ 
+         return (((sources & InputDevice.SOURCE_CLASS_JOYSTICK) == InputDevice.SOURCE_CLASS_JOYSTICK) ||
+                 ((sources & InputDevice.SOURCE_DPAD) == InputDevice.SOURCE_DPAD) ||
+@@ -265,7 +268,7 @@ class SDLJoystickHandler_API16 extends SDLJoystickHandler_API12 {
+     public String getJoystickDescriptor(InputDevice joystickDevice) {
+         String desc = joystickDevice.getDescriptor();
+ 
+-        if (desc != null && !desc.equals("")) {
++        if (desc != null && !desc.isEmpty()) {
+             return desc;
+         }
+ 
+diff --git a/src/shared/xparser.pas b/src/shared/xparser.pas
+index ead0fff..c033e6a 100644
+--- a/src/shared/xparser.pas
++++ b/src/shared/xparser.pas
+@@ -110,8 +110,8 @@ type
+     constructor Create (aopts: TOptions=[TOption.SignedNumbers]);
+     destructor Destroy (); override;
+ 
+-    procedure error (const amsg: AnsiString); noreturn;
+-    procedure errorfmt (const afmt: AnsiString; const args: array of const); noreturn;
++    procedure error (const amsg: AnsiString);
++    procedure errorfmt (const afmt: AnsiString; const args: array of const); 
+ 
+     function skipChar (): Boolean; // returns `false` on eof
+ 
+@@ -322,13 +322,13 @@ begin
+ end;
+ 
+ 
+-procedure TTextParser.error (const amsg: AnsiString); noreturn;
++procedure TTextParser.error (const amsg: AnsiString);
+ begin
+   raise TParserException.Create(self, amsg);
+ end;
+ 
+ 
+-procedure TTextParser.errorfmt (const afmt: AnsiString; const args: array of const); noreturn;
++procedure TTextParser.errorfmt (const afmt: AnsiString; const args: array of const);
+ begin
+   raise TParserException.CreateFmt(self, afmt, args);
+ end;
+-- 
+2.46.0
+
