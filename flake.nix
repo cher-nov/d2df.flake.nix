@@ -21,7 +21,7 @@
       cmakeVersion = "3.22.1";
       androidComposition = pkgs.androidenv.composeAndroidPackages {
         buildToolsVersions = [buildToolsVersion "28.0.3"];
-        platformVersions = ["34" "28"];
+        platformVersions = ["34" "31" "28" "21"];
         abiVersions = ["armeabi-v7a" "arm64-v8a"];
         cmakeVersions = [cmakeVersion];
         includeNDK = true;
@@ -52,7 +52,7 @@
             alejandra
             nixd
             androidSdk # The customized SDK that we've made above
-            jdk17
+            jdk8
           ];
 
           shellHook = ''
