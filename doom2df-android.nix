@@ -33,6 +33,13 @@
   jarsigner = "${pkgs.jdk}/bin/jarsigner";
   ANDROID_JAVA_HOME = "${jdk.home}";
 
+  SDL2_custom_src = v:
+    fetchFromGitHub {
+      owner = "libsdl-org";
+      repo = "SDL";
+      rev = "release-${v}";
+      hash = "sha256-ij9/VhSacUaPbMGX1hx2nz0n8b1tDb1PnC7IO9TlNhE=";
+    };
   SDL2_custom = let
     inherit ANDROID_PLATFORM ANDROID_ABI;
     baseName = "SDL2";
@@ -40,13 +47,7 @@
     stdenv.mkDerivation (finalAttrs: {
       pname = "SDL2";
       version = "2.30.6";
-
-      src = fetchFromGitHub {
-        owner = "libsdl-org";
-        repo = "SDL";
-        rev = "release-${finalAttrs.version}";
-        hash = "sha256-ij9/VhSacUaPbMGX1hx2nz0n8b1tDb1PnC7IO9TlNhE=";
-      };
+      src = SDL2_custom_src finalAttrs.version;
 
       buildPhase = ''
         runHook preBuild
@@ -163,7 +164,11 @@ in
       ln -s "${SDL2_custom}/lib/libSDL2.so" ass/lib/arm64-v8a/libSDL2.so
       ln -s "${enet_custom}/lib/libenet.so" ass/lib/arm64-v8a/libenet.so
       ln -s "${doom2dfAndroid}/lib/libDoom2DF.so" ass/lib/arm64-v8a/libDoom2DF.so
-      cp assets/* resources -r
+      cp -r assets/* resources
+
+      # Use SDL Java sources from the version we compiled our game with.
+      rm -r src/org/libsdl/app/*
+      cp -r "${SDL2_custom_src SDL2_custom.version}/android-project/app/src/main/java/org/libsdl/app" "src/org/libsdl"
 
       ${aapt} package -f -m -S res -J gen -M AndroidManifest.xml -I ${ANDROID_JAR}
       ${jdk}/bin/javac -encoding UTF-8 -source 1.8 -target 1.8 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')

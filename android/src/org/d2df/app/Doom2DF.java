@@ -43,7 +43,6 @@ public class Doom2DF extends SDLActivity {
   }
 */
 
-/*
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -57,7 +56,6 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "instruments");
     CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
   }
-*/
 
   @Override
   protected void onDestroy() {
