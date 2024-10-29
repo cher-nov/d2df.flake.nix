@@ -1,0 +1,43 @@
+From b19665054f2f785a7961aff1f5d9ce98166ba899 Mon Sep 17 00:00:00 2001
+From: polybluez <163671824+polybluez@users.noreply.github.com>
+Date: Tue, 29 Oct 2024 11:04:17 +0000
+Subject: [PATCH] Remove noreturns from functions that throw
+
+---
+ src/shared/xparser.pas | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/shared/xparser.pas b/src/shared/xparser.pas
+index ead0fff..2e326a6 100644
+--- a/src/shared/xparser.pas
++++ b/src/shared/xparser.pas
+@@ -110,8 +110,8 @@ type
+     constructor Create (aopts: TOptions=[TOption.SignedNumbers]);
+     destructor Destroy (); override;
+ 
+-    procedure error (const amsg: AnsiString); noreturn;
+-    procedure errorfmt (const afmt: AnsiString; const args: array of const); noreturn;
++    procedure error (const amsg: AnsiString); 
++    procedure errorfmt (const afmt: AnsiString; const args: array of const); 
+ 
+     function skipChar (): Boolean; // returns `false` on eof
+ 
+@@ -322,13 +322,13 @@ begin
+ end;
+ 
+ 
+-procedure TTextParser.error (const amsg: AnsiString); noreturn;
++procedure TTextParser.error (const amsg: AnsiString);
+ begin
+   raise TParserException.Create(self, amsg);
+ end;
+ 
+ 
+-procedure TTextParser.errorfmt (const afmt: AnsiString; const args: array of const); noreturn;
++procedure TTextParser.errorfmt (const afmt: AnsiString; const args: array of const); 
+ begin
+   raise TParserException.CreateFmt(self, afmt, args);
+ end;
+-- 
+2.46.0
+

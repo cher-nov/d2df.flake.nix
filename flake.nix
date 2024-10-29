@@ -56,7 +56,9 @@
             alejandra
             nixd
             androidSdk # The customized SDK that we've made above
-            jdk8
+            jdk17
+            gradle
+            self.packages."${system}".fpc-android
           ];
 
           shellHook = ''
