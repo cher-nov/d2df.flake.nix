@@ -1,0 +1,105 @@
+[BOT] 007
+[BOT] <RiPPER>
+[BOT] Arjuna
+[BOT] Bad Guy
+[BOT] BigMek
+[BOT] Corwin of Amber
+[BOT] COTOHA
+[BOT] cpt. Mancubus
+[BOT] CrazyFrog
+[BOT] Dante
+[BOT] dr. Evil
+[BOT] Drool
+[BOT] Evil Genius
+[BOT] Expert Droid
+[BOT] Fragger
+[BOT] Impossible
+[BOT] l00per
+[BOT] Munchkin
+[BOT] Nigga
+[BOT] Nuclear Droid
+[BOT] Old School
+[BOT] Phantomas
+[BOT] Proton
+[BOT] Rambo
+[BOT] SuperFrog
+[BOT] Terminator
+[BOT] Terran
+[BOT] Tesla
+[BOT] Wookie
+[BOT] Xtra frag
+[BOT] Yarra!
+[BOT] Zicky-Zacky
+[BOT] ZX-fan
+[BOT] Charlie Manson
+[BOT] Chikatilo
+[BOT] Dahmer
+[BOT] Fisher
+[BOT] Jack the Ripper
+[BOT] Sweeney Todd
+[BOT] Ted Bundy
+[BOT] Zodiac
+[BOT] Unabomber
+[BOT] Alexander
+[BOT] Attila
+[BOT] Benito Mussolini
+[BOT] Beria
+[BOT] Bokassa
+[BOT] Borgia
+[BOT] Caligula
+[BOT] Che Guevara
+[BOT] Cortes
+[BOT] Cromwell
+[BOT] Danton
+[BOT] Ezhov
+[BOT] Franco
+[BOT] General Butt Naked
+[BOT] Genghis Khan
+[BOT] Gilles de Retz
+[BOT] Giovanni Battista
+[BOT] Hering
+[BOT] Himmler
+[BOT] Hitler
+[BOT] Idi Amin
+[BOT] Iron Felix
+[BOT] Ivan the Terrible
+[BOT] Lev Trotsky
+[BOT] Mao Tse-Tung
+[BOT] Marat
+[BOT] Mengele
+[BOT] Mobutu Sese Seko
+[BOT] Napoleon
+[BOT] Nero
+[BOT] Philip II
+[BOT] Pinochet
+[BOT] Pissarro
+[BOT] Pol Pot
+[BOT] Robespierre
+[BOT] Saddam
+[BOT] Sanson
+[BOT] Stalin
+[BOT] Tamerlan
+[BOT] Tokugava
+[BOT] Torquemada
+[BOT] Vlad the Impaler
+[BOT] Wilhelm the Conqueror
+[BOT] Yan Zhizhka
+[BOT] 1801BM1
+[BOT] 6x86MX
+[BOT] Am2901
+[BOT] Athlon 64 X2
+[BOT] DEC Alpha
+[BOT] Elbrus 2000
+[BOT] i80386DX
+[BOT] i80486SX
+[BOT] i8086
+[BOT] m68000
+[BOT] MOSTEK 6502
+[BOT] MZST-R500
+[BOT] Nx586FP 
+[BOT] PA6T
+[BOT] PowerPC G3
+[BOT] Sparc64 V
+[BOT] U5S
+[BOT] Z80
+[BOT] Snapdragon 805

@@ -1,0 +1,118 @@
+;KASTET         = 0
+;SAW            = 1
+;PISTOL         = 2
+;SHOTGUN1       = 3
+;SHOTGUN2       = 4
+;CHAINGUN       = 5
+;ROCKETLAUNCHER = 6
+;PLASMA         = 7
+;BFG            = 8
+;SUPERPULEMET   = 9
+;bot_addlist name|num [red|blue]
+
+[0]
+name=Prikolist
+model=Doomer
+color=255,128,0
+team=red
+;вероятность стрельбы под углом
+diag_fire=255
+;вероятность ответного огня, если по боту стрельнули из темноты
+invis_fire=255
+;точность стрельбы под углом
+diag_precision=255
+;точность стрельбы в полете
+fly_precision=255
+;точность, с которой отпрыгивает от ракет
+cover=255
+;прыгучесть если близко к тебе подбежал
+close_jump=255
+;приоритеты оружия на дальней и ближней дистанции
+w_prior1=9,4,3,5,7,6,8,2,1,0
+w_prior2=9,8,6,4,7,3,5,2,1,0
+
+[1]
+name=Svintus
+model=L.A.R.D.
+color=0,255,128
+team=blue
+diag_fire=10
+invis_fire=10
+diag_precision=10
+fly_precision=10
+cover=10
+close_jump=10
+w_prior1=9,4,3,5,7,6,8,2,1,0
+w_prior2=9,8,6,4,7,3,5,2,1,0
+
+[2]
+name=Robo
+model=Harp 0.1
+color=180,180,250
+team=red
+diag_fire=10
+invis_fire=10
+diag_precision=10
+fly_precision=10
+cover=10
+close_jump=10
+w_prior1=9,4,3,5,7,6,8,2,1,0
+w_prior2=9,8,6,4,7,3,5,2,1,0
+
+[3]
+name=Strife Guy
+model=Strifer
+color=100,200,100
+team=blue
+diag_fire=10
+invis_fire=10
+diag_precision=10
+fly_precision=10
+cover=10
+close_jump=10
+w_prior1=9,4,3,5,7,6,8,2,1,0
+w_prior2=9,8,6,4,7,3,5,2,1,0
+
+[4]
+name=Zombieman
+model=zombieman
+color=150,150,120
+team=red
+diag_fire=255
+invis_fire=255
+diag_precision=255
+fly_precision=255
+cover=255
+close_jump=10
+;w_prior1=9,4,3,5,7,6,8,2,1,0
+;w_prior2=9,8,6,4,7,3,5,2,1,0
+w_prior1=1,1,1,1,1,8,9,6,4,7
+w_prior2=1,1,1,1,1,4,6,7,8,9
+
+[5]
+name=Commando
+model=Commando
+color=192,0,0
+team=red
+diag_fire=255
+invis_fire=255
+diag_precision=255
+fly_precision=255
+cover=255
+close_jump=255
+w_prior1=9,8,4,7,7,6,5,3,1,0
+w_prior2=9,8,4,7,7,6,5,3,1,0
+
+[6]
+name=Imp
+model=Imp
+color=135,90,45
+team=red
+diag_fire=255
+invis_fire=255
+diag_precision=255
+fly_precision=255
+cover=255
+close_jump=255
+w_prior1=9,4,3,5,7,6,8,2,1,0
+w_prior2=9,8,6,4,7,3,5,2,1,0

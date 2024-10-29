@@ -163,15 +163,17 @@ in
       ln -s "${SDL2_custom}/lib/libSDL2.so" ass/lib/arm64-v8a/libSDL2.so
       ln -s "${enet_custom}/lib/libenet.so" ass/lib/arm64-v8a/libenet.so
       ln -s "${doom2dfAndroid}/lib/libDoom2DF.so" ass/lib/arm64-v8a/libDoom2DF.so
+      cp assets/* resources -r
 
-      export ANDROID_HOME="${ANDROID_HOME}"
-      ${aapt} package -f -m -S res -J gen -M AndroidManifest.xml -I "${ANDROID_JAR}"
+      ${aapt} package -f -m -S res -J gen -M AndroidManifest.xml -I ${ANDROID_JAR}
       ${jdk}/bin/javac -encoding UTF-8 -source 1.8 -target 1.8 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')
-      ${d8} $(find obj -name '*.class') --lib "${ANDROID_JAR}" --output ./bin/classes.jar
-      ${d8} "${ANDROID_JAR}" ./bin/classes.jar --output bin
-      ${aapt} package -f -M ./AndroidManifest.xml -S res -I "${ANDROID_JAR}" -F ./bin/d2df.unsigned.apk -A resources bin ass
+      ${d8} $(find obj -name '*.class') --lib ${ANDROID_JAR} --output bin/classes.jar
+      cd bin
+      ${d8} ${ANDROID_JAR} classes.jar
+      cd ..
+      ${aapt} package -f -M ./AndroidManifest.xml -S res -I ${ANDROID_JAR} -F bin/d2df.unsigned.apk -A resources bin ass
       ${jdk}/bin/keytool -genkey -validity 10000 -dname "CN=AndroidDebug, O=Android, C=US" -keystore d2df.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -v
-      ${jdk}/bin/jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore d2df.keystore -storepass android -keypass android -signedjar ./bin/d2df.signed.apk ./bin/d2df.unsigned.apk androiddebugkey
+      ${jdk}/bin/jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore d2df.keystore -storepass android -keypass android -signedjar bin/d2df.signed.apk bin/d2df.unsigned.apk androiddebugkey
     '';
 
     installPhase = ''
