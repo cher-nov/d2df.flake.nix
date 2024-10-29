@@ -56,7 +56,8 @@
         export PATH="$ANDROID_SDK_ROOT/cmake/*/bin:$PATH";
         ${cmake} .. \
           -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
-          -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+          -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM} \
+          -DCMAKE_INSTALL_PREFIX=$out
         make -j$(nproc)
         runHook postBuild
       '';
@@ -65,6 +66,7 @@
         runHook preInstall
         mkdir -p $out/lib
         cp lib${baseName}.so $out/lib
+        make install
         runHook postInstall
       '';
     });
@@ -89,6 +91,47 @@
         mkdir build
         cd build
         ${cmake} .. \
+          -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
+          -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM}
+        make -j$(nproc)
+        runHook postBuild
+      '';
+
+      installPhase = ''
+        runHook preInstall
+        mkdir -p $out/lib
+        cp lib${baseName}.so $out/lib
+        runHook postInstall
+      '';
+    });
+
+  SDL2_mixer_custom = let
+    inherit ANDROID_PLATFORM ANDROID_ABI;
+    baseName = "SDL2_mixer";
+  in
+    stdenv.mkDerivation (finalAttrs: {
+      pname = "SDL2_mixer";
+      version = "2.8.0";
+
+      src = fetchFromGitHub {
+        owner = "libsdl-org";
+        repo = "SDL_mixer";
+        rev = "dd4e0a600d7f3c561e9adaa23f3932289a768fdb";
+        hash = "sha256-I13Cm3R9Ez4NgMGuv8LDpjD+CiaSugulYk4fkbcTiAM=";
+      };
+
+      buildInputs = [
+        SDL2_custom
+      ];
+
+      nativeBuildInputs = [pkgs.pkg-config];
+
+      buildPhase = ''
+        runHook preBuild
+        mkdir build
+        cd build
+        ${cmake} .. \
+          -DSDL2_INCLUDE_DIR="${SDL2_custom}/include" -DSDL2_LIBRARY="${SDL2_custom}/lib" -DSDL2MIXER_VENDORED=OFF \
           -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
           -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM}
         make -j$(nproc)
@@ -131,9 +174,9 @@
           ${fpc-android}/bin/ppcrossa64 -g -gl -O1 \
             -T${target} -Cp${processor} -Cf${fp} \
             -FEbin -FUtmp \
-            -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
+            -dUSE_SDL2 -dUSE_SDLMIXER -dUSE_GLES1 \
             -Fl${NDK_LIB} \
-            -Fl${SDL2_custom}/lib -Fl${enet_custom}/lib \
+            -Fl${SDL2_custom}/lib -Fl${enet_custom}/lib -Fl${SDL2_mixer_custom} \
             -olibDoom2DF.so \
             Doom2DF.lpr
         popd
@@ -167,6 +210,7 @@ in
         mkdir -p ass/lib/arm64-v8a
         ln -s "${SDL2_custom}/lib/libSDL2.so" ass/lib/arm64-v8a/libSDL2.so
         ln -s "${enet_custom}/lib/libenet.so" ass/lib/arm64-v8a/libenet.so
+        ln -s "${SDL2_mixer_custom}/lib/libSDL2_mixer.so" ass/lib/arm64-v8a/libSDL2_mixer.so
         ln -s "${doom2dfAndroid}/lib/libDoom2DF.so" ass/lib/arm64-v8a/libDoom2DF.so
         cp -r assets/* resources
       ''
