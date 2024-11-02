@@ -43,7 +43,7 @@ in
           "${fpc}/remove-signature.sh}" \
         --replace "ifneq (\$(CODESIGN),)" "ifeq (\$(OS_TARGET), darwin)" \
         --replace "-no_uuid" ""
-    ''; 
+    '';
 
     #make all NOGDB=1 FPC="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     buildPhase = let
