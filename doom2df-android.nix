@@ -174,9 +174,9 @@
           ${fpc-android}/bin/ppcrossa64 -g -gl -O1 \
             -T${target} -Cp${processor} -Cf${fp} \
             -FEbin -FUtmp \
-            -dUSE_SDL2 -dUSE_SDLMIXER -dUSE_GLES1 \
+            -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
             -Fl${NDK_LIB} \
-            -Fl${SDL2_custom}/lib -Fl${enet_custom}/lib -Fl${SDL2_mixer_custom} \
+            -Fl${SDL2_custom}/lib -Fl${enet_custom}/lib \
             -olibDoom2DF.so \
             Doom2DF.lpr
         popd
@@ -210,7 +210,6 @@ in
         mkdir -p ass/lib/arm64-v8a
         ln -s "${SDL2_custom}/lib/libSDL2.so" ass/lib/arm64-v8a/libSDL2.so
         ln -s "${enet_custom}/lib/libenet.so" ass/lib/arm64-v8a/libenet.so
-        ln -s "${SDL2_mixer_custom}/lib/libSDL2_mixer.so" ass/lib/arm64-v8a/libSDL2_mixer.so
         ln -s "${doom2dfAndroid}/lib/libDoom2DF.so" ass/lib/arm64-v8a/libDoom2DF.so
         cp -r assets/* resources
       ''

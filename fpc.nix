@@ -20,8 +20,8 @@ in
     pname = "fpc-android";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source.git";
-      rev = "46508f6af16b7f676ca05bc9f84f904d3c2aac23";
-      sha256 = "sha256-0HjI4FXWXA8P468dK7GLSofgDdPfCSvyohJlIbS/KSc=";
+      rev = "bea36238e7ed10caf56df832ed070f569d6892f3";
+      sha256 = "sha256-IWuz+a2GwzxGanGgC6LMeAtW/TvER225AnfBBvXmses=";
     };
 
     buildInputs = [gawk fpc];
@@ -43,7 +43,7 @@ in
           "${fpc}/remove-signature.sh}" \
         --replace "ifneq (\$(CODESIGN),)" "ifeq (\$(OS_TARGET), darwin)" \
         --replace "-no_uuid" ""
-    '';
+    ''; 
 
     #make all NOGDB=1 FPC="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     buildPhase = let

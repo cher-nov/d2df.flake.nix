@@ -28,7 +28,6 @@ public class Doom2DF extends SDLActivity {
   protected String[] getLibraries () {
     return new String[] {
       "SDL2",
-      "SDL2_mixer",
       "enet",
       "Doom2DF"
     };
