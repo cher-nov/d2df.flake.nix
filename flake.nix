@@ -34,11 +34,30 @@
         includeEmulator = false;
       };
       androidSdk = androidComposition.androidsdk;
+      doom2dfAndroid = import ./doom2df-android.nix {
+        inherit (pkgs) stdenv fetchFromGitHub;
+      };
+      SDL2_custom = pkgs.callPackage doom2dfAndroid.SDL2_custom {inherit androidSdk;};
+      enet_custom = pkgs.callPackage doom2dfAndroid.enet_custom {inherit androidSdk;};
     in {
       packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};
-      packages.doom2df-android = pkgs.callPackage ./doom2df-android.nix {
-        inherit androidSdk;
-        fpc-android = self.packages.${system}.fpc-android;
+      packages.doom2dfAndroidNativeLibrary = pkgs.callPackage doom2dfAndroid.doom2dfAndroidNativeLibrary {
+        inherit (self.packages."${system}") fpc-android;
+        inherit androidSdk SDL2_custom enet_custom;
+      };
+      packages.doom2df-android = pkgs.callPackage doom2dfAndroid.doom2df-android {
+        inherit (self.packages."${system}") doom2dfAndroidNativeLibrary;
+        inherit androidSdk SDL2_custom enet_custom;
+      };
+      packages.doom2df-android-O2 = self.packages."${system}".doom2df-android.override {
+        doom2dfAndroidNativeLibrary = self.packages."${system}".doom2dfAndroidNativeLibrary.overrideAttrs (final: prev: {
+          buildPhase = builtins.replaceStrings ["-O1"] ["-O2"] prev.buildPhase;
+        });
+      };
+      packages.doom2df-android-O3 = self.packages."${system}".doom2df-android.override {
+        doom2dfAndroidNativeLibrary = self.packages."${system}".doom2dfAndroidNativeLibrary.overrideAttrs (final: prev: {
+          buildPhase = builtins.replaceStrings ["-O1"] ["-O3"] prev.buildPhase;
+        });
       };
       devShell = with pkgs;
         mkShell rec {
