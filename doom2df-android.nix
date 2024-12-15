@@ -158,7 +158,7 @@ in {
             ln -s "${abiAttrs.doom2df}/lib/libDoom2DF.so" ass/lib/${abi}/libDoom2DF.so
           '';
         in
-          (f "arm64-v8a" customAndroidFpcPkgs."arm64-v8a")
+          (lib.foldlAttrs (acc: name: value: acc + (f name value)) "" customAndroidFpcPkgs)
           + ''
             cp -r assets/* resources
           '')

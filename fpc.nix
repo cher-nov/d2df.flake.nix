@@ -1,17 +1,11 @@
 {
   lib,
   stdenv,
-  fetchurl,
   fetchgit,
   gawk,
-  fetchpatch,
-  undmg,
-  cpio,
-  xar,
-  darwin,
-  libiconv,
   fpc,
-  androidSdk,
+  androidNdk,
+  androidPlatform
 }: let
   startFPC = fpc;
 in
@@ -47,17 +41,16 @@ in
 
     #make all NOGDB=1 FPC="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     buildPhase = let
-      androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
       ndkToolchainAarch = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
       ndkToolchainArm32 = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
-      ndkLibArm32 = "${androidNdk}/platforms/android-28/arch-arm/usr/lib";
-      ndkLibAarch = "${androidNdk}/platforms/android-28/arch-arm64/usr/lib";
+      ndkLibArm32 = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm/usr/lib";
+      ndkLibAarch = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm64/usr/lib";
     in ''
       export PATH="$PATH:${ndkToolchainArm32}:${ndkToolchainAarch}";
       #export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH";
       make clean all
       make clean all OS_TARGET=android CPU_TARGET=aarch64 CROSSOPT="-Fl${ndkLibAarch}" NDK=${androidNdk} NOGDB=1 FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
-      make clean all OS_TARGET=android CPU_TARGET=arm CROSSOPT="-Fl${ndkLibArm32}" NDK=${androidNdk} NOGDB=1 FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
+      make clean all OS_TARGET=android CPU_TARGET=arm CROSSOPT="-CpARMV7A -CfVFPV3 -Fl${ndkLibArm32}" NDK=${androidNdk} NOGDB=1 FPC="${fpc}/bin/fpc" PP="${fpc}/bin/fpc" INSTALL_PREFIX=$out
     '';
 
     installPhase =
