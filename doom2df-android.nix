@@ -92,9 +92,11 @@
 
       src = fetchgit {
         url = "https://repo.or.cz/d2df-sdl.git";
-        rev = "0722185740e8e3644a63c09a71ebf7fde7606011";
-        sha256 = "sha256-5GYhJ4J4fJ3qnX+4pTJA8TdNONqqkqgT9sP+txpV7Xs=";
+        rev = "58bea163d93100936cfe20515526e76f6cdf8ddb";
+        sha256 = "sha256-oCxv3VjAqxB887Rwe6JLELjHo4b9ISjvdpme6Zs12j4=";
       };
+
+      patches = [./0001-Experimental-network-patch.patch];
 
       buildPhase = ''
         pushd src/game
