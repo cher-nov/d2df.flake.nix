@@ -34,20 +34,37 @@
         includeEmulator = false;
       };
       androidSdk = androidComposition.androidsdk;
+      androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
+      ndkToolchain = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
+      ndkLib = "${androidNdk}/platforms/android-28/arch-arm64/usr/lib";
       doom2dfAndroid = import ./doom2df-android.nix {
         inherit (pkgs) stdenv fetchFromGitHub;
       };
-      SDL2_custom = pkgs.callPackage doom2dfAndroid.SDL2_custom {inherit androidSdk;};
-      enet_custom = pkgs.callPackage doom2dfAndroid.enet_custom {inherit androidSdk;};
+      androidPlatform = "28";
+      androidNdkPkgs = {
+        armv8 = let
+          androidAbi = "arm64-v8a";
+          processor = "ARMV8";
+          fp = "VFP";
+          target = "android";
+          fpc-android = self.packages."${system}".fpc-android;
+          fpc-android-wrapped = pkgs.writeShellScriptBin "fpc" "${fpc-android}/bin/ppcrossa64 -T${target} -Cp${processor} -Cf${fp} -Fl${ndkLib} $@";
+        in {
+          SDL2_custom = pkgs.callPackage doom2dfAndroid.SDL2_custom {inherit androidSdk androidNdk androidPlatform androidAbi;};
+          enet_custom = pkgs.callPackage doom2dfAndroid.enet_custom {inherit androidSdk androidNdk androidPlatform androidAbi;};
+          doom2dfAndroidNativeLibrary = pkgs.callPackage doom2dfAndroid.doom2dfAndroidNativeLibrary {
+            fpc = fpc-android-wrapped;
+            inherit (androidNdkPkgs.armv8) SDL2_custom enet_custom;
+            inherit ndkToolchain;
+          };
+        };
+      };
     in {
       packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};
-      packages.doom2dfAndroidNativeLibrary = pkgs.callPackage doom2dfAndroid.doom2dfAndroidNativeLibrary {
-        inherit (self.packages."${system}") fpc-android;
-        inherit androidSdk SDL2_custom enet_custom;
-      };
+      legacyPackages.ndk = androidNdkPkgs;
       packages.doom2df-android = pkgs.callPackage doom2dfAndroid.doom2df-android {
-        inherit (self.packages."${system}") doom2dfAndroidNativeLibrary;
-        inherit androidSdk SDL2_custom enet_custom;
+        inherit (androidNdkPkgs.armv8) doom2dfAndroidNativeLibrary SDL2_custom enet_custom;
+        inherit androidSdk;
       };
       packages.doom2df-android-O2 = self.packages."${system}".doom2df-android.override {
         doom2dfAndroidNativeLibrary = self.packages."${system}".doom2dfAndroidNativeLibrary.overrideAttrs (final: prev: {

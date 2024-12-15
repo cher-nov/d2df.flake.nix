@@ -9,17 +9,17 @@
   stdenv,
   fetchFromGitHub,
 }: let
-  androidPlatform = 28;
-  ANDROID_ABI = "arm64-v8a";
-  ANDROID_PLATFORM = "android-${builtins.toString androidPlatform}";
-
   androidCmakeDrv = {
     pname,
     version,
     src,
     cmakeExtraArgs ? "",
-  }: {androidSdk}: let
-    ANDROID_NDK = "${androidSdk}/libexec/android-sdk/ndk-bundle";
+  }: {
+    androidSdk,
+    androidNdk,
+    androidAbi,
+    androidPlatform,
+  }: let
     cmake = "${androidSdk}/libexec/android-sdk/cmake/3.22.1/bin/cmake";
   in
     stdenv.mkDerivation (finalAttrs: {
@@ -31,8 +31,8 @@
         cd build
         export PATH="$ANDROID_SDK_ROOT/cmake/*/bin:$PATH";
         ${cmake} .. \
-          -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake \
-          -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${ANDROID_ABI} -DANDROID_PLATFORM=${ANDROID_PLATFORM} \
+          -DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake \
+          -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${androidAbi} -DANDROID_PLATFORM=${androidPlatform} \
           -DCMAKE_INSTALL_PREFIX=$out \
           ${cmakeExtraArgs}
         make -j$(nproc)
@@ -72,19 +72,11 @@
   doom2dfAndroidNativeLibrary = {
     stdenv,
     fetchgit,
-    fpc-android,
-    androidSdk,
+    fpc,
+    ndkToolchain,
     SDL2_custom,
     enet_custom,
-  }: let
-    inherit ANDROID_PLATFORM ANDROID_ABI;
-    processor = "ARMV8";
-    fp = "VFP";
-    target = "android";
-    ANDROID_NDK = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-    NDK_TOOLCHAIN = "${ANDROID_NDK}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
-    NDK_LIB = "${ANDROID_NDK}/platforms/android-28/arch-arm64/usr/lib";
-  in
+  }:
     stdenv.mkDerivation (finalAttrs: {
       version = "0.667-git";
       pname = "d2df-android-lib";
@@ -101,15 +93,14 @@
       buildPhase = ''
         pushd src/game
         mkdir bin tmp
-        PATH='${NDK_TOOLCHAIN}:$PATH' \
-          ${fpc-android}/bin/ppcrossa64 -g -gl -O1 \
-            -T${target} -Cp${processor} -Cf${fp} \
+        PATH='${ndkToolchain}:$PATH' \
+          ${fpc}/bin/fpc \
+            -g -gl -O1 \
             -FEbin -FUtmp \
             -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
-            -Fl${NDK_LIB} \
             -Fl${SDL2_custom}/lib -Fl${enet_custom}/lib \
             -olibDoom2DF.so \
-            Doom2DF.lpr
+            -al Doom2DF.lpr
         popd
       '';
 
