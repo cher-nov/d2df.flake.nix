@@ -78,7 +78,7 @@
         };
       };
     in {
-      packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidNdk androidPlatform;};
+      packages.fpc-android = pkgs.callPackage ./fpc {inherit androidNdk androidPlatform;};
       legacyPackages.ndk = androidNdkPkgs;
       packages.doom2df-android = pkgs.callPackage doom2dfAndroid.doom2df-android {
         inherit androidSdk;
