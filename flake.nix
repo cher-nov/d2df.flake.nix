@@ -40,6 +40,7 @@
       doom2dfAndroid = import ./doom2df-android.nix {
         inherit (pkgs) stdenv fetchFromGitHub;
       };
+      fpc-android = self.packages."${system}".fpc-android;
       androidPlatform = "28";
       androidNdkPkgs = {
         armv8 = let
@@ -47,7 +48,6 @@
           processor = "ARMV8";
           fp = "VFP";
           target = "android";
-          fpc-android = self.packages."${system}".fpc-android;
           fpc-android-wrapped = pkgs.writeShellScriptBin "fpc" "${fpc-android}/bin/ppcrossa64 -T${target} -Cp${processor} -Cf${fp} -Fl${ndkLib} $@";
         in {
           SDL2_custom = pkgs.callPackage doom2dfAndroid.SDL2_custom {inherit androidSdk androidNdk androidPlatform androidAbi;};
@@ -63,8 +63,15 @@
       packages.fpc-android = pkgs.callPackage ./fpc.nix {inherit androidSdk;};
       legacyPackages.ndk = androidNdkPkgs;
       packages.doom2df-android = pkgs.callPackage doom2dfAndroid.doom2df-android {
-        inherit (androidNdkPkgs.armv8) doom2dfAndroidNativeLibrary SDL2_custom enet_custom;
         inherit androidSdk;
+        SDL2ForJava =
+          androidNdkPkgs.armv8.SDL2_custom;
+        customAndroidFpcPkgs = {
+          "arm64-v8a" = {
+            doom2df = androidNdkPkgs.armv8.doom2dfAndroidNativeLibrary;
+            nativeBuildInputs = [androidNdkPkgs.armv8.enet_custom androidNdkPkgs.armv8.SDL2_custom];
+          };
+        };
       };
       packages.doom2df-android-O2 = self.packages."${system}".doom2df-android.override {
         doom2dfAndroidNativeLibrary = self.packages."${system}".doom2dfAndroidNativeLibrary.overrideAttrs (final: prev: {

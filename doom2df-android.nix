@@ -113,15 +113,17 @@ in {
   inherit SDL2_custom enet_custom;
   inherit doom2dfAndroidNativeLibrary;
   doom2df-android = {
-    doom2dfAndroidNativeLibrary,
     stdenv,
     jdk17,
-    SDL2_custom,
-    enet_custom,
     findutils,
     coreutils-full,
     file,
     androidSdk,
+    lib,
+    SDL2ForJava,
+    # Example:
+    # {"arm64-v8a" = { nativeBuildInputs = [SDL2_custom enet_custom]; doom2df = ...}; }
+    customAndroidFpcPkgs,
   }:
     stdenv.mkDerivation (finalAttrs: let
       ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
@@ -145,17 +147,25 @@ in {
           mkdir -p resources ass/lib
         ''
         # Populate native library directories for supported platforms.
-        + ''
-          mkdir -p ass/lib/arm64-v8a
-          ln -s "${SDL2_custom}/lib/libSDL2.so" ass/lib/arm64-v8a/libSDL2.so
-          ln -s "${enet_custom}/lib/libenet.so" ass/lib/arm64-v8a/libenet.so
-          ln -s "${doom2dfAndroidNativeLibrary}/lib/libDoom2DF.so" ass/lib/arm64-v8a/libDoom2DF.so
-          cp -r assets/* resources
-        ''
+        + (let
+          copyLibraries = abi: libraries: let
+            i = lib.map (x: "ln -s ${x}/lib/*.so ass/lib/${abi}") libraries;
+          in
+            lib.concatStringsSep "\n" i;
+          f = abi: abiAttrs: ''
+            mkdir -p "ass/lib/${abi}"
+            ${(copyLibraries abi abiAttrs.nativeBuildInputs)}
+            ln -s "${abiAttrs.doom2df}/lib/libDoom2DF.so" ass/lib/${abi}/libDoom2DF.so
+          '';
+        in
+          (f "arm64-v8a" customAndroidFpcPkgs."arm64-v8a")
+          + ''
+            cp -r assets/* resources
+          '')
         # Use SDL Java sources from the version we compiled our game with.
         + ''
           rm -r src/org/libsdl/app/*
-          cp -r "${SDL2_custom.src}/android-project/app/src/main/java/org/libsdl/app" "src/org/libsdl"
+          cp -r "${SDL2ForJava.src}/android-project/app/src/main/java/org/libsdl/app" "src/org/libsdl"
         ''
         # Build the APK.
         + ''
