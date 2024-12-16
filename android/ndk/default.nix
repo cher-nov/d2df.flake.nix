@@ -14,6 +14,7 @@
     androidNdk,
     androidAbi,
     androidPlatform,
+    ...
   }: let
     cmake = "${androidSdk}/libexec/android-sdk/cmake/3.22.1/bin/cmake";
   in
@@ -41,7 +42,7 @@
         runHook postInstall
       '';
     });
-in {
+in rec {
   SDL2 = androidCmakeDrv rec {
     pname = "SDL2";
     version = "2.30.6";
@@ -63,16 +64,45 @@ in {
       hash = "sha256-YIqJC5wMTX4QiWebvGGm5EfZXLzufXBxUO7YdeQ+6Bk=";
     };
   };
-  /*
+
+  fpc = {
+    androidSdk,
+    androidNdk,
+    androidAbi,
+    androidPlatform,
+    ndkToolchain,
+    ndkLib,
+    fpcAttrs,
+    ...
+  }: let
+    archsAttrs = {
+      "${androidAbi}" = {
+        fpcArgs = fpcAttrs.makeArgs;
+        toolchainPaths = [ndkToolchain];
+      };
+    };
+  in
+    pkgs.callPackage ../../fpc {inherit archsAttrs;};
+
+  fpc-wrapper = {
+    androidSdk,
+    androidNdk,
+    androidAbi,
+    androidPlatform,
+    ndkToolchain,
+    ndkLib,
+    fpc,
+    fpcAttrs,
+    ...
+  }:
+    pkgs.writeShellScriptBin "fpc" "PATH=\"$PATH:${ndkToolchain}\" ${fpc}/bin/pp${fpcAttrs.basename} ${lib.concatStringsSep " " fpcAttrs.cpuArgs} ${fpcAttrs.targetArg} $@";
 
   doom2df-library = {
     stdenv,
     fetchgit,
     fpc,
-    ndkToolchain,
     SDL2,
     enet,
-    customNdkLibraries,
   }:
     stdenv.mkDerivation (finalAttrs: {
       version = "0.667-git";
@@ -85,19 +115,18 @@ in {
         sha256 = "sha256-oCxv3VjAqxB887Rwe6JLELjHo4b9ISjvdpme6Zs12j4=";
       };
 
-      patches = [./0001-Experimental-network-patch.patch];
+      patches = [../../0001-Experimental-network-patch.patch];
 
       buildPhase = ''
         pushd src/game
         mkdir bin tmp
-        PATH='${ndkToolchain}:$PATH' \
-          ${fpc}/bin/fpc \
-            -g -gl -O1 \
-            -FEbin -FUtmp \
-            -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
-            ${lib.concatStringsSep " " (lib.map (drv: "-Fl${drv}/lib") customNdkLibraries)}
-            -olibDoom2DF.so \
-            -al Doom2DF.lpr
+        ${fpc}/bin/fpc \
+          -g -gl -O1 \
+          -FEbin -FUtmp \
+          -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
+          -Fl${SDL2}/lib -Fl${enet}/lib \
+          -olibDoom2DF.so \
+          -al Doom2DF.lpr
         popd
       '';
 
@@ -106,5 +135,4 @@ in {
         cp src/game/bin/libDoom2DF.so $out/lib
       '';
     });
-  */
 }

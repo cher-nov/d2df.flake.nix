@@ -4,8 +4,6 @@
   fetchgit,
   gawk,
   fpc,
-  androidNdk,
-  androidPlatform,
   archsAttrs,
 }: let
   startFPC = fpc;
@@ -13,7 +11,7 @@
 in
   stdenv.mkDerivation rec {
     version = "3.3.1";
-    pname = "fpc-android";
+    pname = "fpc-custom";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source.git";
       rev = "bea36238e7ed10caf56df832ed070f569d6892f3";
