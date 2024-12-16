@@ -3,6 +3,7 @@
   androidNdk,
   androidPlatform,
   fpcPkgs,
+  d2dfPkgs,
   lib,
   pkgs,
 }: let
@@ -138,7 +139,7 @@
       value = {
         inherit enet SDL2;
         doom2df-library = let
-          f = import ../game;
+          f = d2dfPkgs;
         in
           pkgs.callPackage f.doom2df-unwrapped {
             fpc = fpc-wrapper;

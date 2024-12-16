@@ -15,8 +15,10 @@
         config = {
           android_sdk.accept_license = true;
           allowUnfree = true;
+          allowUnsupportedSystem = true;
         };
       };
+      lib = pkgs.lib;
       buildToolsVersion = "34.0.0";
       cmakeVersion = "3.22.1";
       androidComposition = pkgs.androidenv.composeAndroidPackages {
@@ -36,13 +38,20 @@
       androidSdk = androidComposition.androidsdk;
       androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
       androidPlatform = "21";
+      fpcPkgs = import ./fpc;
+      d2dfPkgs = import ./game;
     in {
       legacyPackages.kek = import ./android {
         inherit androidSdk androidNdk androidPlatform;
-        fpcPkgs = import ./fpc;
+        inherit fpcPkgs d2dfPkgs;
         lib = pkgs.lib;
         inherit pkgs;
       };
+      legacyPackages.mingw = import ./mingw {
+        inherit pkgs lib;
+        inherit fpcPkgs d2dfPkgs;
+      };
+
       devShell = with pkgs;
         mkShell rec {
           ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
