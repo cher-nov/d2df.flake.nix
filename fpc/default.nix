@@ -45,21 +45,20 @@ in
     # compile a crosscompiling FPC without compiling an FPC native to the host system.
     # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
 
-    buildPhase = 
-      (
-        ''
-          make clean all ${lib.concatStringsSep " " default}
-        ''
-        + (lib.concatStringsSep "\n" (
-          lib.map (x: let
-            abi = x.name;
-            abiAttrs = x.value;
-          in ''
-            PATH="$PATH:${lib.concatStringsSep ":" abiAttrs.toolchainPaths}" \
-              make clean crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") abiAttrs.fpcArgs)}
-          '') (lib.attrsToList archsAttrs)
-        ))
-      );
+    buildPhase = (
+      ''
+        make clean all ${lib.concatStringsSep " " default}
+      ''
+      + (lib.concatStringsSep "\n" (
+        lib.map (x: let
+          abi = x.name;
+          abiAttrs = x.value;
+        in ''
+          PATH="$PATH:${lib.concatStringsSep ":" abiAttrs.toolchainPaths}" \
+            make clean crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") abiAttrs.fpcArgs)}
+        '') (lib.attrsToList archsAttrs)
+      ))
+    );
 
     installPhase =
       (
