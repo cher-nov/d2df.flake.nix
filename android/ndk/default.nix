@@ -64,43 +64,4 @@ in rec {
       hash = "sha256-YIqJC5wMTX4QiWebvGGm5EfZXLzufXBxUO7YdeQ+6Bk=";
     };
   };
-
-  doom2df-library = {
-    stdenv,
-    fetchgit,
-    fpc,
-    SDL2,
-    enet,
-  }:
-    stdenv.mkDerivation (finalAttrs: {
-      version = "0.667-git";
-      pname = "d2df-android-lib";
-      name = "${finalAttrs.pname}-${finalAttrs.version}";
-
-      src = fetchgit {
-        url = "https://repo.or.cz/d2df-sdl.git";
-        rev = "58bea163d93100936cfe20515526e76f6cdf8ddb";
-        sha256 = "sha256-oCxv3VjAqxB887Rwe6JLELjHo4b9ISjvdpme6Zs12j4=";
-      };
-
-      patches = [../../0001-Experimental-network-patch.patch];
-
-      buildPhase = ''
-        pushd src/game
-        mkdir bin tmp
-        ${fpc}/bin/fpc \
-          -g -gl -O1 \
-          -FEbin -FUtmp \
-          -dUSE_SDL2 -dUSE_SOUNDSTUB -dUSE_GLES1 \
-          -Fl${SDL2}/lib -Fl${enet}/lib \
-          -olibDoom2DF.so \
-          -al Doom2DF.lpr
-        popd
-      '';
-
-      installPhase = ''
-        mkdir -p $out/lib
-        cp src/game/bin/libDoom2DF.so $out/lib
-      '';
-    });
 }

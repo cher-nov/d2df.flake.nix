@@ -139,10 +139,15 @@
       name = androidAbi;
       value = {
         inherit enet SDL2;
-        doom2df-library = pkgs.callPackage customNdkPkgs.doom2df-library {
-          inherit SDL2 enet;
-          fpc = fpc-wrapper;
-        };
+        doom2df-library = let
+          f = import ../game;
+        in
+          pkgs.callPackage f.doom2df-unwrapped {
+            fpc = fpc-wrapper;
+            inherit SDL2 enet;
+            glibc = null;
+            buildAsLibrary = true;
+          };
       };
     })
     architectures;
