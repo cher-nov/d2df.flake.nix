@@ -2,7 +2,7 @@
   androidSdk,
   androidNdk,
   androidPlatform,
-  fpc-custom,
+  fpcPkgs,
   lib,
   pkgs,
 }: let
@@ -10,8 +10,6 @@
     inherit lib pkgs;
     inherit (pkgs) fetchFromGitHub stdenv;
   };
-
-  fpcPkgs = import ../fpc;
 
   architectures = {
     armv7 = rec {

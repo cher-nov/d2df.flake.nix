@@ -35,12 +35,11 @@
       };
       androidSdk = androidComposition.androidsdk;
       androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-      fpc-android = self.packages."${system}".fpc-android;
       androidPlatform = "21";
     in {
       legacyPackages.kek = import ./android {
         inherit androidSdk androidNdk androidPlatform;
-        fpc-custom = fpc-android;
+        fpcPkgs = import ./fpc;
         lib = pkgs.lib;
         inherit pkgs;
       };
