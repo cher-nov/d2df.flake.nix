@@ -121,7 +121,7 @@
     });
 
   ndkPackagesByArch =
-    lib.mapAttrs (abi: abiAttrs: let
+    lib.mapAttrs' (abi: abiAttrs: let
       inherit (abiAttrs) androidAbi ndkToolchain ndkLib fpcAttrs;
       enet = customNdkPkgs.enet {
         inherit androidSdk androidNdk androidAbi androidPlatform;
@@ -140,23 +140,28 @@
         inherit fpcAttrs fpc;
       };
     in {
-      inherit enet SDL2 fpc;
-      doom2df-library = pkgs.callPackage customNdkPkgs.doom2df-library {
-        inherit SDL2 enet;
-        fpc = fpc-wrapper;
+      name = androidAbi;
+      value = {
+        inherit enet SDL2 fpc;
+        doom2df-library = pkgs.callPackage customNdkPkgs.doom2df-library {
+          inherit SDL2 enet;
+          fpc = fpc-wrapper;
+        };
       };
     })
     architectures;
   universal = {
     doom2df-android = pkgs.callPackage doom2df-android {
       inherit androidSdk;
-      SDL2ForJava = ndkPackagesByArch.armv8.SDL2;
-      customAndroidFpcPkgs = {
-        "arm64-v8a" = {
-          nativeBuildInputs = [ndkPackagesByArch.armv8.enet ndkPackagesByArch.armv8.SDL2];
-          doom2df = ndkPackagesByArch.armv8.doom2df-library;
-        };
-      };
+      SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;
+      customAndroidFpcPkgs =
+        lib.mapAttrs (abi: ndkPkgs: let
+          inherit (ndkPkgs) enet SDL2 doom2df-library;
+        in {
+          nativeBuildInputs = [enet SDL2];
+          doom2df = doom2df-library;
+        })
+        ndkPackagesByArch;
     };
   };
 in
