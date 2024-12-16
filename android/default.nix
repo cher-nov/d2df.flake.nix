@@ -11,6 +11,8 @@
     inherit (pkgs) fetchFromGitHub stdenv;
   };
 
+  fpcPkgs = import ../fpc;
+
   architectures = {
     armv7 = rec {
       androidAbi = "armeabi-v7a";
@@ -26,7 +28,7 @@
           CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
           NDK = "${androidNdk}";
         };
-        extraPaths = [ndkToolchain];
+        toolchainPaths = [ndkToolchain];
       };
     };
     armv8 = rec {
@@ -43,7 +45,7 @@
           CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
           NDK = "${androidNdk}";
         };
-        extraPaths = [ndkToolchain];
+        toolchainPaths = [ndkToolchain];
       };
     };
   };
@@ -129,20 +131,14 @@
       SDL2 = customNdkPkgs.SDL2 {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
-      fpc = customNdkPkgs.fpc {
-        inherit androidSdk androidNdk androidAbi androidPlatform;
-        inherit ndkToolchain ndkLib;
+      fpc-wrapper = pkgs.callPackage fpcPkgs.wrapper {
+        fpc = universal.fpc-android;
         inherit fpcAttrs;
-      };
-      fpc-wrapper = customNdkPkgs.fpc-wrapper {
-        inherit androidSdk androidNdk androidAbi androidPlatform;
-        inherit ndkToolchain ndkLib;
-        inherit fpcAttrs fpc;
       };
     in {
       name = androidAbi;
       value = {
-        inherit enet SDL2 fpc;
+        inherit enet SDL2;
         doom2df-library = pkgs.callPackage customNdkPkgs.doom2df-library {
           inherit SDL2 enet;
           fpc = fpc-wrapper;
@@ -151,6 +147,9 @@
     })
     architectures;
   universal = {
+    fpc-android = pkgs.callPackage fpcPkgs.base {
+      archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
+    };
     doom2df-android = pkgs.callPackage doom2df-android {
       inherit androidSdk;
       SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;

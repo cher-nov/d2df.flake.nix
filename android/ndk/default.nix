@@ -65,38 +65,6 @@ in rec {
     };
   };
 
-  fpc = {
-    androidSdk,
-    androidNdk,
-    androidAbi,
-    androidPlatform,
-    ndkToolchain,
-    ndkLib,
-    fpcAttrs,
-    ...
-  }: let
-    archsAttrs = {
-      "${androidAbi}" = {
-        fpcArgs = fpcAttrs.makeArgs;
-        toolchainPaths = [ndkToolchain];
-      };
-    };
-  in
-    pkgs.callPackage ../../fpc {inherit archsAttrs;};
-
-  fpc-wrapper = {
-    androidSdk,
-    androidNdk,
-    androidAbi,
-    androidPlatform,
-    ndkToolchain,
-    ndkLib,
-    fpc,
-    fpcAttrs,
-    ...
-  }:
-    pkgs.writeShellScriptBin "fpc" "PATH=\"$PATH:${ndkToolchain}\" ${fpc}/bin/pp${fpcAttrs.basename} ${lib.concatStringsSep " " fpcAttrs.cpuArgs} ${fpcAttrs.targetArg} $@";
-
   doom2df-library = {
     stdenv,
     fetchgit,
