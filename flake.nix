@@ -78,7 +78,35 @@
         };
       };
     in {
-      packages.fpc-android = pkgs.callPackage ./fpc {inherit androidNdk androidPlatform;};
+      packages.fpc-android = pkgs.callPackage ./fpc {
+        inherit androidNdk androidPlatform;
+        archsAttrs = {
+          armv7 = let
+            ndkLibArm32 = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm/usr/lib";
+            ndkToolchain = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
+          in {
+            fpcArgs = {
+              OS_TARGET = "android";
+              CPU_TARGET = "arm";
+              CROSSOPT = "\"-CpARMV7A -CfVFPV3 -Fl${ndkLibArm32}\"";
+              NDK = "${androidNdk}";
+            };
+            toolchainPaths = [ndkToolchain];
+          };
+          armv8 = let
+            ndkLibAarch = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm64/usr/lib";
+            ndkToolchain = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
+          in {
+            fpcArgs = {
+              OS_TARGET = "android";
+              CPU_TARGET = "aarch64";
+              CROSSOPT = "\"-Fl${ndkLibAarch}\"";
+              NDK = "${androidNdk}";
+            };
+            toolchainPaths = [ndkToolchain];
+          };
+        };
+      };
       legacyPackages.ndk = androidNdkPkgs;
       packages.doom2df-android = pkgs.callPackage doom2dfAndroid.doom2df-android {
         inherit androidSdk;
@@ -91,7 +119,7 @@
           };
           "armeabi-v7a" = {
             doom2df = androidNdkPkgs.armv7.doom2dfAndroidNativeLibrary;
-            nativeBuildInputs = [androidNdkPkgs.armv7.enet_custom androidNdkPkgs.armv7.SDL2_custom]; 
+            nativeBuildInputs = [androidNdkPkgs.armv7.enet_custom androidNdkPkgs.armv7.SDL2_custom];
           };
         };
       };

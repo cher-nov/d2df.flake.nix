@@ -1,10 +1,3 @@
-# Grep for V/SDL
-/*
-10-20 17:23:17.579 V/SDL     (23013): Running main function SDL_main from library libDoom2DF.so
-10-20 17:23:17.580 V/SDL     (23013): nativeRunMain()
-10-20 17:23:17.580 E/SDL     (23013): nativeRunMain(): Couldn't load library libDoom2DF.so
-10-20 17:23:17.580 V/SDL     (23013): Finished main function
-*/
 {
   stdenv,
   fetchFromGitHub,

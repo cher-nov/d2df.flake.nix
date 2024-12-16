@@ -5,30 +5,11 @@
   gawk,
   fpc,
   androidNdk,
-  androidPlatform
+  androidPlatform,
+  archsAttrs,
 }: let
   startFPC = fpc;
-      ndkToolchainAarch = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
-      ndkToolchainArm32 = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
-      default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
-      archs = {
-androidArmv8 = let ndkLibAarch = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm64/usr/lib"; in {
-  OS_TARGET="android";
-  CPU_TARGET="aarch64";
-  CROSSOPT="-Fl${ndkLibAarch}";
-  NDK="${androidNdk}";
-};
-androidArmv7 = let ndkLibArm32 = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm/usr/lib"; in {
-  OS_TARGET="android";
-  CPU_TARGET="arm";
-  CROSSOPT="-CpARMV7A -CfVFPV3 -Fl${ndkLibArm32}";
-  NDK="${androidNdk}";
-};
-linuxX86_64 = {};
-linuxX86 = {};
-mingw32 = {};
-mingw64 = {};
-      };  
+  default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
 in
   stdenv.mkDerivation rec {
     version = "3.3.1";
@@ -60,24 +41,41 @@ in
         --replace "-no_uuid" ""
     '';
 
-    #make all NOGDB=1 FPC="${fpc}/bin/fpc" INSTALL_PREFIX=$out
-    buildPhase = let
-      # export PATH="$PATH:${ndkToolchainArm32}:${ndkToolchainAarch}";
-      # export PATH="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH";
-    in ''
-      make clean all ${lib.concatStringsSep " " default}
-      PATH="$PATH:${ndkToolchainArm32}:${ndkToolchainAarch}" \
-        make clean all ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") archs.androidArmv8)}
-    '';
- 
+    # At the moment of writing this comment, author couldn't find a way to
+    # compile a crosscompiling FPC without compiling an FPC native to the host system.
+    # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
+
+    buildPhase = 
+      (
+        ''
+          make clean all ${lib.concatStringsSep " " default}
+        ''
+        + (lib.concatStringsSep "\n" (
+          lib.map (x: let
+            abi = x.name;
+            abiAttrs = x.value;
+          in ''
+            PATH="$PATH:${lib.concatStringsSep ":" abiAttrs.toolchainPaths}" \
+              make clean crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") abiAttrs.fpcArgs)}
+          '') (lib.attrsToList archsAttrs)
+        ))
+      );
+
     installPhase =
-        #make install NOGDB=1 INSTALL_PREFIX=$out
-        #make crossinstall NOGDB=1 OS_TARGET=android CPU_TARGET=aarch64 INSTALL_PREFIX=$out
-        #make crossinstall NOGDB=1 OS_TARGET=android CPU_TARGET=arm INSTALL_PREFIX=$out    
-      ''
-        make install NOGDB=1 INSTALL_PREFIX=$out
-        make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") archs.androidArmv8)}
-      ''
+      (
+        ''
+          make install ${lib.concatStringsSep " " default}
+        ''
+        + (lib.concatStringsSep "\n" (
+          lib.map (x: let
+            abi = x.name;
+            abiAttrs = x.value;
+          in ''
+            PATH="$PATH:${lib.concatStringsSep ":" abiAttrs.toolchainPaths}" \
+              make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") abiAttrs.fpcArgs)}
+          '') (lib.attrsToList archsAttrs)
+        ))
+      )
       + ''
         for i in $out/lib/fpc/*/ppc*; do
           ln -fs $i $out/bin/$(basename $i)
