@@ -29,10 +29,10 @@
         mkdir build
         cd build
         ${cmakePrefix} \
-          ${pkgs.cmake}/bin/cmake .. \
+          ${cmake} .. \
             -DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake \
             -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${androidAbi} -DANDROID_PLATFORM=${androidPlatform} \
-            -DCMAKE_INSTALL_PREFIX=$out \
+            -DCMAKE_INSTALL_PREFIX=$out -DANDROID_STL=c++_static \
             ${cmakeExtraArgs}
         make -j$(nproc)
         runHook postBuild

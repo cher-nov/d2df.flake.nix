@@ -31,6 +31,7 @@
         toolchainPaths = [ndkToolchain];
       };
     };
+
     armv8 = rec {
       androidAbi = "arm64-v8a";
       clangTriplet = "aarch64-linux-android";
@@ -144,13 +145,46 @@
       fluidsynth =
         (customNdkPkgs.fluidsynth {
           inherit androidSdk androidNdk androidAbi androidPlatform;
-          cmakeExtraArgs = "--debug-output";
-          #cmakeExtraArgs = "-DCMAKE_C_COMPILER=\"${toolchainPath}/bin/clang --target=${abiAttrs.clangTriplet}${androidPlatform}\"";
-          #${toolchainPath}/bin/clang --target=${abiAttrs.clangTriplet}${androidPlatform}
+          cmakeExtraArgs = let
+            sysroot = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
+            libPath0 = "${sysroot}/usr/lib/${abiAttrs.clangTriplet}/${androidPlatform}";
+            libPath1 = "${sysroot}/usr/lib/${abiAttrs.clangTriplet}";
+
+            # https://invent.kde.org/frameworks/extra-cmake-modules/-/merge_requests/31
+            compilerFlags = [
+              "--sysroot=${sysroot}"
+              "-I${sysroot}/usr/include"
+              "-shared"
+            ];
+            linkerFlags = [
+              "-Wl,-rpath-link=${libPath0}"
+              "-L${libPath0}"
+              "-Wl,-rpath-link=${libPath1}"
+              "-L${libPath1}"
+            ];
+          in
+            lib.concatStringsSep " " [
+              # NDK's CMake Toolchain file is very finnicky in regards to adding module paths.
+              # It would ignore SDL unless you add it as another root.
+              # Doing that causes compilation to go awry, so additional hand-holding is needed.
+              "-DBUILD_SHARED_LIBS=on"
+              "-Denable-sdl2=on"
+              "-Denable-threads=off"
+              "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+              "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH"
+              "-DCMAKE_PREFIX_PATH=${SDL2}"
+              # "--debug-find"
+              "-DANDROID_NDK=${androidNdk}"
+              "-DANDROID_COMPILER_FLAGS=\"${lib.concatStringsSep ";" compilerFlags}\""
+              "-DANDROID_LINKER_FLAGS=\"${lib.concatStringsSep ";" linkerFlags}\""
+              "-DCMAKE_REQUIRED_FLAGS=\"${lib.concatStringsSep " " compilerFlags}\""
+              "-DCMAKE_REQUIRED_LINK_OPTIONS=\"${lib.concatStringsSep ";" linkerFlags}\""
+              "-DThreads_FOUND=true"
+            ];
         })
-        .overrideAttrs {
-          nativeBuildInputs = [pkgs.buildPackages.stdenv.cc];
-        };
+        .overrideAttrs (prev: {
+          nativeBuildInputs = [pkgs.buildPackages.stdenv.cc pkgs.pkg-config];
+        });
       wavpack = customNdkPkgs.wavpack {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
@@ -232,6 +266,10 @@
             "-DSDL2MIXER_VORBIS=off"
             "-DSDL2MIXER_OPUS=off"
             "-DSDL2MIXER_VENDORED=off"
+            "-DSDL2MIXER_MIDI=on"
+            "-DSDL2MIXER_MIDI_TIMIDITY=off"
+            "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
+            "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
             "-DBUILD_SHARED_LIBS=on"
             "-DSDL2_LIBRARY=${SDL2}/lib/libSDL2.so"
             "-DSDL2_INCLUDE_DIR=${SDL2}/include/SDL2"
@@ -280,9 +318,9 @@
       SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;
       customAndroidFpcPkgs =
         lib.mapAttrs (abi: ndkPkgs: let
-          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp;
+          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth;
         in {
-          nativeBuildInputs = [enet SDL2 SDL2_mixer libxmp];
+          nativeBuildInputs = [enet SDL2 SDL2_mixer libxmp fluidsynth];
           doom2df = doom2df-library;
         })
         ndkPackagesByArch;

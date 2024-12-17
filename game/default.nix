@@ -134,7 +134,7 @@
       pname = "doom2df-unwrapped";
       name = "${pname}-${lib.optionalString buildAsLibrary "lib-"}${version}";
 
-      patches = [];
+      patches = [./patches/set-sdl-soundfont-env.patch];
 
       env = {
         D2DF_BUILD_USER = "nixbld";
