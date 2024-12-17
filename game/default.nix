@@ -151,12 +151,12 @@
         ++ optional withSDL1 SDL.dev
         ++ optional withSDL1_mixer SDL_mixer
         ++ optional withSDL2 SDL2
-        ++ optional withSDL2_mixer SDL2_mixer.dev
+        ++ optional withSDL2_mixer SDL2_mixer
         ++ optional withLibXmp libxmp
-        ++ optional withMpg123 libmpg123.dev
-        ++ optionals withOpus [libopus.dev opusfile.dev]
-        ++ optionals withVorbis [libvorbis.dev libogg.dev]
-        ++ optionals withFluidsynth [fluidsynth.dev]
+        ++ optional withMpg123 libmpg123
+        ++ optionals withOpus [libopus opusfile]
+        ++ optionals withVorbis [libvorbis libogg]
+        ++ optionals withFluidsynth [fluidsynth]
         ++ optional withMiniupnpc miniupnpc;
 
       buildInputs = let
