@@ -29,8 +29,9 @@
         mkdir build
         cd build
         ${cmakePrefix} \
-          ${cmake} .. \
+          ${pkgs.cmake}/bin/cmake .. \
             -DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake \
+            -DCMAKE_POLICY_DEFAULT_CMP0057=NEW \
             -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${androidAbi} -DANDROID_PLATFORM=${androidPlatform} \
             -DCMAKE_INSTALL_PREFIX=$out -DANDROID_STL=c++_static \
             ${cmakeExtraArgs}
@@ -52,8 +53,8 @@ in rec {
     src = fetchFromGitHub {
       owner = "libsdl-org";
       repo = "SDL";
-      rev = "release-${version}";
-      hash = "sha256-ij9/VhSacUaPbMGX1hx2nz0n8b1tDb1PnC7IO9TlNhE=";
+      rev = "ad93f50ee6408c90eec0d96867b41046392bb426";
+      hash = "sha256-rajAfb7NoF63Bv2JZsO8WJrRkqKBIc39u7fLWFrpanU=";
     };
   };
 

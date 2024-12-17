@@ -19,15 +19,18 @@
         };
       };
       lib = pkgs.lib;
-      buildToolsVersion = "34.0.0";
+      buildToolsVersion = "35.0.0";
       cmakeVersion = "3.22.1";
+      ndkVersion = "27.0.12077973";
+      platformToolsVersion = "35.0.2";
       androidComposition = pkgs.androidenv.composeAndroidPackages {
         buildToolsVersions = [buildToolsVersion "28.0.3"];
+        inherit platformToolsVersion;
         platformVersions = ["34" "31" "28" "21"];
         abiVersions = ["armeabi-v7a" "arm64-v8a"];
         cmakeVersions = [cmakeVersion];
         includeNDK = true;
-        ndkVersions = ["21.4.7075529"];
+        ndkVersions = [ndkVersion];
 
         includeSources = false;
         includeSystemImages = false;
