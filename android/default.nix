@@ -154,6 +154,16 @@
       libxmp = customNdkPkgs.libxmp {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
+      openal =
+        (customNdkPkgs.openal {
+          inherit androidSdk androidNdk androidAbi androidPlatform;
+          cmakeExtraArgs = "-DALSOFT_UTILS=off -DALSOFT_EXAMPLES=off";
+        })
+        .overrideAttrs (prev: {
+          preBuild = ''
+            rm -r build
+          '';
+        });
       vorbis = customNdkPkgs.vorbis {
         inherit androidSdk androidNdk androidAbi androidPlatform;
         cmakeExtraArgs = lib.concatStringsSep " " [
@@ -164,6 +174,10 @@
       };
       libgme = customNdkPkgs.libgme {
         inherit androidSdk androidNdk androidAbi androidPlatform;
+      };
+      mpg123 = customNdkPkgs.libmpg123 {
+        inherit androidSdk androidNdk androidAbi androidPlatform;
+        cmakeListsPath = "ports/cmake";
       };
       libmodplug = customNdkPkgs.libmodplug {
         inherit androidSdk androidNdk androidAbi androidPlatform;
@@ -238,7 +252,7 @@
             libs = pkgs.symlinkJoin {
               name = "cmake-packages";
               paths =
-                [libxmp fluidsynth wavpack SDL2 opus ogg libgme libmodplug]
+                [libxmp fluidsynth wavpack SDL2 opus ogg libgme libmodplug mpg123]
                 # These are projects which are broken regarding packaging.
                 # Specify their path manually.
                 ++ [
@@ -257,6 +271,8 @@
               "-DVorbis_vorbisfile_LIBRARY=${vorbis}/lib/libvorbisfile.so"
 
               "-DSDL2MIXER_MP3=on"
+              "-DSDL2MIXER_MP3_MPG123=on"
+              "-DSDL2MIXER_MP3_MPG123_SHARED=off"
 
               "-DSDL2MIXER_OPUS=on"
               "-DSDL2MIXER_OPUS_SHARED=off"
@@ -292,15 +308,26 @@
     in {
       name = androidAbi;
       value = {
-        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug;
+        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123;
         doom2df-library = let
           f = d2dfPkgs;
         in
           pkgs.callPackage f.doom2df-unwrapped {
             fpc = fpc-wrapper;
-            inherit SDL2 enet SDL2_mixer;
+            inherit SDL2 enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg;
+            libopus = opus;
+            libogg = ogg;
+            libmpg123 = mpg123;
+            libvorbis = vorbis;
             disableSound = false;
-            withSDL2_mixer = true;
+            withSDL2_mixer = false;
+            withFluidsynth = true;
+            withLibxmp = true;
+            withOpus = true;
+            withVorbis = true;
+            withOpenAL = true;
+            withMpg123 = true;
+            withLibgme = true;
             glibc = null;
             buildAsLibrary = true;
           };
@@ -316,9 +343,9 @@
       SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;
       customAndroidFpcPkgs =
         lib.mapAttrs (abi: ndkPkgs: let
-          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug;
+          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
         in {
-          nativeBuildInputs = [enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug];
+          nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
           doom2df = doom2df-library;
         })
         ndkPackagesByArch;

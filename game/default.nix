@@ -40,6 +40,8 @@
     withOpus ? false,
     libopus ? null,
     opusfile ? null,
+    withLibgme ? false,
+    libgme ? null,
     withMiniupnpc ? false,
     miniupnpc ? null,
     withFluidsynth ? false,
@@ -114,6 +116,7 @@
         ++ optional withMpg123 "-dUSE_MPG123"
         ++ optional withOpus "-dUSE_OPUS"
         ++ optional withFluidsynth "-dUSE_FLUIDSYNTH"
+        ++ optional withLibgme "-dUSE_GME"
       else [];
 
     miscFlags =
@@ -157,6 +160,7 @@
         ++ optionals withOpus [libopus opusfile]
         ++ optionals withVorbis [libvorbis libogg]
         ++ optionals withFluidsynth [fluidsynth]
+        ++ optionals withLibgme [libgme]
         ++ optional withMiniupnpc miniupnpc;
 
       buildInputs = let
@@ -172,11 +176,12 @@
         ++ optional withSDL2 SDL2
         ++ optional withSDL2_mixer SDL2_mixer
         ++ optional withOpenAL openal
-        ++ optional (!soundActuallyUsed && withLibXmp) libxmp
-        ++ optional (!soundActuallyUsed && withMpg123) libmpg123
-        ++ optionals (!soundActuallyUsed && withOpus) [libopus opusfile]
-        ++ optionals (!soundActuallyUsed && withVorbis) [libvorbis libogg]
-        ++ optionals (!soundActuallyUsed && withFluidsynth) [fluidsynth]
+        ++ optional (soundActuallyUsed && withLibXmp) libxmp
+        ++ optional (soundActuallyUsed && withMpg123) libmpg123
+        ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
+        ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
+        ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
+        ++ optionals (soundActuallyUsed && withLibgme) [libgme]
         ++ optional withMiniupnpc miniupnpc;
 
       buildPhase = ''
@@ -187,7 +192,7 @@
           -al Doom2DF.lpr \
           ${fpcOptimizationFlags} \
           ${fpcExtraArgs} \
-          ${lib.concatStringsSep " " defines} \
+          ${lib.traceVal (lib.concatStringsSep " " defines)} \
           ${let
           inputs = lib.filter (x: !builtins.isNull x) buildInputs;
         in

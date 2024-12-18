@@ -13,6 +13,7 @@
     androidNdk,
     androidAbi,
     androidPlatform,
+    cmakeListsPath ? null,
     cmakePrefix ? "",
     cmakeExtraArgs ? "",
     ...
@@ -26,6 +27,7 @@
 
       buildPhase = ''
         runHook preBuild
+        ${lib.optionalString (!builtins.isNull cmakeListsPath) "cd ${cmakeListsPath}"}
         mkdir build
         cd build
         ${cmakePrefix} \
@@ -150,18 +152,16 @@ in rec {
     };
   };
 
-  /*
-  mpg123 = androidCmakeDrv {
+  libmpg123 = androidCmakeDrv {
     pname = "mpg123";
     version = "1.32.8-git";
     src = fetchFromGitHub {
       owner = "madebr";
       repo = "mpg123";
       rev = "3c34e2af2ff4737959580c095e3e158af8adccb2";
-      hash = lib.fakeHash;
+      hash = "sha256-0BYPWEIz1Lzig6JXhidL4VrMJi2+PJbYje4N8UXKhoQ=";
     };
   };
-  */
 
   vorbis = androidCmakeDrv {
     pname = "vorbis";
@@ -193,6 +193,17 @@ in rec {
       repo = "libmodplug";
       rev = "d1b97ed0020bc620a059d3675d1854b40bd2608d";
       hash = "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=";
+    };
+  };
+
+  openal = androidCmakeDrv {
+    pname = "openal-soft";
+    version = "1.24.1-git";
+    src = fetchFromGitHub {
+      owner = "kcat";
+      repo = "openal-soft";
+      rev = "ff497ad11182b48d1bfa57216c51a2ac0c723c7d";
+      hash = "sha256-YejeK1qiddRjPAls+14HwUUWEk3kQR5eY/e1Uf/76aA=";
     };
   };
 }
