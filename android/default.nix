@@ -157,42 +157,16 @@
       fluidsynth =
         (customNdkPkgs.fluidsynth {
           inherit androidSdk androidNdk androidAbi androidPlatform;
-          cmakeExtraArgs = let
-            sysroot = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
-            libPath0 = "${sysroot}/usr/lib/${abiAttrs.clangTriplet}/${androidPlatform}";
-            libPath1 = "${sysroot}/usr/lib/${abiAttrs.clangTriplet}";
-
-            # https://invent.kde.org/frameworks/extra-cmake-modules/-/merge_requests/31
-            compilerFlags = [
-              "--sysroot=${sysroot}"
-              "-I${sysroot}/usr/include"
-              "-shared"
-            ];
-            linkerFlags = [
-              "-Wl,-rpath-link=${libPath0}"
-              "-L${libPath0}"
-              "-Wl,-rpath-link=${libPath1}"
-              "-L${libPath1}"
-            ];
-          in
-            lib.concatStringsSep " " [
-              # NDK's CMake Toolchain file is very finnicky in regards to adding module paths.
-              # It would ignore SDL unless you add it as another root.
-              # Doing that causes compilation to go awry, so additional hand-holding is needed.
-              "-DBUILD_SHARED_LIBS=on"
-              "-Denable-sdl2=on"
-              "-Denable-threads=off"
-              "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
-              "-DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=BOTH"
-              "-DCMAKE_PREFIX_PATH=${SDL2}"
-              # "--debug-find"
-              "-DANDROID_NDK=${androidNdk}"
-              "-DANDROID_COMPILER_FLAGS=\"${lib.concatStringsSep ";" compilerFlags}\""
-              "-DANDROID_LINKER_FLAGS=\"${lib.concatStringsSep ";" linkerFlags}\""
-              "-DCMAKE_REQUIRED_FLAGS=\"${lib.concatStringsSep " " compilerFlags}\""
-              "-DCMAKE_REQUIRED_LINK_OPTIONS=\"${lib.concatStringsSep ";" linkerFlags}\""
-              "-DThreads_FOUND=true"
-            ];
+          cmakeExtraArgs = lib.concatStringsSep " " [
+            "-DBUILD_SHARED_LIBS=on"
+            "-DBUILD_STATIC_LIBS=off"
+            "-Denable-sdl2=on"
+            "-Denable-threads=off"
+            "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+            "-DCMAKE_PREFIX_PATH=${SDL2}"
+            "-DANDROID_NDK=${androidNdk}"
+            "-DANDROID_COMPILER_FLAGS=\"-shared\""
+          ];
         })
         .overrideAttrs (prev: {
           nativeBuildInputs = [pkgs.buildPackages.stdenv.cc pkgs.pkg-config];
@@ -207,7 +181,17 @@
       opusfile =
         (customNdkPkgs.opusfile {
           inherit androidSdk androidNdk androidAbi androidPlatform;
-          cmakeExtraArgs = "-DOP_DISABLE_HTTP=on -DOP_DISABLE_DOCS=on -DOP_DISABLE_HTTP=on";
+          cmakeExtraArgs = lib.concatStringsSep " " [
+            "-DOP_DISABLE_HTTP=on"
+            "-DOP_DISABLE_DOCS=on"
+            "-DOP_DISABLE_HTTP=on"
+            "-DOP_DISABLE_EXAMPLES=on"
+            "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+            "-DCMAKE_PREFIX_PATH=${pkgs.symlinkJoin {
+              name = "cmake-packages";
+              paths = [ogg opus];
+            }}"
+          ];
         })
         .overrideAttrs (prev: {
           buildPhase =
@@ -217,59 +201,7 @@
             ''
             + prev.buildPhase;
           nativeBuildInputs = [pkgs.pkg-config];
-          env.PKG_CONFIG_PATH = "${ogg}/lib/pkgconfig:${opus}/lib/pkgconfig";
         });
-
-      # opusfile is absolutely horrible.
-      /*
-      opusfile = let
-        drv = {
-          androidSdk,
-          androidNdk,
-          androidAbi,
-          androidPlatform,
-          abiAttrs,
-        }:
-          pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
-            pname = "opusfile";
-            version = "0.12-git";
-            src = pkgs.fetchFromGitHub {
-              owner = "xiph";
-              repo = "opusfile";
-              rev = "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166";
-              hash = "sha256-kyvH3b/6ouAXffAE4xmck4L5c3/nd2VWq0ss/XJlX7Q=";
-            };
-            phases = ["unpackPhase" "buildPhase" "installPhase"];
-            env = let
-              toolchainPath = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64";
-            in {
-              LD = "${toolchainPath}/bin/ld";
-              RANLIB = "${toolchainPath}/bin/llvm-ranlib";
-              STRIP = "${toolchainPath}/bin/llvm-strip";
-              CC = "${toolchainPath}/bin/clang --target=${abiAttrs.clangTriplet}${androidPlatform}";
-              CXX = "${toolchainPath}/bin/clang++ --target=${abiAttrs.clangTriplet}${androidPlatform}";
-              CFLAGS =
-                (lib.concatStringsSep " " (lib.map (x: "-I${x}/include") [ogg opus]))
-                + " "
-                + (lib.concatStringsSep " " (lib.map (x: "-L${x}/lib") [ogg opus]))
-                + " "
-                + lib.concatStringsSep " " ["-lm" "-shared" "-lopus" "-logg" "-olibopusfile.so" "-Iinclude" "-I${opus}/include/opus"];
-            };
-            buildPhase = ''
-              eval $CC $CFLAGS src/info.c src/internal.c src/opusfile.c src/stream.c
-            '';
-
-            installPhase = ''
-              mkdir -p $out/{lib,include/opus}
-              cp include/* $out/include/opus -r
-              substituteInPlace $out/include/opus/opusfile.h \
-                --replace "<ogg/ogg.h>" "<ogg.h>"
-              cp libopusfile.so $out/lib
-            '';
-          });
-      in
-        drv {inherit androidSdk androidNdk androidAbi androidPlatform abiAttrs;};
-      */
 
       SDL2_mixer =
         (customNdkPkgs.SDL2_mixer {
@@ -286,17 +218,14 @@
             "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
             "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
             "-DBUILD_SHARED_LIBS=on"
-            "-DSDL2_LIBRARY=${SDL2}/lib/libSDL2.so"
-            "-DSDL2_INCLUDE_DIR=${SDL2}/include/SDL2"
             #"-DOpusFile_LIBRARY=${opusfile}/lib/libopusfile.so"
             #"-DOpusFile_INCLUDE_PATH=${opusfile}/include"
-            "-Dlibxmp_LIBRARY=${libxmp}/lib/libxmp.so"
-            "-Dlibxmp_INCLUDE_PATH=${libxmp}/include"
+            "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+            "-DCMAKE_PREFIX_PATH=${pkgs.symlinkJoin {
+              name = "cmake-packages";
+              paths = [libxmp fluidsynth wavpack SDL2 opusfile ogg opus];
+            }}"
             "-DSDL2MIXER_MOD_XMP_SHARED=off"
-            "-DFluidSynth_LIBRARY=${fluidsynth}/lib/libfluidsynth.so"
-            "-DFluidSynth_INCLUDE_PATH=${fluidsynth}/include"
-            "-Dwavpack_LIBRARY=${wavpack}/lib/libwavpack.so"
-            "-Dwavpack_INCLUDE_PATH=${wavpack}/include"
           ];
         })
         .overrideAttrs (prev: {
