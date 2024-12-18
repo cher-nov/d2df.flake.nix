@@ -1,0 +1,26 @@
+diff --git a/Makefile b/Makefile
+index fcbed5d226..4eeb6bb9f4 100644
+--- a/Makefile
++++ b/Makefile
+@@ -368,7 +368,7 @@ endif
+ endif
+ override PACKAGE_NAME=fpc
+ override PACKAGE_VERSION=3.3.1
+-REQUIREDVERSION=3.2.2
++REQUIREDVERSION=3.3.1
+ REQUIREDVERSION2=3.2.0
+ ifndef inOS2
+ override FPCDIR:=$(BASEDIR)
+diff --git a/Makefile.fpc b/Makefile.fpc
+index c03a7dccc0..b58fccb8e0 100644
+--- a/Makefile.fpc
++++ b/Makefile.fpc
+@@ -20,7 +20,7 @@ fpcdir=.
+ rule=help
+ 
+ [prerules]
+-REQUIREDVERSION=3.2.2
++REQUIREDVERSION=3.3.1
+ REQUIREDVERSION2=3.2.0
+ 
+ 

@@ -17,11 +17,20 @@
           allowUnfree = true;
           allowUnsupportedSystem = true;
         };
+        overlays = [
+          (final: prev: {
+            fpc = prev.callPackage fpcPkgs.base {
+              fpc = prev.fpc;
+              archsAttrs = {};
+            };
+          })
+        ];
       };
       lib = pkgs.lib;
       buildToolsVersion = "35.0.0";
       cmakeVersion = "3.22.1";
       ndkVersion = "27.0.12077973";
+      ndkBinutilsVersion = "22.1.7171670";
       platformToolsVersion = "35.0.2";
       androidComposition = pkgs.androidenv.composeAndroidPackages {
         buildToolsVersions = [buildToolsVersion "28.0.3"];
@@ -30,7 +39,7 @@
         abiVersions = ["armeabi-v7a" "arm64-v8a"];
         cmakeVersions = [cmakeVersion];
         includeNDK = true;
-        ndkVersions = [ndkVersion];
+        ndkVersions = [ndkVersion ndkBinutilsVersion];
 
         includeSources = false;
         includeSystemImages = false;
@@ -40,12 +49,13 @@
       };
       androidSdk = androidComposition.androidsdk;
       androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
+      androidNdkBinutils = "${androidSdk}/libexec/android-sdk/ndk/${ndkBinutilsVersion}";
       androidPlatform = "21";
       fpcPkgs = import ./fpc;
       d2dfPkgs = import ./game;
     in {
       legacyPackages.kek = import ./android {
-        inherit androidSdk androidNdk androidPlatform;
+        inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
         inherit fpcPkgs d2dfPkgs;
         lib = pkgs.lib;
         inherit pkgs;
@@ -54,6 +64,7 @@
         inherit pkgs lib;
         inherit fpcPkgs d2dfPkgs;
       };
+      legacyPackages.fpc-git = pkgs.fpc;
 
       devShell = with pkgs;
         mkShell rec {

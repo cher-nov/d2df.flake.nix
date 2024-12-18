@@ -1,6 +1,7 @@
 {
   androidSdk,
   androidNdk,
+  androidNdkBinutils,
   androidPlatform,
   fpcPkgs,
   d2dfPkgs,
@@ -16,8 +17,11 @@
     armv7 = rec {
       androidAbi = "armeabi-v7a";
       clangTriplet = "arm-linux-androideabi";
-      ndkLib = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm/usr/lib";
-      ndkToolchain = "${androidNdk}/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin";
+      compiler = "armv7a-linux-androideabi";
+      sysroot = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
+      ndkLib = "${sysroot}/usr/lib/${clangTriplet}/${androidPlatform}";
+      ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
+      ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       fpcAttrs = rec {
         cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}"];
         targetArg = "-Tandroid";
@@ -28,15 +32,20 @@
           CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
           NDK = "${androidNdk}";
         };
-        toolchainPaths = [ndkToolchain];
+        toolchainPaths = [
+          ndkToolchain
+          ndkBinutilsToolchain
+        ];
       };
     };
 
     armv8 = rec {
       androidAbi = "arm64-v8a";
       clangTriplet = "aarch64-linux-android";
-      ndkLib = "${androidNdk}/platforms/android-${androidPlatform}/arch-arm64/usr/lib";
-      ndkToolchain = "${androidNdk}/toolchains/aarch64-linux-android-4.9/prebuilt/linux-x86_64/bin";
+      sysroot = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
+      ndkLib = "${sysroot}/usr/lib/${clangTriplet}/${androidPlatform}";
+      ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
+      ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       fpcAttrs = rec {
         cpuArgs = ["-CpARMV8" "-CfVFP" "-Fl${ndkLib}"];
         targetArg = "-Tandroid";
@@ -47,7 +56,10 @@
           CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
           NDK = "${androidNdk}";
         };
-        toolchainPaths = [ndkToolchain];
+        toolchainPaths = [
+          ndkToolchain
+          ndkBinutilsToolchain
+        ];
       };
     };
   };
@@ -69,7 +81,7 @@
       ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
       ANDROID_JAR = "${ANDROID_HOME}/platforms/android-34/android.jar";
       aapt = "${ANDROID_HOME}/build-tools/28.0.3/aapt";
-      d8 = "${ANDROID_HOME}/build-tools/34.0.0/d8";
+      d8 = "${ANDROID_HOME}/build-tools/35.0.0/d8";
       jdk = jdk17;
     in {
       version = "0.667-git";
@@ -187,6 +199,9 @@
         });
       wavpack = customNdkPkgs.wavpack {
         inherit androidSdk androidNdk androidAbi androidPlatform;
+        # fails on armv7 32 bit
+        # See https://github.com/curl/curl/pull/13264
+        cmakeExtraArgs = "-DCMAKE_REQUIRED_FLAGS=\"-D_FILE_OFFSET_BITS=64\"";
       };
 
       opusfile =

@@ -15,6 +15,7 @@
     gawk,
     fpc,
     archsAttrs,
+    binutils,
   }: let
     default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
   in
@@ -23,14 +24,17 @@
       pname = "fpc-custom";
       src = fetchgit {
         url = "https://gitlab.com/freepascal.org/fpc/source.git";
-        rev = "bea36238e7ed10caf56df832ed070f569d6892f3";
-        sha256 = "sha256-IWuz+a2GwzxGanGgC6LMeAtW/TvER225AnfBBvXmses=";
+        rev = "76e2ee99701b89837445a5b636d4507eb435f567";
+        sha256 = "sha256-Uzcn1aPvekvEamIsPhP6VvZEWeK8RcUFtyFAqxgf4rQ=";
       };
 
-      buildInputs = [gawk fpc];
+      nativeBuildInputs = [binutils gawk fpc];
       glibc = stdenv.cc.libc.out;
 
-      patches = [./0001-Mark-paths-for-NixOS.patch];
+      patches = [
+        ./0001-Mark-paths-for-NixOS.patch
+        ./allow-trunk.patch
+      ];
 
       postPatch = ''
         # substitute the markers set by the mark-paths patch
@@ -54,7 +58,7 @@
 
       buildPhase = (
         ''
-          make clean all ${lib.concatStringsSep " " default}
+          make all ${lib.concatStringsSep " " default}
         ''
         + (lib.concatStringsSep "\n" (
           lib.map (x: let
@@ -62,7 +66,7 @@
             fpcAttrs = x.value;
           in ''
             PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-              make clean crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+              make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
           '') (lib.attrsToList archsAttrs)
         ))
       );
