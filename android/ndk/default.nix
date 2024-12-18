@@ -149,4 +149,50 @@ in rec {
       hash = "sha256-I2Ggo93YAdU/knMMPDB4HXNn9fLQQ+xbCRKy6d6xP0c=";
     };
   };
+
+  /*
+  mpg123 = androidCmakeDrv {
+    pname = "mpg123";
+    version = "1.32.8-git";
+    src = fetchFromGitHub {
+      owner = "madebr";
+      repo = "mpg123";
+      rev = "3c34e2af2ff4737959580c095e3e158af8adccb2";
+      hash = lib.fakeHash;
+    };
+  };
+  */
+
+  vorbis = androidCmakeDrv {
+    pname = "vorbis";
+    version = "1.3.8-git";
+    src = fetchFromGitHub {
+      owner = "xiph";
+      repo = "vorbis";
+      rev = "84c023699cdf023a32fa4ded32019f194afcdad0";
+      hash = "sha256-wCaqRF6Wa08ut9vcjjoxQ0/HKHV9AeDsHC/15Iq06QE=";
+    };
+  };
+
+  libgme = androidCmakeDrv {
+    pname = "game-music-emu";
+    version = "0.6.3-git";
+    src = fetchFromGitHub {
+      owner = "libgme";
+      repo = "game-music-emu";
+      rev = "cb2c1ccc7563ed58321cc3b6b8507b9015192b80";
+      hash = "sha256-NP55kJp94fOwPq1sA4Z+LmAsYwWqnlPTqqrSGM6tqfI=";
+    };
+  };
+
+  libmodplug = androidCmakeDrv {
+    pname = "libmodplug";
+    version = "d1b97ed";
+    src = fetchFromGitHub {
+      owner = "Konstanty";
+      repo = "libmodplug";
+      rev = "d1b97ed0020bc620a059d3675d1854b40bd2608d";
+      hash = "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=";
+    };
+  };
 }

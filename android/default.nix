@@ -154,12 +154,25 @@
       libxmp = customNdkPkgs.libxmp {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
+      vorbis = customNdkPkgs.vorbis {
+        inherit androidSdk androidNdk androidAbi androidPlatform;
+        cmakeExtraArgs = lib.concatStringsSep " " [
+          "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+          "-DCMAKE_PREFIX_PATH=${ogg}"
+          "-DCMAKE_FIND_ROOT_PATH=${ogg}"
+        ];
+      };
+      libgme = customNdkPkgs.libgme {
+        inherit androidSdk androidNdk androidAbi androidPlatform;
+      };
+      libmodplug = customNdkPkgs.libmodplug {
+        inherit androidSdk androidNdk androidAbi androidPlatform;
+      };
       fluidsynth =
         (customNdkPkgs.fluidsynth {
           inherit androidSdk androidNdk androidAbi androidPlatform;
           cmakeExtraArgs = lib.concatStringsSep " " [
             "-DBUILD_SHARED_LIBS=on"
-            "-DBUILD_STATIC_LIBS=off"
             "-Denable-sdl2=on"
             "-Denable-threads=off"
             "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
@@ -194,12 +207,24 @@
           ];
         })
         .overrideAttrs (prev: {
+          patches = [
+            (pkgs.fetchurl {
+              url = "https://raw.githubusercontent.com/NixOS/nixpkgs/refs/heads/nixos-24.11/pkgs/by-name/op/opusfile/include-multistream.patch";
+              sha256 = "sha256-MXkkFmu6NgHbZL3ChtiYsOlwMBSvdSpBaLvrI1RhzgU=";
+            })
+          ];
           buildPhase =
             ''
               substituteInPlace CMakeLists.txt \
               --replace "list(GET PROJECT_VERSION_LIST 1 PROJECT_VERSION_MINOR)" ""
             ''
             + prev.buildPhase;
+          installPhase =
+            prev.installPhase
+            + ''
+              substituteInPlace $out/include/opus/opusfile.h \
+              --replace "<opus_multistream.h>" "<opus/opus_multistream.h>"
+            '';
           nativeBuildInputs = [pkgs.pkg-config];
         });
 
@@ -209,24 +234,53 @@
           # FIXME
           # For some reason this doesn't pickup environment variables to change pkgconfig path.
 
-          cmakeExtraArgs = lib.concatStringsSep " " [
-            "-DSDL2MIXER_VORBIS=off"
-            "-DSDL2MIXER_OPUS=off"
-            "-DSDL2MIXER_VENDORED=off"
-            "-DSDL2MIXER_MIDI=on"
-            "-DSDL2MIXER_MIDI_TIMIDITY=off"
-            "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
-            "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
-            "-DBUILD_SHARED_LIBS=on"
-            #"-DOpusFile_LIBRARY=${opusfile}/lib/libopusfile.so"
-            #"-DOpusFile_INCLUDE_PATH=${opusfile}/include"
-            "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
-            "-DCMAKE_PREFIX_PATH=${pkgs.symlinkJoin {
+          cmakeExtraArgs = let
+            libs = pkgs.symlinkJoin {
               name = "cmake-packages";
-              paths = [libxmp fluidsynth wavpack SDL2 opusfile ogg opus];
-            }}"
-            "-DSDL2MIXER_MOD_XMP_SHARED=off"
-          ];
+              paths =
+                [libxmp fluidsynth wavpack SDL2 opus ogg libgme libmodplug]
+                # These are projects which are broken regarding packaging.
+                # Specify their path manually.
+                ++ [
+                  # vorbis
+                  # opusfile
+                ];
+            };
+          in
+            lib.concatStringsSep " " [
+              "-DBUILD_SHARED_LIBS=on"
+              "-DSDL2MIXER_VENDORED=off"
+
+              "-DSDL2MIXER_VORBIS=VORBISFILE"
+              "-DSDL2MIXER_VORBIS_VORBISFILE_SHARED=off"
+              "-DVorbis_vorbisfile_INCLUDE_PATH=${vorbis}/include"
+              "-DVorbis_vorbisfile_LIBRARY=${vorbis}/lib/libvorbisfile.so"
+
+              "-DSDL2MIXER_MP3=on"
+
+              "-DSDL2MIXER_OPUS=on"
+              "-DSDL2MIXER_OPUS_SHARED=off"
+              "-DOpusFile_LIBRARY=${opusfile}/lib/libopusfile.so"
+              "-DOpusFile_INCLUDE_PATH=${opusfile}/include"
+
+              "-DSDL2MIXER_GME=on"
+              "-DSDL2MIXER_GME_SHARED=off"
+
+              "-DSDL2MIXER_MIDI=on"
+              "-DSDL2MIXER_MIDI_TIMIDITY=off"
+              "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
+              "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
+
+              "-DSDL2MIXER_MOD=on"
+              "-DSDL2MIXER_MOD_MODPLUG=off"
+              "-DSDL2MIXER_MOD_XMP=on"
+              "-DSDL2MIXER_MOD_XMP_SHARED=off"
+
+              "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+              "-DCMAKE_PREFIX_PATH=${libs}"
+              "-DCMAKE_FIND_ROOT_PATH=${libs}"
+              "-DSDL2MIXER_MOD_XMP_SHARED=off"
+            ];
         })
         .overrideAttrs (prev: {
           nativeBuildInputs = [pkgs.pkg-config];
@@ -238,7 +292,7 @@
     in {
       name = androidAbi;
       value = {
-        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack;
+        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug;
         doom2df-library = let
           f = d2dfPkgs;
         in
@@ -262,9 +316,9 @@
       SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;
       customAndroidFpcPkgs =
         lib.mapAttrs (abi: ndkPkgs: let
-          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth;
+          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug;
         in {
-          nativeBuildInputs = [enet SDL2 SDL2_mixer libxmp fluidsynth];
+          nativeBuildInputs = [enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug];
           doom2df = doom2df-library;
         })
         ndkPackagesByArch;
