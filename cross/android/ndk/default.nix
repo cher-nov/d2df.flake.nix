@@ -23,6 +23,9 @@
     pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
       inherit pname version src;
 
+      dontStrip = true;
+      dontPatchELF = true;
+
       phases = ["unpackPhase" "buildPhase" "installPhase"];
 
       buildPhase = ''
