@@ -45,10 +45,6 @@
           inherit buildWadScript doom2df-res;
         };
       }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
-      mingwPkgs = import ./cross/mingw {
-        inherit pkgs lib;
-        inherit fpcPkgs d2dfPkgs;
-      };
       bundles = import ./game/bundle {
         inherit (pkgs) callPackage;
       };
@@ -69,7 +65,7 @@
         botnames = ./game/assets/dirtyAssets/botnames.txt;
       };
     in {
-      legacyPackages.android = (import ./android.nix).default {
+      legacyPackages.android = (import ./packages/android.nix).default {
         inherit pkgs lib fpcPkgs d2dfPkgs;
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
@@ -77,15 +73,12 @@
         mkAndroidApk = bundles.mkAndroidApk;
       };
 
-      legacyPackages.mingw = mingwPkgs;
-      legacyPackages.doom2df-zip = bundles.mkZipBundle {
+      legacyPackages.mingw = (import ./packages/mingw.nix).default {
+        inherit pkgs lib fpcPkgs d2dfPkgs;
         gameAssetsPath = defaultAssetsPath;
-        unknownPkgsAttrs = {
-          sharedBundledLibraries = [mingwPkgs.mingw32.enet mingwPkgs.mingw32.SDL2 mingwPkgs.mingw32.fmodex];
-          doom2df = mingwPkgs.mingw32.doom2d;
-        };
-        isWindows = true;
+        mkZipBundle = bundles.mkZipBundle;
       };
+
       legacyPackages.fpc-git = pkgs.fpc;
       legacyPackages.wads = wads;
 

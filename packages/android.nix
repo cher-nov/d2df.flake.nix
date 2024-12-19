@@ -34,27 +34,29 @@
     androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
     androidNdkBinutils = "${androidSdk}/libexec/android-sdk/ndk/${ndkBinutilsVersion}";
     androidPlatform = "21";
-    androidPkgs = import ./cross/android {
+    androidPkgs = import ../cross/android {
       inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
       inherit fpcPkgs d2dfPkgs;
       lib = pkgs.lib;
       inherit pkgs;
     };
-  in {
-    doom2df-sdl2_mixer-apk = mkAndroidApk {
-      inherit androidSdk;
-      inherit androidRoot androidRes gameAssetsPath;
-      SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
-      customAndroidFpcPkgs =
-        lib.mapAttrs (abi: ndkPkgs: let
-          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
-        in {
-          nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
-          doom2df = doom2df-library;
-        })
-        androidPkgs.byArch;
+    universalAdditional = {
+      doom2df-sdl2_mixer-apk = mkAndroidApk {
+        inherit androidSdk;
+        inherit androidRoot androidRes gameAssetsPath;
+        SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
+        customAndroidFpcPkgs =
+          lib.mapAttrs (abi: ndkPkgs: let
+            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
+          in {
+            nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
+            doom2df = doom2df-library;
+          })
+          androidPkgs.byArch;
+      };
     };
-  };
+  in
+    lib.recursiveUpdate androidPkgs universalAdditional;
 
   # If one ever dared to compile for ancient Android, they would need this.
   /*

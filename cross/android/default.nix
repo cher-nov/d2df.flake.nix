@@ -181,8 +181,6 @@
       SDL2_mixer =
         (customNdkPkgs.SDL2_mixer {
           inherit androidSdk androidNdk androidAbi androidPlatform;
-          # FIXME
-          # For some reason this doesn't pickup environment variables to change pkgconfig path.
 
           cmakeExtraArgs = let
             libs = pkgs.symlinkJoin {
@@ -250,18 +248,18 @@
         in
           pkgs.callPackage f.doom2df-unwrapped {
             fpc = fpc-wrapper;
-            inherit SDL2 SDL2_mixer enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg;
+            inherit SDL2 SDL2_mixer enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg libmodplug;
             libopus = opus;
             libogg = ogg;
             libmpg123 = mpg123;
             libvorbis = vorbis;
             disableSound = false;
-            withSDL2_mixer = true;
+            withSDL2_mixer = false;
             withFluidsynth = true;
-            withLibxmp = true;
+            withModplug = true;
             withOpus = true;
             withVorbis = true;
-            withOpenAL = false;
+            withOpenAL = true;
             withMpg123 = true;
             withLibgme = true;
             glibc = null;
@@ -274,20 +272,6 @@
     fpc-android = pkgs.callPackage fpcPkgs.base {
       archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
     };
-    /*
-    doom2df-android = pkgs.callPackage doom2df-android {
-      inherit androidSdk;
-      SDL2ForJava = ndkPackagesByArch.arm64-v8a.SDL2;
-      customAndroidFpcPkgs =
-        lib.mapAttrs (abi: ndkPkgs: let
-          inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
-        in {
-          nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
-          doom2df = doom2df-library;
-        })
-        ndkPackagesByArch;
-    };
-    */
   };
 in
   universal // {byArch = ndkPackagesByArch;}

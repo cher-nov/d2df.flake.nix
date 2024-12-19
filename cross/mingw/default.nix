@@ -100,15 +100,21 @@
             (lib.enableFeature false "music-midi")
             (lib.enableFeature true "music-mp3")
             (lib.enableFeature true "music-mp3-mpg123")
+            (lib.enableFeature true "music-mod")
+            (lib.enableFeature false "music-mod-modplug")
+            (lib.enableFeature false "music-mod-modplug-shared")
+            (lib.enableFeature true "music-mod-xmp")
+            (lib.enableFeature false "music-mod-xmp-shared")
           ];
       });
     libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
-    libvorbis = pkgs.pkgsCross.${crossTarget}.libogg;
+    libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis;
     opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
     libopus = pkgs.pkgsCross.${crossTarget}.libopus;
     mpg123 = pkgs.pkgsCross.${crossTarget}.mpg123;
     libgme = pkgs.pkgsCross.${crossTarget}.game-music-emu;
     wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
+    libxmp = pkgs.pkgsCross.${crossTarget}.libxmp;
     libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
     fmodex = let
       drv = {
@@ -224,4 +230,4 @@
     };
   };
 in
-  universal // crossPkgs
+  universal // {byArch = crossPkgs;}

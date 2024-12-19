@@ -45,6 +45,8 @@
   miniupnpc ? null,
   withFluidsynth ? false,
   fluidsynth ? null,
+  withModplug ? false,
+  libmodplug ? null,
   withFmod ? false,
   ...
 }: let
@@ -120,6 +122,7 @@
       ++ optional withOpus "-dUSE_OPUS"
       ++ optional withFluidsynth "-dUSE_FLUIDSYNTH"
       ++ optional withLibgme "-dUSE_GME"
+      ++ optional withModplug "-dUSE_MODPLUG"
     else [];
 
   miscFlags =
@@ -164,6 +167,7 @@ in
       ++ optionals withVorbis [libvorbis libogg]
       ++ optionals withFluidsynth [fluidsynth]
       ++ optionals withLibgme [libgme]
+      ++ optionals withModplug [libmodplug]
       ++ optional withMiniupnpc miniupnpc;
 
     buildInputs = let
@@ -184,6 +188,7 @@ in
       ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
       ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
       ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
+      ++ optionals (soundActuallyUsed && withModplug) [libmodplug]
       ++ optionals (soundActuallyUsed && withLibgme) [libgme]
       ++ optional withMiniupnpc miniupnpc;
 
