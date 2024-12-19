@@ -164,7 +164,7 @@
         withSDL2_mixer = false;
         withFmod = true;
         withOpenAL = false;
-        withMpg123 = true;
+        withMpg123 = false;
         headless = false;
         # _WIN32_WINNT 0x0400
         buildAsLibrary = false;

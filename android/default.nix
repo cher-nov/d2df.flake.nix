@@ -322,18 +322,18 @@
         in
           pkgs.callPackage f.doom2df-unwrapped {
             fpc = fpc-wrapper;
-            inherit SDL2 enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg;
+            inherit SDL2 SDL2_mixer enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg;
             libopus = opus;
             libogg = ogg;
             libmpg123 = mpg123;
             libvorbis = vorbis;
             disableSound = false;
-            withSDL2_mixer = false;
+            withSDL2_mixer = true;
             withFluidsynth = true;
             withLibxmp = true;
             withOpus = true;
             withVorbis = true;
-            withOpenAL = true;
+            withOpenAL = false;
             withMpg123 = true;
             withLibgme = true;
             glibc = null;

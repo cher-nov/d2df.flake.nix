@@ -59,7 +59,7 @@
         rev = "08172877ab51feafb50469523a6ebe738efdd16d";
         hash = "sha256-XEb/8DRcQA6BOOQVHcsA3SiR1IPKLoBEwirfmDK0Xmw=";
       };
-      buildWadScript = ./game/scripts/parse.awk;
+      buildWadScript = d2dfPkgs.buildWadScript;
       wads = lib.listToAttrs (lib.map (wad: {
         name = wad;
         value = pkgs.callPackage d2dfPkgs.buildWad {
@@ -90,9 +90,9 @@
         editorWad = wads.editor;
         # FIXME
         # Dirty, hardcoded assets
-        flexuiWad = ./game/dirtyAssets/flexui.wad;
-        botlist = ./game/dirtyAssets/botlist.txt;
-        botnames = ./game/dirtyAssets/botnames.txt;
+        flexuiWad = ./game/bundle/dirtyAssets/flexui.wad;
+        botlist = ./game/bundle/dirtyAssets/botlist.txt;
+        botnames = ./game/bundle/dirtyAssets/botnames.txt;
       };
 
       devShell = with pkgs;
