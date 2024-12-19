@@ -44,7 +44,7 @@ BEGIN {
 		basepath = base "/" src
 		zipFile = basename ".zip"
 		destPath = prefix "/" src "/" zipFile
-		system("pushd "basepath " ;zip -r $(pwd)/../../" destPath " ./" basename " ;popd")
+		system("(cd "basepath " ;zip -r $(pwd)/../../" destPath " ./" basename " ; )")
 		next
 	} else {
 	if (!currentDir) destPath = prefix "/" targetFile
@@ -55,7 +55,7 @@ BEGIN {
 
 END {
 	if (prefix && outputPath) {
-		system("pushd " prefix " ; " "zip -r " "../" outputPath " " "." " ;popd")
+		system("(cd " prefix " ; " "zip -r " "../" outputPath " " "." " ; )")
 		system("rm -r " prefix)
 	}
 }
