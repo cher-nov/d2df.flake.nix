@@ -27,30 +27,6 @@
         ];
       };
       lib = pkgs.lib;
-      buildToolsVersion = "35.0.0";
-      cmakeVersion = "3.22.1";
-      ndkVersion = "27.0.12077973";
-      ndkBinutilsVersion = "22.1.7171670";
-      platformToolsVersion = "35.0.2";
-      androidComposition = pkgs.androidenv.composeAndroidPackages {
-        buildToolsVersions = [buildToolsVersion "28.0.3"];
-        inherit platformToolsVersion;
-        platformVersions = ["34" "31" "28" "21"];
-        abiVersions = ["armeabi-v7a" "arm64-v8a"];
-        cmakeVersions = [cmakeVersion];
-        includeNDK = true;
-        ndkVersions = [ndkVersion ndkBinutilsVersion];
-
-        includeSources = false;
-        includeSystemImages = false;
-        useGoogleAPIs = false;
-        useGoogleTVAddOns = false;
-        includeEmulator = false;
-      };
-      androidSdk = androidComposition.androidsdk;
-      androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-      androidNdkBinutils = "${androidSdk}/libexec/android-sdk/ndk/${ndkBinutilsVersion}";
-      androidPlatform = "21";
       fpcPkgs = import ./fpc;
       d2dfPkgs = import ./game;
 
@@ -69,12 +45,6 @@
           inherit buildWadScript doom2df-res;
         };
       }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
-      androidPkgs = import ./cross/android {
-        inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
-        inherit fpcPkgs d2dfPkgs;
-        lib = pkgs.lib;
-        inherit pkgs;
-      };
       mingwPkgs = import ./cross/mingw {
         inherit pkgs lib;
         inherit fpcPkgs d2dfPkgs;
@@ -99,23 +69,15 @@
         botnames = ./game/assets/dirtyAssets/botnames.txt;
       };
     in {
-      legacyPackages.android = androidPkgs;
-      legacyPackages.mingw = mingwPkgs;
-      legacyPackages.doom2df-sdl2_mixer-apk = bundles.mkAndroidApk {
-        inherit androidSdk;
+      legacyPackages.android = (import ./android.nix).default {
+        inherit pkgs lib fpcPkgs d2dfPkgs;
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
         gameAssetsPath = defaultAssetsPath;
-        SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
-        customAndroidFpcPkgs =
-          lib.mapAttrs (abi: ndkPkgs: let
-            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
-          in {
-            nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
-            doom2df = doom2df-library;
-          })
-          androidPkgs.byArch;
+        mkAndroidApk = bundles.mkAndroidApk;
       };
+
+      legacyPackages.mingw = mingwPkgs;
       legacyPackages.doom2df-zip = bundles.mkZipBundle {
         gameAssetsPath = defaultAssetsPath;
         unknownPkgsAttrs = {
@@ -129,33 +91,11 @@
 
       devShell = with pkgs;
         mkShell rec {
-          ANDROID_SDK_ROOT = "${androidSdk}/libexec/android-sdk";
-          ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
-          ANDROID_NDK_ROOT = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-          ANDROID_NDK_HOME = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-          ANDROID_NDK = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-          ANDROID_JAVA_HOME = "${pkgs.jdk17.home}";
-          NDK = "${androidSdk}/libexec/android-sdk/ndk-bundle";
-          PATH = "${androidSdk}:${androidSdk}/libexec/android-sdk/ndk-bundle:\$PATH";
-          nativeBuildInputs = [cmake];
           buildInputs = [
             bash
             alejandra
             nixd
-            androidSdk # The customized SDK that we've made above
-            jdk17
-            gradle
-            #self.packages."${system}".fpc-android
           ];
-
-          shellHook = ''
-            export PATH="$ANDROID_SDK_ROOT/cmake/${cmakeVersion}/bin:$PATH";
-            export PATH="$ANDROID_SDK_ROOT/platform-tools:$PATH";
-            export PATH="$ANDROID_SDK_ROOT/tools:$PATH";
-            export PATH="$ANDROID_SDK_ROOT/build-tools:$PATH";
-            export PATH="$ANDROID_SDK_ROOT/cmdline-tools:$PATH";
-            export PATH="$ANDROID_SDK_ROOT/ndk-bundle:$PATH";
-          '';
         };
     });
 }
