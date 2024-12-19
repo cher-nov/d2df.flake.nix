@@ -9,8 +9,8 @@
   SDL2ForJava,
   androidRoot,
   androidRes,
-  assetsPath,
-  # Example: 
+  gameAssetsPath,
+  # Example:
   # {"arm64-v8a" = { nativeBuildInputs = [SDL2_custom enet_custom]; doom2df = ...}; }
   customAndroidFpcPkgs,
 }:
@@ -50,7 +50,7 @@ in {
     in
       (lib.foldlAttrs (acc: name: value: acc + (f name value)) "" customAndroidFpcPkgs)
       + ''
-        cp -r ${assetsPath}/* resources
+        cp -r ${gameAssetsPath}/* resources
       '')
     # Use SDL Java sources from the version we compiled our game with.
     + ''

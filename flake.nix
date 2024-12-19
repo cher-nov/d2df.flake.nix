@@ -59,6 +59,7 @@
         rev = "08172877ab51feafb50469523a6ebe738efdd16d";
         hash = "sha256-XEb/8DRcQA6BOOQVHcsA3SiR1IPKLoBEwirfmDK0Xmw=";
       };
+
       buildWadScript = d2dfPkgs.buildWadScript;
       wads = lib.listToAttrs (lib.map (wad: {
         name = wad;
@@ -104,16 +105,16 @@
         inherit androidSdk;
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
-        assetsPath = defaultAssetsPath;
+        gameAssetsPath = defaultAssetsPath;
         SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
         customAndroidFpcPkgs =
           lib.mapAttrs (abi: ndkPkgs: let
-            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;  
+            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
           in {
             nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
             doom2df = doom2df-library;
           })
-           androidPkgs.byArch;
+          androidPkgs.byArch;
       };
       legacyPackages.fpc-git = pkgs.fpc;
       legacyPackages.wads = wads;
