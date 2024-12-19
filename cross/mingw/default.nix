@@ -71,6 +71,9 @@
     in {
       nativeBuildInputs = [pkgs.pkgsCross.${crossTarget}.buildPackages.autoreconfHook];
       patches = [mingwPatchNoUndefined mingwPatchWinlibs];
+      postFixup = ''
+        mv $out/bin/libenet-7.dll $out/bin/enet.dll
+      '';
     });
     SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2.override {stdenv = stdenvWin32Threads;};
     SDL2_mixer =
@@ -107,6 +110,50 @@
     libgme = pkgs.pkgsCross.${crossTarget}.game-music-emu;
     wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
     libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
+    fmodex = let
+      drv = {
+        stdenv,
+        lib,
+        fetchurl,
+        p7zip,
+      }: let
+        version = "4.26.36";
+        shortVersion = builtins.replaceStrings ["."] [""] version;
+        src = fetchurl {
+          url = "https://zdoom.org/files/fmod/fmodapi${shortVersion}win32-installer.exe";
+          sha256 = "sha256-jAZP7D9/qt42sn4zz4NwLwc52jH8uQ1roSI0UmqE2aU=";
+        };
+      in
+        stdenv.mkDerivation rec {
+          pname = "fmod";
+          inherit version shortVersion;
+
+          nativeBuildInputs = [p7zip];
+
+          unpackPhase = false;
+          dontUnpack = true;
+          dontStrip = true;
+          dontPatchELF = true;
+          dontBuild = true;
+
+          installPhase = lib.optionalString stdenv.hostPlatform.isLinux ''
+            mkdir -p $out/bin
+            7z e -aoa ${src}
+            cp fmodex.dll $out/bin
+          '';
+
+          meta = with lib; {
+            description = "Programming library and toolkit for the creation and playback of interactive audio";
+            homepage = "http://www.fmod.org/";
+            license = licenses.unfreeRedistributable;
+            platforms = [
+              "i686-mingw32"
+            ];
+            maintainers = [];
+          };
+        };
+    in
+      pkgs.callPackage drv {};
     openal =
       (pkgs.pkgsCross.${crossTarget}.openal.override {
         pipewire = null;

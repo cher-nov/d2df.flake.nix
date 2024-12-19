@@ -116,6 +116,14 @@
           })
           androidPkgs.byArch;
       };
+      legacyPackages.doom2df-zip = bundles.mkZipBundle {
+        gameAssetsPath = defaultAssetsPath;
+        unknownPkgsAttrs = {
+          sharedBundledLibraries = [mingwPkgs.mingw32.enet mingwPkgs.mingw32.SDL2 mingwPkgs.mingw32.fmodex];
+          doom2df = mingwPkgs.mingw32.doom2d;
+        };
+        isWindows = true;
+      };
       legacyPackages.fpc-git = pkgs.fpc;
       legacyPackages.wads = wads;
 

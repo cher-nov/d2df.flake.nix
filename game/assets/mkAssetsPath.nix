@@ -23,8 +23,8 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [gawk gnused zip findutils];
 
   buildPhase = ''
-    mkdir -p data/models wads maps
-    cp ${doom2dWad} maps/doom2d.zip
+    mkdir -p data/models wads maps/megawads/
+    cp ${doom2dWad} maps/megawads/doom2d.zip
     cp ${doomerWad} data/models/doomer.zip
     cp ${shrshadeWad} wads/shrshade.zip
     cp ${standartWad} wads/standart.zip
