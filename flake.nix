@@ -69,13 +69,13 @@
         };
       }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
     in {
-      legacyPackages.kek = import ./android {
+      legacyPackages.kek = import ./cross/android {
         inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
         inherit fpcPkgs d2dfPkgs;
         lib = pkgs.lib;
         inherit pkgs;
       };
-      legacyPackages.mingw = import ./mingw {
+      legacyPackages.mingw = import ./cross/mingw {
         inherit pkgs lib;
         inherit fpcPkgs d2dfPkgs;
       };
