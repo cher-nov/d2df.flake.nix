@@ -53,6 +53,21 @@
       androidPlatform = "21";
       fpcPkgs = import ./fpc;
       d2dfPkgs = import ./game;
+
+      doom2df-res = pkgs.fetchgit {
+        url = "https://github.com/Doom2D/DF-Res.git";
+        rev = "08172877ab51feafb50469523a6ebe738efdd16d";
+        hash = "sha256-XEb/8DRcQA6BOOQVHcsA3SiR1IPKLoBEwirfmDK0Xmw=";
+      };
+      buildWadScript = ./game/scripts/parse.awk;
+      wads = lib.listToAttrs (lib.map (wad: {
+        name = wad;
+        value = pkgs.callPackage d2dfPkgs.buildWad {
+          outName = wad;
+          lstPath = "${wad}.lst";
+          inherit buildWadScript doom2df-res;
+        };
+      }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
     in {
       legacyPackages.kek = import ./android {
         inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
@@ -65,6 +80,20 @@
         inherit fpcPkgs d2dfPkgs;
       };
       legacyPackages.fpc-git = pkgs.fpc;
+      legacyPackages.wads = wads;
+      legacyPackages.doom2df-bundle = pkgs.callPackage d2dfPkgs.doom2df-bundle {
+        doom2dWad = wads.doom2d;
+        doomerWad = wads.doomer;
+        standartWad = wads.standart;
+        shrshadeWad = wads.shrshade;
+        gameWad = wads.game;
+        editorWad = wads.editor;
+        # FIXME
+        # Dirty, hardcoded assets
+        flexuiWad = ./game/dirtyAssets/flexui.wad;
+        botlist = ./game/dirtyAssets/botlist.txt;
+        botnames = ./game/dirtyAssets/botnames.txt;
+      };
 
       devShell = with pkgs;
         mkShell rec {
