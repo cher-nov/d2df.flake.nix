@@ -68,20 +68,23 @@
           inherit buildWadScript doom2df-res;
         };
       }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
-    in {
-      legacyPackages.kek = import ./cross/android {
+      androidPkgs = import ./cross/android {
         inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
         inherit fpcPkgs d2dfPkgs;
         lib = pkgs.lib;
         inherit pkgs;
       };
-      legacyPackages.mingw = import ./cross/mingw {
+      mingwPkgs = import ./cross/mingw {
         inherit pkgs lib;
         inherit fpcPkgs d2dfPkgs;
       };
-      legacyPackages.fpc-git = pkgs.fpc;
-      legacyPackages.wads = wads;
-      legacyPackages.doom2df-bundle = pkgs.callPackage d2dfPkgs.doom2df-bundle {
+      bundles = import ./game/bundle {
+        inherit (pkgs) callPackage;
+      };
+      assets = import ./game/assets {
+        inherit (pkgs) callPackage;
+      };
+      defaultAssetsPath = assets.mkAssetsPath {
         doom2dWad = wads.doom2d;
         doomerWad = wads.doomer;
         standartWad = wads.standart;
@@ -90,10 +93,30 @@
         editorWad = wads.editor;
         # FIXME
         # Dirty, hardcoded assets
-        flexuiWad = ./game/bundle/dirtyAssets/flexui.wad;
-        botlist = ./game/bundle/dirtyAssets/botlist.txt;
-        botnames = ./game/bundle/dirtyAssets/botnames.txt;
+        flexuiWad = ./game/assets/dirtyAssets/flexui.wad;
+        botlist = ./game/assets/dirtyAssets/botlist.txt;
+        botnames = ./game/assets/dirtyAssets/botnames.txt;
       };
+    in {
+      legacyPackages.android = androidPkgs;
+      legacyPackages.mingw = mingwPkgs;
+      legacyPackages.doom2df-sdl2_mixer-apk = bundles.mkAndroidApk {
+        inherit androidSdk;
+        androidRoot = assets.androidRoot;
+        androidRes = assets.androidIcons;
+        assetsPath = defaultAssetsPath;
+        SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
+        customAndroidFpcPkgs =
+          lib.mapAttrs (abi: ndkPkgs: let
+            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;  
+          in {
+            nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
+            doom2df = doom2df-library;
+          })
+           androidPkgs.byArch;
+      };
+      legacyPackages.fpc-git = pkgs.fpc;
+      legacyPackages.wads = wads;
 
       devShell = with pkgs;
         mkShell rec {
