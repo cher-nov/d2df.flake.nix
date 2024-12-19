@@ -52,7 +52,14 @@
   createCrossPkgSet = abi: abiAttrs: let
     crossTarget = abi;
   in rec {
-    enet = pkgs.pkgsCross.${crossTarget}.enet.overrideAttrs (prev: let
+    gcc = pkgs.pkgsCross.${crossTarget}.buildPackages.wrapCC (pkgs.pkgsCross.${crossTarget}.buildPackages.gcc-unwrapped.override {
+      threadsCross = {
+        model = "win32";
+        package = null;
+      };
+    });
+    stdenvWin32Threads = pkgs.pkgsCross.${crossTarget}.buildPackages.overrideCC pkgs.pkgsCross.${crossTarget}.stdenv gcc;
+    enet = (pkgs.pkgsCross.${crossTarget}.enet.override {stdenv = stdenvWin32Threads;}).overrideAttrs (prev: let
       mingwPatchNoUndefined = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/msys2/MINGW-packages/refs/heads/master/mingw-w64-enet/001-no-undefined.patch";
         hash = "sha256-t3fXrYG0h2OkZHx13KPKaJL4hGGJKZcN8vdsWza51Hk=";
@@ -65,12 +72,74 @@
       nativeBuildInputs = [pkgs.pkgsCross.${crossTarget}.buildPackages.autoreconfHook];
       patches = [mingwPatchNoUndefined mingwPatchWinlibs];
     });
-    SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2;
+    SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2.override {stdenv = stdenvWin32Threads;};
+    SDL2_mixer =
+      (pkgs.pkgsCross.${crossTarget}.SDL2_mixer.override {
+        enableSdltest = false;
+        enableSmpegtest = false;
+        SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2;
+        fluidsynth = null;
+        smpeg2 = null;
+        flac = null;
+        timidity = SDL2;
+        stdenv = stdenvWin32Threads;
+      })
+      .overrideAttrs (prev: {
+        buildInputs = prev.buildInputs ++ [pkgs.pkgsCross.${crossTarget}.game-music-emu];
+        NIX_CFLAGS_LINK = "-D_WIN32_WINNT=0x0501 -static-libgcc";
+        NIX_CFLAGS_COMPILE = "-D_WIN32_WINNT=0x0501 -static-libgcc";
+        configureFlags =
+          prev.configureFlags
+          ++ [
+            (lib.enableFeature false "music-flac")
+            (lib.enableFeature false "music-gme")
+            (lib.enableFeature false "music-gme-shared")
+            (lib.enableFeature false "music-midi")
+            (lib.enableFeature true "music-mp3")
+            (lib.enableFeature true "music-mp3-mpg123")
+          ];
+      });
+    libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
+    libvorbis = pkgs.pkgsCross.${crossTarget}.libogg;
+    opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
+    libopus = pkgs.pkgsCross.${crossTarget}.libopus;
+    mpg123 = pkgs.pkgsCross.${crossTarget}.mpg123;
+    libgme = pkgs.pkgsCross.${crossTarget}.game-music-emu;
+    wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
+    libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
+    openal =
+      (pkgs.pkgsCross.${crossTarget}.openal.override {
+        pipewire = null;
+        dbus = null;
+        alsa-lib = null;
+        libpulseaudio = null;
+        stdenv = stdenvWin32Threads;
+      })
+      .overrideAttrs (prev: {
+        /*
+        buildInputs =
+          prev.buildInputs
+          ++ [
+            (pkgs.pkgsCross.mingwW64.windows.mcfgthreads)
+          ];
+        */
+        preConfigure = ''
+          cmakeFlagsArray+=(
+            -DCMAKE_REQUIRED_COMPILER_FLAGS="-D_WIN32_WINNT=0x0501 -static-libgcc -static-libstdc++"
+            -DCMAKE_SHARED_LINKER_FLAGS="-D_WIN32_WINNT=0x0501 -static-libgcc -static-libstdc++"
+          )
+        '';
+
+        postInstall = "";
+      });
+    #libogg,
+    #libvorbis,
+    #mpg123,
     doom2d = let
       pkg = d2dfPkgs;
     in
       pkgs.callPackage pkg.doom2df-unwrapped {
-        inherit SDL2 enet;
+        inherit SDL2 enet SDL2_mixer mpg123;
         glibc = null;
         fpc = pkgs.callPackage fpcPkgs.wrapper {
           fpc = universal.fpc-mingw;
@@ -90,9 +159,14 @@
         withOpenGL2 = true;
         disableGraphics = false;
         disableIo = false;
-        disableSound = true;
+        disableSound = false;
         withSDL2 = true;
+        withSDL2_mixer = false;
+        withFmod = true;
+        withOpenAL = false;
+        withMpg123 = true;
         headless = false;
+        # _WIN32_WINNT 0x0400
         buildAsLibrary = false;
       };
   };

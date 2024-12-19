@@ -36,7 +36,7 @@
     withLibXmp ? false,
     libxmp ? null,
     withMpg123 ? false,
-    libmpg123 ? null,
+    mpg123 ? null,
     withOpus ? false,
     libopus ? null,
     opusfile ? null,
@@ -46,6 +46,7 @@
     miniupnpc ? null,
     withFluidsynth ? false,
     fluidsynth ? null,
+    withFmod ? false,
     ...
   }: let
     optional = lib.optional;
@@ -80,10 +81,7 @@
     ];
     soundDriver = [
       (
-        if
-          ((withSDL2_mixer && withOpenAL)
-            || (withSDL2_mixer && disableSound)
-            || (withOpenAL && disableSound))
+        if (lib.length (lib.filter (x: x == true) [withSDL2_mixer withSDL1_mixer withOpenAL withFmod disableSound]) > 1)
         then abort "Exactly one sound driver should be enabled (or none)."
         else if disableSound
         then "-dDISABLE_SOUND"
@@ -91,6 +89,8 @@
         then "-dUSE_SOUNDSTUB"
         else if withOpenAL
         then "-dUSE_OPENAL"
+        else if withFmod
+        then "-dUSE_FMOD"
         else sdlMixerFlag
       )
     ];
@@ -156,7 +156,7 @@
         ++ optional withSDL2 SDL2
         ++ optional withSDL2_mixer SDL2_mixer
         ++ optional withLibXmp libxmp
-        ++ optional withMpg123 libmpg123
+        ++ optional withMpg123 mpg123
         ++ optionals withOpus [libopus opusfile]
         ++ optionals withVorbis [libvorbis libogg]
         ++ optionals withFluidsynth [fluidsynth]
@@ -177,7 +177,7 @@
         ++ optional withSDL2_mixer SDL2_mixer
         ++ optional withOpenAL openal
         ++ optional (soundActuallyUsed && withLibXmp) libxmp
-        ++ optional (soundActuallyUsed && withMpg123) libmpg123
+        ++ optional (soundActuallyUsed && withMpg123) mpg123
         ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
         ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
         ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
