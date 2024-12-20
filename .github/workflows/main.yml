@@ -21,7 +21,7 @@ jobs:
           nix shell nixpkgs#jq nixpkgs#p7zip nixpkgs#git
       - name: Update Doom2D related inputs
         run: |
-          nix flake update d2df-sdl doom2df-res
+          nix flake update d2df-sdl d2df-editor doom2df-res
           D2DF_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-sdl".locked.rev')
           EDITOR_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-editor".locked.rev')
           RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')
