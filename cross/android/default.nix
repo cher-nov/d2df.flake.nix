@@ -44,6 +44,7 @@
     armv8 = rec {
       androidAbi = "arm64-v8a";
       clangTriplet = "aarch64-linux-android";
+      compiler = clangTriplet;
       sysroot = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
       ndkLib = "${sysroot}/usr/lib/${clangTriplet}/${androidPlatform}";
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
@@ -233,12 +234,23 @@
         });
       fpc-wrapper = pkgs.callPackage fpcPkgs.wrapper {
         fpc = universal.fpc-android;
-        inherit fpcAttrs;
+        fpcAttrs =
+          abiAttrs.fpcAttrs
+          // {
+            targetArg = abiAttrs.fpcAttrs.targetArg + " -XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${abiAttrs.clangTriplet}/bin/";
+            toolchainPaths =
+              abiAttrs.fpcAttrs.toolchainPaths
+              ++ [
+                "${pkgs.writeShellScriptBin
+                  "${abiAttrs.clangTriplet}-ld"
+                  "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${abiAttrs.clangTriplet}/bin/ld $@"}/bin"
+              ];
+          };
       };
     in {
       name = androidAbi;
       value = {
-        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123;
+        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123 fpc-wrapper;
         doom2df-library = let
           f = d2dfPkgs;
         in

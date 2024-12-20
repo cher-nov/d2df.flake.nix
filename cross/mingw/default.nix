@@ -4,53 +4,10 @@
   fpcPkgs,
   d2dfPkgs,
   d2df-sdl,
+  d2df-editor,
   doom2df-res,
   ...
 }: let
-  architectures = {
-    mingw32 = rec {
-      toolchainPrefix = "i686-w64-mingw32";
-      fpcAttrs = rec {
-        cpuArgs = [""];
-        targetArg = "-Twin32";
-        basename = "cross386";
-        makeArgs = {
-          OS_TARGET = "win32";
-          CPU_TARGET = "i386";
-          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
-        };
-        toolchainPaths = [
-          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
-          "${pkgs.writeShellScriptBin "i386-win32-as" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
-          "${pkgs.writeShellScriptBin "i386-win32-ld" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
-        ];
-      };
-    };
-
-    # FIXME
-    # Doesn't pass install phase with FPC
-
-    /*
-    mingwW64 = rec {
-      toolchainPrefix = "x86_64-w64-mingw32";
-      fpcAttrs = rec {
-        cpuArgs = [""];
-        targetArg = "-Twin64";
-        basename = "cx64";
-        makeArgs = {
-          OS_TARGET = "win64";
-          CPU_TARGET = "x86_64";
-          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
-        };
-        toolchainPaths = [
-          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
-          "${pkgs.writeShellScriptBin "x86_64-win64-as" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
-          "${pkgs.writeShellScriptBin "x86_64-win64-ld" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
-        ];
-      };
-    };
-    */
-  };
   createCrossPkgSet = abi: abiAttrs: let
     crossTarget = abi;
   in rec {
@@ -190,6 +147,15 @@
     #libogg,
     #libvorbis,
     #mpg123,
+    lazarus = pkgs.callPackage fpcPkgs.lazarusWrapper {
+      fpc = universal.fpc-mingw;
+      fpcAttrs = abiAttrs.fpcAttrs;
+      lazarus = universal.lazarus-mingw;
+    };
+    editor = pkgs.callPackage d2dfPkgs.editor {
+      inherit d2df-editor;
+      lazarus = lazarus;
+    };
     doom2d = let
       pkg = d2dfPkgs;
     in
@@ -227,10 +193,59 @@
       };
   };
   crossPkgs = lib.mapAttrs createCrossPkgSet architectures;
-  universal = {
+  universal = rec {
     fpc-mingw = pkgs.callPackage fpcPkgs.base {
       archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
     };
+    lazarus-mingw = pkgs.callPackage fpcPkgs.lazarus {
+      fpc-git = fpc-mingw;
+    };
   };
-in
-  universal // {byArch = crossPkgs;}
+  architectures = {
+    mingw32 = rec {
+      toolchainPrefix = "i686-w64-mingw32";
+      fpcAttrs = rec {
+        cpuArgs = [""];
+        targetArg = "-Twin32";
+        basename = "cross386";
+        makeArgs = {
+          OS_TARGET = "win32";
+          CPU_TARGET = "i386";
+          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
+        };
+        toolchainPaths = [
+          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
+          "${pkgs.writeShellScriptBin "i386-win32-as" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
+          "${pkgs.writeShellScriptBin "i386-win32-ld" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
+        ];
+      };
+    };
+
+    # FIXME
+    # Doesn't pass install phase with FPC
+
+    /*
+    mingwW64 = rec {
+      toolchainPrefix = "x86_64-w64-mingw32";
+      fpcAttrs = rec {
+        cpuArgs = [""];
+        targetArg = "-Twin64";
+        basename = "cx64";
+        makeArgs = {
+          OS_TARGET = "win64";
+          CPU_TARGET = "x86_64";
+          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
+        };
+        toolchainPaths = [
+          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
+          "${pkgs.writeShellScriptBin "x86_64-win64-as" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
+          "${pkgs.writeShellScriptBin "x86_64-win64-ld" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
+        ];
+      };
+    };
+    */
+  };
+in {
+  byArch = crossPkgs;
+  inherit universal architectures;
+}

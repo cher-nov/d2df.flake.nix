@@ -51,10 +51,6 @@
   withFmod ? false,
   ...
 }: let
-  # dirty:
-  # botlist.txt
-  # botnames.txt
-  # flexui.wad
   optional = lib.optional;
   optionals = lib.optionals;
   version = "0.667";

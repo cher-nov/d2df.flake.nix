@@ -10,6 +10,7 @@
     mkAndroidApk,
     d2df-sdl,
     doom2df-res,
+    d2df-editor,
     ...
   }: let
     buildToolsVersion = "35.0.0";

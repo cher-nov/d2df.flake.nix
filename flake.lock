@@ -1,5 +1,23 @@
 {
   "nodes": {
+    "d2df-editor": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1708948652,
+        "narHash": "sha256-yMW+jArIZxNWDbdcaKV2QrgUUV09ClaqCEBYZItg2cI=",
+        "ref": "refs/heads/master",
+        "rev": "7fe67265f79c80b0263dff8645faf299962efbb2",
+        "revCount": 198,
+        "submodules": true,
+        "type": "git",
+        "url": "git://repo.or.cz/d2df-editor.git"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "git://repo.or.cz/d2df-editor.git"
+      }
+    },
     "d2df-sdl": {
       "flake": false,
       "locked": {
@@ -70,6 +88,7 @@
     },
     "root": {
       "inputs": {
+        "d2df-editor": "d2df-editor",
         "d2df-sdl": "d2df-sdl",
         "doom2df-res": "doom2df-res",
         "flake-utils": "flake-utils",

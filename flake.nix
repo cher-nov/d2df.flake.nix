@@ -12,6 +12,10 @@
       url = "git://repo.or.cz/d2df-sdl.git?submodules=1";
       flake = false;
     };
+    d2df-editor = {
+      url = "git://repo.or.cz/d2df-editor.git?submodules=1";
+      flake = false;
+    };
   };
   outputs = {
     self,
@@ -19,6 +23,7 @@
     flake-utils,
     doom2df-res,
     d2df-sdl,
+    d2df-editor,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
@@ -71,7 +76,7 @@
       };
     in {
       legacyPackages.android = (import ./packages/android.nix).default {
-        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res;
+        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res d2df-editor;
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
         gameAssetsPath = defaultAssetsPath;
@@ -79,9 +84,13 @@
       };
 
       legacyPackages.mingw = (import ./packages/mingw.nix).default {
-        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res;
+        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res d2df-editor;
         gameAssetsPath = defaultAssetsPath;
         mkGameBundle = bundles.mkGameBundle;
+      };
+
+      legacyPackages.lazarus = pkgs.callPackage ./lazarus {
+        fpc-git = pkgs.fpc;
       };
 
       legacyPackages.fpc-git = pkgs.fpc;

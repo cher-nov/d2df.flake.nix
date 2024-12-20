@@ -10,6 +10,7 @@ let
     unknownPkgsAttrs,
     # Necessarry to know because .dlls are installed in bin/
     isWindows ? false,
+    withEditor ? false,
   }:
     stdenv.mkDerivation (finalAttrs: {
       version = "0.667-git";
@@ -44,6 +45,7 @@ let
           cp -r * $out
           ${(copyLibraries unknownPkgsAttrs.sharedBundledLibraries)}
           cp ${unknownPkgsAttrs.doom2df}/bin/Doom2DF $out/Doom2DF.exe
+          ${lib.optionalString withEditor "cp ${unknownPkgsAttrs.editor}/bin/Editor $out/Editor.exe"}
         '';
     });
 in
