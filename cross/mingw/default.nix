@@ -61,11 +61,11 @@
     stdenvWin32Threads = pkgs.pkgsCross.${crossTarget}.buildPackages.overrideCC pkgs.pkgsCross.${crossTarget}.stdenv gcc;
     enet = (pkgs.pkgsCross.${crossTarget}.enet.override {stdenv = stdenvWin32Threads;}).overrideAttrs (prev: let
       mingwPatchNoUndefined = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/msys2/MINGW-packages/refs/heads/master/mingw-w64-enet/001-no-undefined.patch";
+        url = "https://raw.githubusercontent.com/msys2/MINGW-packages/a4bc312869703bda3703fc1cb327fdd7659f0c4b/mingw-w64-enet/001-no-undefined.patch";
         hash = "sha256-t3fXrYG0h2OkZHx13KPKaJL4hGGJKZcN8vdsWza51Hk=";
       };
       mingwPatchWinlibs = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/msys2/MINGW-packages/refs/heads/master/mingw-w64-enet/002-win-libs.patch";
+        url = "https://raw.githubusercontent.com/msys2/MINGW-packages/a4bc312869703bda3703fc1cb327fdd7659f0c4b/mingw-w64-enet/002-win-libs.patch";
         hash = "sha256-vD3sKSU4OVs+zHKuMTNpcZC+LnCyiV/SJqf9G9Vj/cQ=";
       };
     in {

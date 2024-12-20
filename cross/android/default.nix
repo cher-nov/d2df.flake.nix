@@ -157,12 +157,6 @@
           ];
         })
         .overrideAttrs (prev: {
-          patches = [
-            (pkgs.fetchurl {
-              url = "https://raw.githubusercontent.com/NixOS/nixpkgs/refs/heads/nixos-24.11/pkgs/by-name/op/opusfile/include-multistream.patch";
-              sha256 = "sha256-MXkkFmu6NgHbZL3ChtiYsOlwMBSvdSpBaLvrI1RhzgU=";
-            })
-          ];
           buildPhase =
             ''
               substituteInPlace CMakeLists.txt \
@@ -254,12 +248,12 @@
             libmpg123 = mpg123;
             libvorbis = vorbis;
             disableSound = false;
-            withSDL2_mixer = false;
+            withSDL2_mixer = true;
             withFluidsynth = true;
             withModplug = true;
             withOpus = true;
             withVorbis = true;
-            withOpenAL = true;
+            withOpenAL = false;
             withMpg123 = true;
             withLibgme = true;
             glibc = null;
