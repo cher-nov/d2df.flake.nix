@@ -16,12 +16,10 @@ jobs:
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - uses: DeterminateSystems/update-flake-lock@main
-        id: update
-        with:
-          commit-msg: "chore(flake): bump game inputs"
-          pr-title: "chore(flake): bump game inputs"
-          inputs: d2df-sdl doom2df-res
+      - name: Update Doom2D related inputs
+        run: |
+          nix flake update d2df-sdl
+          nix flake update doom2df-res
       - name: Build debug APK
         run: |
           nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
@@ -38,6 +36,3 @@ jobs:
           name: doom2df-win32
           path: result
           if-no-files-found: error
-      - run: "gh pr merge --auto --merge ${{ steps.update.outputs.pull-request-number }}"
-        env:
-          GH_TOKEN: ${{ github.token }}
