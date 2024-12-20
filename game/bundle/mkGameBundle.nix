@@ -43,7 +43,7 @@ let
           mkdir -p $out
           cp -r * $out
           ${(copyLibraries unknownPkgsAttrs.sharedBundledLibraries)}
-          ln -s ${unknownPkgsAttrs.doom2df}/bin/Doom2DF $out/Doom2DF.exe
+          cp ${unknownPkgsAttrs.doom2df}/bin/Doom2DF $out/Doom2DF.exe
         '';
     });
 in
