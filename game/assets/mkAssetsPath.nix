@@ -24,13 +24,13 @@ stdenvNoCC.mkDerivation {
 
   buildPhase = ''
     mkdir -p data/models wads maps/megawads/
-    cp ${doom2dWad} maps/megawads/doom2d.zip
-    cp ${doomerWad} data/models/doomer.zip
-    cp ${shrshadeWad} wads/shrshade.zip
-    cp ${standartWad} wads/standart.zip
-    cp ${editorWad} data/editor.zip
-    cp ${gameWad} data/game.zip
-    cp ${flexuiWad} data/flexui.wad
+    cp ${doom2dWad} maps/megawads/doom2d
+    cp ${doomerWad} data/models/doomer
+    cp ${shrshadeWad} wads/shrshade
+    cp ${standartWad} wads/standart
+    cp ${editorWad} data/editor
+    cp ${gameWad} data/game
+    cp ${flexuiWad} data/flexui
     cp ${botlist} data/botlist.txt
     cp ${botnames} data/botnames.txt
   '';
