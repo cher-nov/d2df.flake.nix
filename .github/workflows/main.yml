@@ -38,7 +38,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
-          artifacts: doom2df-win32.zip, doom2df-android.zip
+          artifacts: ${{ github.workspace }}\*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Doom2D Forever builds (latest commit)
           tag: doom2dforever
