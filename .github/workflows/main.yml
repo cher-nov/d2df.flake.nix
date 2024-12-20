@@ -17,7 +17,7 @@ jobs:
           nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-android.apk
+          name: doom2df-android
           path: result/bin/d2df.signed.apk
           if-no-files-found: error
       - name: Build Windows 32-bit ZIP bundle
@@ -25,6 +25,6 @@ jobs:
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.doom2df-bundle
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-win32.zip
+          name: doom2df-win32
           path: result
           if-no-files-found: error
