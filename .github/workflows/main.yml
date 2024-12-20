@@ -35,3 +35,14 @@ jobs:
           name: doom2df-win32
           path: result
           if-no-files-found: error
+      - uses: ncipollo/release-action@v1
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
+        with:
+          artifacts: doom2df-win32, doom2df-android
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Doom2D Forever builds (latest commit)
+          tag: doom2dforever
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          prerelease: true
+          replacesArtifacts: true
