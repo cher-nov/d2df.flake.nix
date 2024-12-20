@@ -37,8 +37,11 @@ jobs:
       - name: Build Windows 32-bit ZIP bundle
         run: |
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.doom2df-bundle
+          pwd
           cd result
+          pwd
           zip -r ../doom2df-win32.zip .
+          pwd
           cd -
       - uses: actions/upload-artifact@v4
         with:
