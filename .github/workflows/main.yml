@@ -26,7 +26,7 @@ jobs:
           RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')
           echo "D2DF_REV=$D2DF_REV" >> "$GITHUB_ENV"
           echo "RES_REV=$RES_REV" >> "$GITHUB_ENV"
-          printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s' ${{env.D2DF_REV}} ${{env.RES_REV}} > release_body
+          printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s' $D2DF_REV $RES_REV > release_body
       - name: Build debug APK
         run: |
           nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
