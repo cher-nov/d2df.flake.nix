@@ -200,7 +200,7 @@ in
         -al Doom2DF.lpr \
         ${fpcOptimizationFlags} \
         ${fpcExtraArgs} \
-        ${lib.traceVal (lib.concatStringsSep " " defines)} \
+        ${(lib.concatStringsSep " " defines)} \
         ${let
         inputs = lib.filter (x: !builtins.isNull x) buildInputs;
       in
