@@ -6,9 +6,12 @@
     d2dfPkgs,
     mkGameBundle,
     gameAssetsPath,
+    d2df-sdl,
+    doom2df-res,
   }: let
     mingwPkgs = import ../cross/mingw {
       inherit pkgs lib;
+      inherit d2df-sdl doom2df-res;
       inherit fpcPkgs d2dfPkgs;
     };
     byArchAdditional =

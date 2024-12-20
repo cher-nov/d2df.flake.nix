@@ -8,6 +8,8 @@
     androidRes,
     gameAssetsPath,
     mkAndroidApk,
+    d2df-sdl,
+    doom2df-res,
     ...
   }: let
     buildToolsVersion = "35.0.0";
@@ -36,6 +38,7 @@
     androidPlatform = "21";
     androidPkgs = import ../cross/android {
       inherit androidSdk androidNdk androidPlatform androidNdkBinutils;
+      inherit d2df-sdl doom2df-res;
       inherit fpcPkgs d2dfPkgs;
       lib = pkgs.lib;
       inherit pkgs;

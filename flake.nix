@@ -3,11 +3,22 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+
+    doom2df-res = {
+      url = "github:Doom2D/DF-Res";
+      flake = false;
+    };
+    d2df-sdl = {
+      url = "git://repo.or.cz/d2df-sdl.git?submodules=1";
+      flake = false;
+    };
   };
   outputs = {
     self,
     nixpkgs,
     flake-utils,
+    doom2df-res,
+    d2df-sdl,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
@@ -29,12 +40,6 @@
       lib = pkgs.lib;
       fpcPkgs = import ./fpc;
       d2dfPkgs = import ./game;
-
-      doom2df-res = pkgs.fetchgit {
-        url = "https://github.com/Doom2D/DF-Res.git";
-        rev = "08172877ab51feafb50469523a6ebe738efdd16d";
-        hash = "sha256-XEb/8DRcQA6BOOQVHcsA3SiR1IPKLoBEwirfmDK0Xmw=";
-      };
 
       buildWadScript = d2dfPkgs.buildWadScript;
       wads = lib.listToAttrs (lib.map (wad: {
@@ -66,7 +71,7 @@
       };
     in {
       legacyPackages.android = (import ./packages/android.nix).default {
-        inherit pkgs lib fpcPkgs d2dfPkgs;
+        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res;
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
         gameAssetsPath = defaultAssetsPath;
@@ -74,7 +79,7 @@
       };
 
       legacyPackages.mingw = (import ./packages/mingw.nix).default {
-        inherit pkgs lib fpcPkgs d2dfPkgs;
+        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res;
         gameAssetsPath = defaultAssetsPath;
         mkGameBundle = bundles.mkGameBundle;
       };

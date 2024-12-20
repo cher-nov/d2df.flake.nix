@@ -7,6 +7,7 @@
   fpc,
   enet,
   glibc,
+  d2df-sdl,
   fpcOptimizationFlags ? "-g -gl -O1",
   fpcExtraArgs ? "",
   buildAsLibrary ? false,
@@ -59,12 +60,7 @@
   version = "0.667";
   basename = "Doom2DF";
   rev = "92bd4a234eb7375f2174a8f58b893bb29fc1931a";
-
-  src = fetchgit {
-    url = "https://repo.or.cz/d2df-sdl.git";
-    inherit rev;
-    sha256 = "sha256-s2xxVvb+xruRmLYEipiYbb6pCxE1qhX2UKNwbB0UM0I=";
-  };
+  src = d2df-sdl;
 
   sdlMixerFlag =
     if ((withSDL2_mixer && withSDL1) || (withSDL1_mixer && withSDL2))

@@ -7,6 +7,8 @@
   d2dfPkgs,
   lib,
   pkgs,
+  d2df-sdl,
+  doom2df-res,
 }: let
   customNdkPkgs = import ./ndk {
     inherit lib pkgs;
@@ -241,6 +243,7 @@
           f = d2dfPkgs;
         in
           pkgs.callPackage f.doom2df-unwrapped {
+            inherit d2df-sdl;
             fpc = fpc-wrapper;
             inherit SDL2 SDL2_mixer enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg libmodplug;
             libopus = opus;

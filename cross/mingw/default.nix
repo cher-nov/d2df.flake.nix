@@ -3,6 +3,8 @@
   lib,
   fpcPkgs,
   d2dfPkgs,
+  d2df-sdl,
+  doom2df-res,
   ...
 }: let
   architectures = {
@@ -192,6 +194,7 @@
       pkg = d2dfPkgs;
     in
       pkgs.callPackage pkg.doom2df-unwrapped {
+        inherit d2df-sdl;
         inherit SDL2 enet SDL2_mixer mpg123;
         glibc = null;
         fpc = pkgs.callPackage fpcPkgs.wrapper {
