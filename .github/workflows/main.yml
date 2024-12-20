@@ -28,7 +28,7 @@ jobs:
           echo "D2DF_REV=$D2DF_REV" >> "$GITHUB_ENV"
           echo "RES_REV=$RES_REV" >> "$GITHUB_ENV"
           echo "EDITOR_REV=$RES_REV" >> "$GITHUB_ENV"
-          printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor:%s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
+          printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
       - name: Build debug APK
         run: |
           nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
