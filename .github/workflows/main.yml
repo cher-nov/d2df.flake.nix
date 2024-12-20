@@ -22,8 +22,10 @@ jobs:
       - name: Update Doom2D related inputs
         run: |
           nix flake update d2df-sdl doom2df-res
-          echo "D2DF_REV=$(nix flake metadata . --json | jq --raw-output '.locks.nodes."d2df-sdl".locked.rev')" >> $GITHUB_ENV
-          echo "RES_REV=$(nix flake metadata . --json | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')" >> $GITHUB_ENV
+          D2DF_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-sdl".locked.rev')
+          RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')
+          echo "D2DF_REV=$D2DF_REV" >> "$GITHUB_ENV"
+          echo "RES_REV=$RES_REV" >> "$GITHUB_ENV"
           printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s' ${{env.D2DF_REV}} ${{env.RES_REV}} > release_body
       - name: Build debug APK
         run: |
