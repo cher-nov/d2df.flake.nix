@@ -22,14 +22,16 @@ jobs:
       - name: Build debug APK
         run: |
           nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
+          cp result doom2df-android.apk
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-android
-          path: result/bin/d2df.signed.apk
+          path: result
           if-no-files-found: error
       - name: Build Windows 32-bit ZIP bundle
         run: |
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.doom2df-bundle
+          cp result doom2df-win32.zip
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-win32
@@ -38,7 +40,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
-          artifacts: "*zip"
+          artifacts: doom2df-win32.zip, doom2df-android.apk
           token: ${{ secrets.GITHUB_TOKEN }}
           name: Doom2D Forever builds (latest commit)
           tag: doom2dforever

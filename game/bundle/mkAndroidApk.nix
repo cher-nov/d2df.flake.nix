@@ -68,7 +68,6 @@ in {
     '';
 
   installPhase = ''
-    mkdir -p $out/bin
-    cp bin/d2df.signed.apk $out/bin
+    cp bin/d2df.signed.apk $out
   '';
 })
