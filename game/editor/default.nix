@@ -26,6 +26,9 @@ pkgs.stdenv.mkDerivation {
 
   buildInputs = with pkgs; [gtk2 glibc libGL libX11 pango cairo gdk-pixbuf];
 
+  dontStrip = true;
+  dontPatchELF = true;
+
   patches = [./temp-fix-error.patch];
 
   env = {
