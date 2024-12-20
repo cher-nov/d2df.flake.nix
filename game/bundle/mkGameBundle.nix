@@ -47,29 +47,4 @@ let
         '';
     });
 in
-  {
-    zip,
-    stdenv,
-    callPackage,
-    gameAssetsPath,
-    unknownPkgsAttrs,
-    isWindows,
-    ...
-  }:
-    stdenv.mkDerivation (finalAttrs: {
-      version = "0.667-git";
-      pname = "d2df-game-bundle";
-      name = "${finalAttrs.pname}-${finalAttrs.version}";
-
-      dontStrip = true;
-      dontPatchELF = true;
-      dontBuild = true;
-
-      nativeBuildInputs = [zip];
-
-      src = callPackage gameBundle {inherit gameAssetsPath unknownPkgsAttrs isWindows;};
-
-      installPhase = ''
-        zip -r $out .
-      '';
-    })
+  gameBundle

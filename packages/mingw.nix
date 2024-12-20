@@ -4,7 +4,7 @@
     lib,
     fpcPkgs,
     d2dfPkgs,
-    mkZipBundle,
+    mkGameBundle,
     gameAssetsPath,
   }: let
     mingwPkgs = import ../cross/mingw {
@@ -13,7 +13,7 @@
     };
     byArchAdditional =
       lib.mapAttrs (target: targetAttrs: let
-        doom2df-zip = mkZipBundle {
+        doom2df-bundle = mkGameBundle {
           inherit gameAssetsPath;
           unknownPkgsAttrs = {
             sharedBundledLibraries = [targetAttrs.enet targetAttrs.SDL2 targetAttrs.fmodex];
@@ -22,7 +22,7 @@
           isWindows = true;
         };
       in {
-        inherit doom2df-zip;
+        inherit doom2df-bundle;
       })
       mingwPkgs.byArch;
   in

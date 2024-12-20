@@ -76,7 +76,7 @@
       legacyPackages.mingw = (import ./packages/mingw.nix).default {
         inherit pkgs lib fpcPkgs d2dfPkgs;
         gameAssetsPath = defaultAssetsPath;
-        mkZipBundle = bundles.mkZipBundle;
+        mkGameBundle = bundles.mkGameBundle;
       };
 
       legacyPackages.fpc-git = pkgs.fpc;

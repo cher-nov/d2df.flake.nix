@@ -1,4 +1,4 @@
 {callPackage}: {
-  mkZipBundle = callPackage ./mkZipBundle.nix;
+  mkGameBundle = callPackage ./mkGameBundle.nix;
   mkAndroidApk = callPackage ./mkAndroidApk.nix;
 }
