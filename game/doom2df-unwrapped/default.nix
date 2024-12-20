@@ -140,6 +140,8 @@ in
     name = "${pname}-${lib.optionalString buildAsLibrary "lib-"}${version}";
 
     patches = [];
+    dontStrip = true;
+    dontPatchELF = true;
 
     env = {
       D2DF_BUILD_USER = "nixbld";
