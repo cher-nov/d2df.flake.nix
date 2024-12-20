@@ -22,7 +22,7 @@ jobs:
           if-no-files-found: error
       - name: Build Windows 32-bit ZIP bundle
         run: |
-          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.doom2df-zip
+          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.doom2df-bundle
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-win32.zip
