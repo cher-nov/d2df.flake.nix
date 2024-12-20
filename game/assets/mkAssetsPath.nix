@@ -29,7 +29,7 @@ stdenvNoCC.mkDerivation {
     cp ${shrshadeWad} wads/shrshade.wad
     cp ${standartWad} wads/standart.wad
     cp ${editorWad} data/editor.wad
-    cp ${gameWad} data/game.dfz
+    cp ${gameWad} data/game.wad
     cp ${flexuiWad} data/flexui.wad
     cp ${botlist} data/botlist.txt
     cp ${botnames} data/botnames.txt
