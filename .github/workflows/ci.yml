@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - name: Build debug APK
+        run: |
+          nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom2df-android.apk
+          path: result/bin/d2df.signed.apk
+          if-no-files-found: error
