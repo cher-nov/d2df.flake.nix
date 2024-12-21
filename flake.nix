@@ -145,6 +145,10 @@
             bash
             alejandra
             nixd
+            jq
+            _7zz
+            git
+            findutils
           ];
         };
     });
