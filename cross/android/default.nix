@@ -282,5 +282,7 @@
       archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
     };
   };
-in
-  universal // {byArch = ndkPackagesByArch;}
+in {
+  inherit universal architectures;
+  byArch = ndkPackagesByArch;
+}

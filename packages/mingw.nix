@@ -4,7 +4,9 @@
     lib,
     fpcPkgs,
     d2dfPkgs,
-    mkGameBundle,
+    mkGamePath,
+    mkAssetsPath,
+    mkExecutablePath,
     gameAssetsPath,
     d2df-sdl,
     doom2df-res,
@@ -14,23 +16,11 @@
       inherit pkgs lib;
       inherit d2df-sdl doom2df-res d2df-editor;
       inherit fpcPkgs d2dfPkgs;
+      inherit mkGamePath gameAssetsPath mkExecutablePath mkAssetsPath;
     };
-    byArchAdditional =
-      lib.mapAttrs (target: targetAttrs: let
-        doom2df-bundle = mkGameBundle {
-          inherit gameAssetsPath;
-          unknownPkgsAttrs = {
-            sharedBundledLibraries = [targetAttrs.enet targetAttrs.SDL2 targetAttrs.fmodex];
-            doom2df = targetAttrs.doom2d;
-            editor = targetAttrs.editor;
-          };
-          isWindows = true;
-          withEditor = true;
-        };
-      in {
-        inherit doom2df-bundle;
-      })
-      mingwPkgs.byArch;
+    byArchAdditional = lib.mapAttrs (target: targetAttrs: let
+    in {})
+    mingwPkgs.byArch;
     universalAdditional = rec {
     };
   in

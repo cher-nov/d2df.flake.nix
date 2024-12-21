@@ -6,6 +6,9 @@
   d2df-sdl,
   d2df-editor,
   doom2df-res,
+  gameAssetsPath,
+  mkGamePath,
+  mkExecutablePath,
   ...
 }: let
   createCrossPkgSet = abi: abiAttrs: let
@@ -191,6 +194,26 @@
         # _WIN32_WINNT 0x0400
         buildAsLibrary = false;
       };
+
+    doom2df-bundle = mkGamePath {
+      inherit gameAssetsPath;
+      gameExecutablePath = let
+        f = pkgs.callPackage mkExecutablePath {
+          byArchPkgsAttrs = {
+            mingw32 = {
+              sharedLibraries = [enet SDL2 fmodex];
+              doom2df = doom2d;
+              editor = editor;
+              isWindows = true;
+              withEditor = true;
+              asLibrary = false;
+              prefix = ".";
+            };
+          };
+        };
+      in
+        f;
+    };
   };
   crossPkgs = lib.mapAttrs createCrossPkgSet architectures;
   universal = rec {

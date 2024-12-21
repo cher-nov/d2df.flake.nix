@@ -10,7 +10,7 @@
     mkAndroidApk,
     d2df-sdl,
     doom2df-res,
-    d2df-editor,
+    mkExecutablePath,
     ...
   }: let
     buildToolsVersion = "35.0.0";
@@ -49,14 +49,20 @@
         inherit androidSdk;
         inherit androidRoot androidRes gameAssetsPath;
         SDL2ForJava = androidPkgs.byArch.arm64-v8a.SDL2;
-        customAndroidFpcPkgs =
-          lib.mapAttrs (abi: ndkPkgs: let
-            inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
-          in {
-            nativeBuildInputs = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
-            doom2df = doom2df-library;
-          })
-          androidPkgs.byArch;
+        gameExecutablePath = pkgs.callPackage mkExecutablePath {
+          byArchPkgsAttrs =
+            lib.mapAttrs (abi: ndkPkgs: let
+              inherit (ndkPkgs) doom2df-library enet SDL2 SDL2_mixer libxmp fluidsynth opus opusfile ogg vorbis libgme libmodplug openal mpg123;
+            in {
+              sharedLibraries = [enet SDL2 openal fluidsynth SDL2_mixer libxmp opus opusfile ogg vorbis libgme libmodplug mpg123];
+              doom2df = doom2df-library;
+              isWindows = false;
+              asLibrary = true;
+              editor = null;
+              prefix = "${abi}";
+            })
+            androidPkgs.byArch;
+        };
       };
     };
   in

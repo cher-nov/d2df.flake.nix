@@ -93,13 +93,13 @@
         androidRoot = assets.androidRoot;
         androidRes = assets.androidIcons;
         gameAssetsPath = defaultAssetsPath;
-        mkAndroidApk = bundles.mkAndroidApk;
+        inherit (bundles) mkAndroidApk mkExecutablePath;
       };
 
       legacyPackages.mingw = (import ./packages/mingw.nix).default {
         inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res d2df-editor;
+        inherit (bundles) mkExecutablePath mkAssetsPath mkGamePath;
         gameAssetsPath = defaultAssetsPath;
-        mkGameBundle = bundles.mkGameBundle;
       };
 
       legacyPackages.lazarus = pkgs.callPackage ./lazarus {
@@ -110,6 +110,31 @@
       legacyPackages.wadcvt = pkgs.wadcvt;
       legacyPackages.dfwad = pkgs.dfwad;
       legacyPackages.wads = wads;
+      legacyPackages.bundles = pkgs.callPackage bundles.mkExecutablePath {
+        byArchPkgsAttrs = {
+          "mingw32" = {
+            isWindows = true;
+            asLibrary = false;
+            sharedLibraries = [self.legacyPackages.${system}.mingw.byArch.mingw32.SDL2 self.legacyPackages.${system}.mingw.byArch.mingw32.enet];
+            doom2df = self.legacyPackages.${system}.mingw.byArch.mingw32.doom2d;
+            editor = null;
+            prefix = ".";
+          };
+
+          /*
+          "arm64-v8a" = {
+            isWindows = false;
+            asLibrary = true;
+            sharedLibraries = [self.legacyPackages.${system}.android.byArch.arm64-v8a.SDL2 self.legacyPackages.${system}.android.byArch.arm64-v8a.enet];
+            doom2df = self.legacyPackages.${system}.android.byArch.arm64-v8a.doom2df-library;
+            editor = null;
+            prefix = "arm64-v8a";
+          };
+          */
+        };
+        #roots = [pkgs.enet pkgs.SDL2 pkgs.openal];
+        #isWindows = false;
+      };
 
       devShell = with pkgs;
         mkShell rec {
