@@ -39,6 +39,19 @@
               fpc = prev.fpc;
               archsAttrs = {};
             };
+            wadcvt = final.callPackage d2dfPkgs.wadcvt {
+              #inherit d2df-sdl;
+              # FIXME
+              # wadcvt stopped building due to a regression some long time ago
+              # Pin some old commit to keep it building meanwhile
+              d2df-sdl = final.fetchgit {
+                url = "https://repo.or.cz/d2df-sdl.git";
+                rev = "f628f55ae39e87c3a8e0c6204e3e8a847d683618";
+                sha256 = "sha256-e16bVIufFPo2JpD/dKeyZoNr6j1ps49xcEGqJU1YT30=";
+              };
+              fpc = final.fpc;
+            };
+            dfwad = final.callPackage d2dfPkgs.dfwad {};
           })
         ];
       };
@@ -94,6 +107,8 @@
       };
 
       legacyPackages.fpc-git = pkgs.fpc;
+      legacyPackages.wadcvt = pkgs.wadcvt;
+      legacyPackages.dfwad = pkgs.dfwad;
       legacyPackages.wads = wads;
 
       devShell = with pkgs;

@@ -8,16 +8,16 @@
     stdenvNoCC,
     gnused,
     gawk,
-    zip,
-    findutils,
-    bash,
+    convmv,
+    dfwad,
+    dfwadCompression ? "none",
   }:
     stdenvNoCC.mkDerivation {
       pname = "d2df-${outName}-wad";
       version = "git";
       phases = ["buildPhase" "installPhase"];
 
-      nativeBuildInputs = [gawk gnused zip findutils];
+      nativeBuildInputs = [gawk gnused convmv dfwad];
 
       buildPhase =
         # FIXME
@@ -33,11 +33,13 @@
           sed -i 's\shrshadewad\ShrShadeWAD\g' shrshade.lst
         ''
         + ''
-          bash -c 'awk -f ${buildWadScript} -v prefix="temp" -v outputPath="${outName}.zip" ${lstPath}'
+          awk -f ${buildWadScript} -v prefix="temp" ${lstPath}
+          convmv -f CP1251 -t UTF-8 --notest -r temp
+          dfwad -v -z "${dfwadCompression}" temp/ ${outName}.wad pack
         '';
 
       installPhase = ''
-        mv "${outName}.zip" $out
+        mv "${outName}.wad" $out
       '';
     };
 }

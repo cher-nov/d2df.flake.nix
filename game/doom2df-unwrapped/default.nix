@@ -132,7 +132,7 @@
 in
   stdenv.mkDerivation rec {
     inherit version src;
-    pname = "doom2df-unwrapped";
+    pname = "doom2df";
     name = "${pname}-${lib.optionalString buildAsLibrary "lib-"}${version}";
 
     patches = [];

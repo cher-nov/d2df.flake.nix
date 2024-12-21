@@ -5,11 +5,13 @@
   libX11 ? null,
   d2df-editor,
   lazarus,
+  stdenv,
   ...
 }:
-pkgs.stdenv.mkDerivation {
+stdenv.mkDerivation (finalAttrs: {
   pname = "doom2d-forever-editor";
-  version = "v0.667-git-a1e98e0";
+  version = "v0.667-${d2df-editor.shortRev}";
+  name = "${finalAttrs.pname}-${finalAttrs.version}";
   src = d2df-editor;
   nativeBuildInputs = with pkgs; [
     autoPatchelfHook
@@ -35,7 +37,7 @@ pkgs.stdenv.mkDerivation {
     D2DF_BUILD_USER = "nixbld";
     D2DF_BUILD_HASH = d2df-editor.rev;
   };
-  enableParallelBuilding = false;
+
   buildPhase = ''
     runHook preInstall
     pushd src/editor
@@ -50,4 +52,4 @@ pkgs.stdenv.mkDerivation {
     mkdir -p $out/bin
     cp bin/editor.exe $out/bin/Editor
   '';
-}
+})
