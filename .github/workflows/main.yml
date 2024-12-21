@@ -59,6 +59,8 @@ jobs:
           cp -r result/* doom2df-win32/
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath
           cp -r result/* doom2df-win32/
+          [ -d "doom2df-win32/Doom2DF" ] && mv doom2df-win32/Doom2DF doom2df-win32/Doom2DF.exe          
+          [ -d "doom2df-win32/Editor" ] && mv doom2df-win32/Editor doom2df-win32/Editor.exe
           find doom2df-win32/ -type f -iname 'doom2df*' -exec touch -d "${{env.D2DF_LAST_COMMIT_DATE}}" {} \;
           find doom2df-win32/ -type f -iname 'editor*' -exec touch -d "${{env.EDITOR_LAST_COMMIT_DATE}}" {} \;
           find doom2df-win32/ -type f -iname '*.dll' -exec touch -d "${{env.D2DF_LAST_COMMIT_DATE}}" {} \;
