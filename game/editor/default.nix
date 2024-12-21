@@ -33,7 +33,7 @@ pkgs.stdenv.mkDerivation {
 
   env = {
     D2DF_BUILD_USER = "nixbld";
-    #D2DF_BUILD_HASH = "${rev}";
+    D2DF_BUILD_HASH = d2df-editor.rev;
   };
   enableParallelBuilding = false;
   buildPhase = ''
