@@ -54,8 +54,8 @@ jobs:
           if-no-files-found: error
       - name: Build Windows 32-bit ZIP bundle
         run: |
-          mkdir -p doom2df-win32 build/doom2df-win32/assets build/doom2df-win32/bin
-          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameAssetsPath
+          mkdir -p doom2df-win32
+          nix build .#legacyPackages.x86_64-linux.defaultAssets
           cp -r result/* doom2df-win32/
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath_fmodex
           cp -r result/* doom2df-win32/
