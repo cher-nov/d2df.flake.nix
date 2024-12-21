@@ -1,26 +1,21 @@
 {
-  pkgs,
   lib,
   stdenv,
-  fetchgit,
   autoPatchelfHook,
   fpc,
   enet,
-  glibc,
   d2df-sdl,
-  fpcOptimizationFlags ? "-g -gl -O1",
-  fpcExtraArgs ? "",
   buildAsLibrary ? false,
   headless ? false,
   withHolmes ? false,
-  disableIo ? false,
+  disableIo ? true,
   withSDL1 ? false,
   SDL ? null,
-  withSDL2 ? true,
-  SDL2 ? true,
-  disableGraphics ? false,
+  withSDL2 ? false,
+  SDL2 ? null,
+  disableGraphics ? true,
   libGL ? null,
-  withOpenGLES ? true,
+  withOpenGLES ? false,
   withOpenGL2 ? false,
   disableSound ? true,
   withSoundStub ? false,
@@ -36,12 +31,12 @@
   withLibXmp ? false,
   libxmp ? null,
   withMpg123 ? false,
-  mpg123 ? null,
+  libmpg123 ? null,
   withOpus ? false,
   libopus ? null,
   opusfile ? null,
-  withLibgme ? false,
-  libgme ? null,
+  withGme ? false,
+  game-music-emu ? null,
   withMiniupnpc ? false,
   miniupnpc ? null,
   withFluidsynth ? false,
@@ -55,7 +50,6 @@
   optionals = lib.optionals;
   version = "0.667";
   basename = "Doom2DF";
-  rev = "92bd4a234eb7375f2174a8f58b893bb29fc1931a";
   src = d2df-sdl;
 
   sdlMixerFlag =
@@ -113,7 +107,7 @@
       ++ optional withMpg123 "-dUSE_MPG123"
       ++ optional withOpus "-dUSE_OPUS"
       ++ optional withFluidsynth "-dUSE_FLUIDSYNTH"
-      ++ optional withLibgme "-dUSE_GME"
+      ++ optional withGme "-dUSE_GME"
       ++ optional withModplug "-dUSE_MODPLUG"
     else [];
 
@@ -128,6 +122,8 @@
     ++ ioDriver
     ++ renderDriver
     ++ miscFlags;
+
+  soundActuallyUsed = !(disableSound || withSoundStub);
   #++ optimizationFlags;
 in
   stdenv.mkDerivation rec {
@@ -141,49 +137,44 @@ in
 
     env = {
       D2DF_BUILD_USER = "nixbld";
-      D2DF_BUILD_HASH = "${rev}";
+      D2DF_BUILD_HASH = d2df-sdl.rev;
     };
 
     nativeBuildInputs =
       [
-        autoPatchelfHook
         fpc
         enet
       ]
       ++ optional withOpenAL openal
-      ++ optional withSDL1 SDL.dev
-      ++ optional withSDL1_mixer SDL_mixer
+      ++ optional withSDL1 SDL
+      ++ optional (soundActuallyUsed && withSDL1_mixer) SDL_mixer
       ++ optional withSDL2 SDL2
-      ++ optional withSDL2_mixer SDL2_mixer
+      ++ optional (soundActuallyUsed && withSDL2_mixer) SDL2_mixer
       ++ optional withLibXmp libxmp
-      ++ optional withMpg123 mpg123
-      ++ optionals withOpus [libopus opusfile]
-      ++ optionals withVorbis [libvorbis libogg]
-      ++ optionals withFluidsynth [fluidsynth]
-      ++ optionals withLibgme [libgme]
-      ++ optionals withModplug [libmodplug]
+      ++ optional (soundActuallyUsed && withMpg123) libmpg123
+      ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
+      ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
+      ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
+      ++ optionals (soundActuallyUsed && withGme) [game-music-emu]
+      ++ optionals (soundActuallyUsed && withModplug) [libmodplug]
       ++ optional withMiniupnpc miniupnpc;
 
-    buildInputs = let
-      soundActuallyUsed = !(disableSound || withSoundStub);
-    in
+    buildInputs =
       [
-        glibc
         enet
       ]
-      ++ optionals (!disableGraphics) [libGL]
       ++ optional withSDL1 SDL
       ++ optional withSDL1_mixer SDL_mixer
       ++ optional withSDL2 SDL2
       ++ optional withSDL2_mixer SDL2_mixer
       ++ optional withOpenAL openal
       ++ optional (soundActuallyUsed && withLibXmp) libxmp
-      ++ optional (soundActuallyUsed && withMpg123) mpg123
+      ++ optional (soundActuallyUsed && withMpg123) libmpg123
       ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
       ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
       ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
       ++ optionals (soundActuallyUsed && withModplug) [libmodplug]
-      ++ optionals (soundActuallyUsed && withLibgme) [libgme]
+      ++ optionals (soundActuallyUsed && withGme) [game-music-emu]
       ++ optional withMiniupnpc miniupnpc;
 
     buildPhase = ''
@@ -192,8 +183,6 @@ in
       ${fpc}/bin/fpc \
         -FEbin -FUtmp \
         -al Doom2DF.lpr \
-        ${fpcOptimizationFlags} \
-        ${fpcExtraArgs} \
         ${(lib.concatStringsSep " " defines)} \
         ${let
         inputs = lib.filter (x: !builtins.isNull x) buildInputs;

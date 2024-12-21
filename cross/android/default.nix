@@ -262,17 +262,14 @@
             libogg = ogg;
             libmpg123 = mpg123;
             libvorbis = vorbis;
-            disableSound = false;
-            withSDL2_mixer = true;
-            withFluidsynth = true;
-            withModplug = true;
-            withOpus = true;
-            withVorbis = true;
-            withOpenAL = false;
-            withMpg123 = true;
-            withLibgme = true;
-            glibc = null;
+
             buildAsLibrary = true;
+            disableIo = false;
+            disableSound = false;
+            disableGraphics = false;
+            withSDL2_mixer = true;
+            withSDL2 = true;
+            withOpenGLES = true;
           };
       };
     })

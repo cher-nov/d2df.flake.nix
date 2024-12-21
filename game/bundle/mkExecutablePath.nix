@@ -24,7 +24,7 @@ stdenvNoCC.mkDerivation {
           [ -d "${library}/lib" ] && find -L ${library}/lib -iname '*.so' -type f -exec cp {} ${archAttrs.prefix} \;
         ''
         + lib.optionalString archAttrs.isWindows ''
-          [ -d "${library}/bin" ] && find -L ${library}/bin -type f -exec cp {} ${archAttrs.prefix} \;
+          [ -d "${library}/bin" ] && find -L ${library}/bin -iname '*.dll' -type f -exec cp {} ${archAttrs.prefix} \;
         '')
       archAttrs.sharedLibraries;
     in

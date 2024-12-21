@@ -2,13 +2,6 @@
   pkgs,
   lib,
   fpcPkgs,
-  d2dfPkgs,
-  d2df-sdl,
-  d2df-editor,
-  doom2df-res,
-  gameAssetsPath,
-  mkGamePath,
-  mkExecutablePath,
   ...
 }: let
   createCrossPkgSet = abi: abiAttrs: let
@@ -154,61 +147,6 @@
       fpc = universal.fpc-mingw;
       fpcAttrs = abiAttrs.fpcAttrs;
       lazarus = universal.lazarus-mingw;
-    };
-    editor = pkgs.callPackage d2dfPkgs.editor {
-      inherit d2df-editor;
-      lazarus = lazarus;
-    };
-    doom2d = let
-      pkg = d2dfPkgs;
-    in
-      pkgs.callPackage pkg.doom2df-unwrapped {
-        inherit d2df-sdl;
-        inherit SDL2 enet SDL2_mixer mpg123;
-        glibc = null;
-        fpc = pkgs.callPackage fpcPkgs.wrapper {
-          fpc = universal.fpc-mingw;
-          fpcAttrs =
-            abiAttrs.fpcAttrs
-            // {
-              toolchainPaths =
-                abiAttrs.fpcAttrs.toolchainPaths
-                ++ [
-                  "${pkgs.writeShellScriptBin
-                    "${abiAttrs.fpcAttrs.makeArgs.CPU_TARGET}-${abiAttrs.fpcAttrs.makeArgs.OS_TARGET}-fpcres"
-                    "${universal.fpc-mingw}/bin/fpcres $@"}/bin"
-                ];
-            };
-        };
-        withOpenGLES = false;
-        withOpenGL2 = true;
-        disableGraphics = false;
-        disableIo = false;
-        disableSound = false;
-        withSDL2 = true;
-        withSDL2_mixer = false;
-        withFmod = true;
-        withOpenAL = false;
-        withMpg123 = false;
-        headless = false;
-        # _WIN32_WINNT 0x0400
-        buildAsLibrary = false;
-      };
-
-    inherit gameAssetsPath;
-
-    gameExecutablePath = pkgs.callPackage mkExecutablePath {
-      byArchPkgsAttrs = {
-        mingw32 = {
-          sharedLibraries = [enet SDL2 fmodex];
-          doom2df = doom2d;
-          editor = editor;
-          isWindows = true;
-          withEditor = true;
-          asLibrary = false;
-          prefix = ".";
-        };
-      };
     };
   };
   crossPkgs = lib.mapAttrs createCrossPkgSet architectures;

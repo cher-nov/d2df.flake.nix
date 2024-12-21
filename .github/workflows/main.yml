@@ -57,9 +57,9 @@ jobs:
           mkdir -p doom2df-win32 build/doom2df-win32/assets build/doom2df-win32/bin
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameAssetsPath
           cp -r result/* doom2df-win32/
-          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath
+          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath_fmodex
           cp -r result/* doom2df-win32/
-          [ -f "doom2df-win32/Doom2DF" ] && mv doom2df-win32/Doom2DF doom2df-win32/Doom2DF.exe          
+          [ -f "doom2df-win32/Doom2DF" ] && mv doom2df-win32/Doom2DF doom2df-win32/Doom2DF.exe
           [ -f "doom2df-win32/Editor" ] && mv doom2df-win32/Editor doom2df-win32/Editor.exe
           find doom2df-win32/ -type f -iname 'doom2df*' -exec touch -d "${{env.D2DF_LAST_COMMIT_DATE}}" {} \;
           find doom2df-win32/ -type f -iname 'editor*' -exec touch -d "${{env.EDITOR_LAST_COMMIT_DATE}}" {} \;
