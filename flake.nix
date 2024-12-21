@@ -17,7 +17,7 @@
       flake = false;
     };
   };
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
     flake-utils,
@@ -88,6 +88,9 @@
         botnames = ./game/assets/dirtyAssets/botnames.txt;
       };
     in {
+      dfInputs = {
+        inherit d2df-sdl d2df-editor doom2df-res;
+      };
       legacyPackages.android = (import ./packages/android.nix).default {
         inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res d2df-editor;
         androidRoot = assets.androidRoot;

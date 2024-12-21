@@ -195,24 +195,20 @@
         buildAsLibrary = false;
       };
 
-    doom2df-bundle = mkGamePath {
-      inherit gameAssetsPath;
-      gameExecutablePath = let
-        f = pkgs.callPackage mkExecutablePath {
-          byArchPkgsAttrs = {
-            mingw32 = {
-              sharedLibraries = [enet SDL2 fmodex];
-              doom2df = doom2d;
-              editor = editor;
-              isWindows = true;
-              withEditor = true;
-              asLibrary = false;
-              prefix = ".";
-            };
-          };
+    inherit gameAssetsPath;
+
+    gameExecutablePath = pkgs.callPackage mkExecutablePath {
+      byArchPkgsAttrs = {
+        mingw32 = {
+          sharedLibraries = [enet SDL2 fmodex];
+          doom2df = doom2d;
+          editor = editor;
+          isWindows = true;
+          withEditor = true;
+          asLibrary = false;
+          prefix = ".";
         };
-      in
-        f;
+      };
     };
   };
   crossPkgs = lib.mapAttrs createCrossPkgSet architectures;
