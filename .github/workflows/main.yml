@@ -27,20 +27,20 @@ jobs:
           EDITOR_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-editor".locked.rev')
           RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')
 
-          D2DF_PATH=$(nix eval '.#dfInputs' --json 2>/dev/null | jq '."x86_64-linux"."d2df-sdl"')
-          EDITOR_PATH=$(nix eval '.#dfInputs' --json 2>/dev/null | jq '."x86_64-linux"."d2df-editor"')
-          RES_PATH=$(nix eval '.#dfInputs' --json 2>/dev/null | jq '."x86_64-linux"."doom2df-res"')
+          git clone https://repo.or.cz/d2df-sdl
+          git clone https://repo.or.cz/d2df-editor
+          git clone https://github.com/Doom2D/DF-Res
 
-          D2DF_LAST_COMMIT_DATE=$(git log --git-dir "$(D2DF_PATH)/.git" -1 --format="%ad" --date=iso)
-          EDITOR_LAST_COMMIT_DATE=$(git log --git-dir "$(EDITOR_PATH)/.git" -1 --format="%ad" --date=iso)
-          RES_LAST_COMMIT_DATE=$(git log --git-dir "$(RES_PATH)/.git" -1 --format="%ad" --date=iso)
+          D2DF_LAST_COMMIT_DATE=$(git   --git-dir d2df-sdl/.git    show -s --format=%ad --date=iso $D2DF_REV)
+          EDITOR_LAST_COMMIT_DATE=$(git --git-dir d2df-editor/.git show -s --format=%ad --date=iso $EDITOR_REV)
+          RES_LAST_COMMIT_DATE=$(git    --git-dir DF-Res/.git      show -s --format=%ad --date=iso $RES_REV)
 
           echo "D2DF_REV=$D2DF_REV" >> "$GITHUB_ENV"
           echo "EDITOR_REV=$RES_REV" >> "$GITHUB_ENV"
           echo "RES_REV=$RES_REV" >> "$GITHUB_ENV"
-          echo "D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE" >> "$GITHUB_ENV"
-          echo "EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE" >> "$GITHUB_ENV"
-          echo "RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE" >> "$GITHUB_ENV"
+          echo "D2DF_LAST_COMMIT_DATE=\"$D2DF_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
+          echo "EDITOR_LAST_COMMIT_DATE=\"$EDITOR_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
+          echo "RES_LAST_COMMIT_DATE=\"$RES_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 
           printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
       - name: Build debug APK
@@ -54,20 +54,18 @@ jobs:
           if-no-files-found: error
       - name: Build Windows 32-bit ZIP bundle
         run: |
-          mkdir -p doom2df-win32 build/assets build/bin
+          mkdir -p doom2df-win32 build/doom2df-win32/assets build/doom2df-win32/bin
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameAssetsPath
-          cp result/* build/assets/
+          cp -r result/* build/doom2df-win32/assets/
           nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath
-          cp result/* build/bin/
-          find . -type f -iname 'doom2df*' -exec touch -d ${{ env.D2DF_LAST_COMMIT_DATE }} {} \;
-          find . -type f -iname 'editor*' -exec touch -d ${{ env.EDITOR_LAST_COMMIT_DATE }} {} \;
-          find . -type f -exec touch -d ${{ env.RES_LAST_COMMIT_DATE }} {} \;
-          cp build/bin/* doom2df-win32
-          cp build/assets/* doom2df-win32
+          cp -r result/* build/doom2df-win32/bin/
+          find build/doom2df-win32/bin/ -type f -iname 'doom2df*' -exec touch -d "${{env.D2DF_LAST_COMMIT_DATE}}" {} \;
+          find build/doom2df-win32/bin/ -type f -iname 'editor*' -exec touch -d "${{env.EDITOR_LAST_COMMIT_DATE}}" {} \;
+          find build/doom2df-win32/assets/ -type f -exec touch -d "${{env.RES_LAST_COMMIT_DATE}}" {} \;
+          cp -r build/doom2df-win32/bin/* doom2df-win32
+          cp -r build/doom2df-win32/assets/* doom2df-win32
 
-          rm -rf build
-          7z a -mtm -stl -ssp -tzip doom2df-win32.zip -w doom2df-win32/.
-          rm doom2df-win32/
+          7z a -tzip doom2df-win32.zip -w doom2df-win32/.
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-win32
