@@ -45,7 +45,7 @@ jobs:
           printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
       - name: Build debug APK
         run: |
-          nix build .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
+          nix build --print-build-logs .#legacyPackages.x86_64-linux.android.doom2df-sdl2_mixer-apk
           cp result doom2df-android.apk
       - uses: actions/upload-artifact@v4
         with:
@@ -55,9 +55,9 @@ jobs:
       - name: Build Windows 32-bit ZIP bundle
         run: |
           mkdir -p doom2df-win32
-          nix build .#legacyPackages.x86_64-linux.defaultAssets
+          nix build --print-build-logs .#legacyPackages.x86_64-linux.defaultAssets
           cp -r result/* doom2df-win32/
-          nix build .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath_fmodex
+          nix build --print-build-logs .#legacyPackages.x86_64-linux.mingw.byArch.mingw32.gameExecutablePath_fmodex
           cp -r result/* doom2df-win32/
           [ -f "doom2df-win32/Doom2DF" ] && mv doom2df-win32/Doom2DF doom2df-win32/Doom2DF.exe
           [ -f "doom2df-win32/Editor" ] && mv doom2df-win32/Editor doom2df-win32/Editor.exe

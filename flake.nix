@@ -77,7 +77,7 @@
         inherit (pkgs) callPackage;
         inherit (d2dfPkgs) buildWad;
         inherit doom2df-res;
-        inherit (assets) mkAssetsPath;
+        inherit (assets) mkAssetsPath dirtyAssets;
         executablesAttrs = self.legacyPackages.${system}.executables;
       };
 

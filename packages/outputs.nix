@@ -5,6 +5,7 @@
   mkAssetsPath,
   doom2df-res,
   executablesAttrs,
+  dirtyAssets,
 }: let
   wads = lib.listToAttrs (lib.map (wad: {
     name = wad;
@@ -21,11 +22,7 @@
     shrshadeWad = wads.shrshade;
     gameWad = wads.game;
     editorWad = wads.editor;
-    # FIXME
-    # Dirty, hardcoded assets
-    flexuiWad = ./game/assets/dirtyAssets/flexui.wad;
-    botlist = ./game/assets/dirtyAssets/botlist.txt;
-    botnames = ./game/assets/dirtyAssets/botnames.txt;
+    inherit (dirtyAssets) flexui botlist botnames;
   };
 in
   lib.mapAttrs (arch: archAttrs: let
@@ -50,21 +47,40 @@ in
           disable = archAttrs: true;
         };
         headless = {
-          isHeadless = archAttrs: info.supportsHeadless;
-          isNotHeadless = archAttrs: true;
+          enable = archAttrs: info.supportsHeadless;
+          disable = archAttrs: true;
+        };
+        holmes = {
+          enable = archAttrs: info.openglDesktop;
+          disable = archAttrs: true;
         };
       };
       featuresMatrix = features: archAttrs: let
         prepopulatedFeatureAttrs = lib.mapAttrs (featureName: featureAttrs: (lib.mapAttrs (definition: value: (value archAttrs) == true)) featureAttrs) features;
         filteredFeatureAttrs = lib.mapAttrs (featureName: featureAttrs: (lib.filterAttrs (definition: value: value == true) featureAttrs)) prepopulatedFeatureAttrs;
         zippedFeaturesWithPossibleValues = lib.mapAttrs (feature: featureAttrset: (lib.foldlAttrs (acc: definitionName: definitionValue: acc ++ [definitionName]) [] featureAttrset)) filteredFeatureAttrs;
+        featureCombinations = lib.cartesianProduct zippedFeaturesWithPossibleValues;
       in
-        lib.cartesianProduct zippedFeaturesWithPossibleValues;
+        # TODO
+        # Get some filters here.
+        # Maybe sound == SDL2 && io != SDL2?
+        lib.filter (
+          combo:
+            !(
+              (combo.holmes == "enable" && combo.graphics != "OpenGL2")
+              || (combo.holmes == "enable" && combo.io != "SDL2")
+              #|| (combo.io == "sysStub" && combo.headless == "disable")
+              #|| (combo.sound == "SDL2_mixer" && combo.io != "SDL2")
+              #|| (combo.sound == "SDL" && combo.io != "SDL2")
+            )
+        )
+        featureCombinations;
       mkExecutable = doom2d: featureAttrs @ {
         graphics,
         headless,
         io,
         sound,
+        holmes,
       }: let
         ioFeature = let
           x = io;
@@ -103,10 +119,18 @@ in
         headlessFeature = let
           x = headless;
         in
-          if x == "isHeadless"
+          if x == "enable"
           then {headless = true;}
-          else if x == "isNotHeadless"
+          else if x == "disable"
           then {headless = false;}
+          else builtins.throw "Unknown build flag";
+        holmesFeature = let
+          x = holmes;
+        in
+          if x == "enable"
+          then {withHolmes = true;}
+          else if x == "disable"
+          then {withHolmes = false;}
           else builtins.throw "Unknown build flag";
       in {
         value = doom2d.override ({
@@ -115,7 +139,8 @@ in
           // ioFeature
           // graphicsFeature
           // soundFeature
-          // headlessFeature);
+          // headlessFeature
+          // holmesFeature);
         name = let
           soundStr =
             if sound == "disable"
@@ -126,8 +151,9 @@ in
             then "-IOStub"
             else "-${io}";
           graphicsStr = "-${graphics}";
-          headlessStr = lib.optionalString (headless == "isHeadless") "-headless";
-        in "doom2df-${archAttrs.infoAttrs.name}${ioStr}${soundStr}${graphicsStr}${headlessStr}";
+          headlessStr = lib.optionalString (headless == "enable") "-headless";
+          holmesStr = lib.optionalString (holmes == "enable") "-holmes";
+        in "doom2df-${archAttrs.infoAttrs.name}${ioStr}${soundStr}${graphicsStr}${headlessStr}${holmesStr}";
       };
     in
       {

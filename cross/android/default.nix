@@ -1,19 +1,36 @@
 {
-  androidSdk,
-  androidNdk,
-  androidNdkBinutils,
-  androidPlatform,
-  fpcPkgs,
-  d2dfPkgs,
   lib,
   pkgs,
-  d2df-sdl,
-  doom2df-res,
 }: let
   customNdkPkgs = import ./ndk {
     inherit lib pkgs;
     inherit (pkgs) fetchFromGitHub stdenv;
   };
+
+  buildToolsVersion = "35.0.0";
+  cmakeVersion = "3.22.1";
+  ndkVersion = "27.0.12077973";
+  ndkBinutilsVersion = "22.1.7171670";
+  platformToolsVersion = "35.0.2";
+  androidComposition = pkgs.androidenv.composeAndroidPackages {
+    buildToolsVersions = [buildToolsVersion "28.0.3"];
+    inherit platformToolsVersion;
+    platformVersions = ["34" "31" "28" "21"];
+    abiVersions = ["armeabi-v7a" "arm64-v8a"];
+    cmakeVersions = [cmakeVersion];
+    includeNDK = true;
+    ndkVersions = [ndkVersion ndkBinutilsVersion];
+
+    includeSources = false;
+    includeSystemImages = false;
+    useGoogleAPIs = false;
+    useGoogleTVAddOns = false;
+    includeEmulator = false;
+  };
+  androidSdk = androidComposition.androidsdk;
+  androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
+  androidNdkBinutils = "${androidSdk}/libexec/android-sdk/ndk/${ndkBinutilsVersion}";
+  androidPlatform = "21";
 
   architectures = {
     armv7 = rec {
@@ -24,9 +41,16 @@
       ndkLib = "${sysroot}/usr/lib/${clangTriplet}/${androidPlatform}";
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
+      name = "android-armeabi-v7a";
+      d2dforeverFeaturesSuport = {
+        openglDesktop = false;
+        openglEs = true;
+        supportsHeadless = false;
+        loadedAsLibrary = true;
+      };
       fpcAttrs = rec {
         lazarusExists = false;
-        cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}"];
+        cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}" "-XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${clangTriplet}/bin/"];
         targetArg = "-Tandroid";
         basename = "crossarm";
         makeArgs = {
@@ -50,9 +74,16 @@
       ndkLib = "${sysroot}/usr/lib/${clangTriplet}/${androidPlatform}";
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
+      name = "android-arm64-v8a";
+      d2dforeverFeaturesSuport = {
+        openglDesktop = false;
+        openglEs = true;
+        supportsHeadless = false;
+        loadedAsLibrary = true;
+      };
       fpcAttrs = rec {
         lazarusExists = false;
-        cpuArgs = ["-CpARMV8" "-CfVFP" "-Fl${ndkLib}"];
+        cpuArgs = ["-CpARMV8" "-CfVFP" "-Fl${ndkLib}" "-XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${clangTriplet}/bin/"];
         targetArg = "-Tandroid";
         basename = "crossa64";
         makeArgs = {
@@ -71,7 +102,7 @@
 
   ndkPackagesByArch =
     lib.mapAttrs' (abi: abiAttrs: let
-      inherit (abiAttrs) androidAbi ndkToolchain ndkLib fpcAttrs;
+      inherit (abiAttrs) androidAbi;
       enet = customNdkPkgs.enet {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
@@ -234,54 +265,13 @@
         .overrideAttrs (prev: {
           nativeBuildInputs = [pkgs.pkg-config];
         });
-      fpc-wrapper = pkgs.callPackage fpcPkgs.wrapper {
-        fpc = universal.fpc-android;
-        fpcAttrs =
-          abiAttrs.fpcAttrs
-          // {
-            targetArg = abiAttrs.fpcAttrs.targetArg + " -XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${abiAttrs.clangTriplet}/bin/";
-            toolchainPaths =
-              abiAttrs.fpcAttrs.toolchainPaths
-              ++ [
-                "${pkgs.writeShellScriptBin
-                  "${abiAttrs.clangTriplet}-ld"
-                  "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${abiAttrs.clangTriplet}/bin/ld $@"}/bin"
-              ];
-          };
-      };
     in {
-      name = androidAbi;
+      name = abiAttrs.name;
       value = {
-        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123 fpc-wrapper;
-        doom2df-library = let
-          f = d2dfPkgs;
-        in
-          pkgs.callPackage f.doom2df-unwrapped {
-            inherit d2df-sdl;
-            fpc = fpc-wrapper;
-            inherit SDL2 SDL2_mixer enet openal fluidsynth libxmp vorbis opus opusfile mpg123 libgme ogg libmodplug;
-            libopus = opus;
-            libogg = ogg;
-            libmpg123 = mpg123;
-            libvorbis = vorbis;
-
-            buildAsLibrary = true;
-            disableIo = false;
-            disableSound = false;
-            disableGraphics = false;
-            withSDL2_mixer = true;
-            withSDL2 = true;
-            withOpenGLES = true;
-          };
+        infoAttrs = abiAttrs;
+        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123;
       };
     })
     architectures;
-  universal = {
-    fpc-android = pkgs.callPackage fpcPkgs.base {
-      archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
-    };
-  };
-in {
-  inherit universal architectures;
-  byArch = ndkPackagesByArch;
-}
+in
+  ndkPackagesByArch

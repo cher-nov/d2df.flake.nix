@@ -1,7 +1,6 @@
 {
   pkgs,
   lib,
-  ...
 }: let
   createCrossPkgSet = arch: archInfoAttrs: let
     crossTarget = arch;

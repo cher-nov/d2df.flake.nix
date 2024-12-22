@@ -6,8 +6,11 @@
   d2df-sdl,
   d2df-editor,
 }: let
+  android = (import ../cross/android) {
+    inherit pkgs lib;
+  };
   mingw = (import ../cross/mingw) {
-    inherit pkgs lib fpcPkgs;
+    inherit pkgs lib;
   };
   f = crossPkgs: let
     fromCrossPkgsAttrs = let
@@ -89,4 +92,4 @@
   in
     lib.mapAttrs fromCrossPkgsAttrs crossPkgs;
 in
-  f mingw
+  f (android // mingw)
