@@ -1,5 +1,5 @@
 {
-  doom2df-unwrapped = import ./doom2df-unwrapped;
+  doom2df-base = import ./doom2df;
   editor = import ./editor;
   wadcvt = import ./utils/wadcvt.nix;
   dfwad = import ./utils/dfwad.nix;

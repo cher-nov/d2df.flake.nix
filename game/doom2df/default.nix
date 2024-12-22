@@ -8,16 +8,16 @@
   buildAsLibrary ? false,
   headless ? false,
   withHolmes ? false,
-  disableIo ? true,
+  disableIo ? false,
   withSDL1 ? false,
   SDL ? null,
   withSDL2 ? false,
   SDL2 ? null,
-  disableGraphics ? true,
+  disableGraphics ? false,
   libGL ? null,
   withOpenGLES ? false,
   withOpenGL2 ? false,
-  disableSound ? true,
+  disableSound ? false,
   withSoundStub ? false,
   withSDL1_mixer ? false,
   SDL_mixer ? null,
@@ -48,7 +48,7 @@
 }: let
   optional = lib.optional;
   optionals = lib.optionals;
-  version = "0.667";
+  version = "0.667-${d2df-sdl.shortRev}";
   basename = "Doom2DF";
   src = d2df-sdl;
 
@@ -87,7 +87,7 @@
   ];
   renderDriver = [
     (
-      if ((!withOpenGL2 && !disableGraphics && !withOpenGLES) || (withOpenGL2 && withOpenGLES) || (withOpenGL2 && disableGraphics) || (withOpenGLES && disableGraphics))
+      if (disableGraphics && (withOpenGL2 || withOpenGLES) || (!disableGraphics && (withOpenGL2 && withOpenGLES)))
       then abort "Exactly one render driver should be enabled (or none)."
       else if (!withOpenGL2 && withHolmes)
       then abort "Holmes is supported only with desktop OpenGL."

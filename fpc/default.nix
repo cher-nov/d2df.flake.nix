@@ -1,5 +1,5 @@
 {
-  wrapper = {
+  fpcWrapper = {
     fpc,
     fpcAttrs,
     writeShellScriptBin,
@@ -24,7 +24,7 @@
     fetchgit,
     makeWrapper,
     writeText,
-    fpc-git,
+    fpc,
     gtk2,
     glib,
     pango,
@@ -45,7 +45,6 @@
   #  1. the build date is embedded in the binary through `$I %DATE%` - we should dump that
   let
     version = "3.0.0-0";
-    fpc = fpc-git;
 
     # as of 2.0.10 a suffix is being added. That may or may not disappear and then
     # come back, so just leave this here.
@@ -120,7 +119,7 @@
       };
     };
 
-  base = {
+  fpc = {
     lib,
     stdenv,
     fetchgit,

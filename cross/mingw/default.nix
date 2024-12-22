@@ -1,12 +1,12 @@
 {
   pkgs,
   lib,
-  fpcPkgs,
   ...
 }: let
-  createCrossPkgSet = abi: abiAttrs: let
-    crossTarget = abi;
+  createCrossPkgSet = arch: archInfoAttrs: let
+    crossTarget = arch;
   in rec {
+    infoAttrs = archInfoAttrs;
     gcc = pkgs.pkgsCross.${crossTarget}.buildPackages.wrapCC (pkgs.pkgsCross.${crossTarget}.buildPackages.gcc-unwrapped.override {
       threadsCross = {
         model = "win32";
@@ -143,25 +143,20 @@
     #libogg,
     #libvorbis,
     #mpg123,
-    lazarus = pkgs.callPackage fpcPkgs.lazarusWrapper {
-      fpc = universal.fpc-mingw;
-      fpcAttrs = abiAttrs.fpcAttrs;
-      lazarus = universal.lazarus-mingw;
-    };
   };
   crossPkgs = lib.mapAttrs createCrossPkgSet architectures;
-  universal = rec {
-    fpc-mingw = pkgs.callPackage fpcPkgs.base {
-      archsAttrs = lib.mapAttrs (abi: abiAttrs: abiAttrs.fpcAttrs) architectures;
-    };
-    lazarus-mingw = pkgs.callPackage fpcPkgs.lazarus {
-      fpc-git = fpc-mingw;
-    };
-  };
   architectures = {
     mingw32 = rec {
       toolchainPrefix = "i686-w64-mingw32";
+      name = "mingw64-32";
+      d2dforeverFeaturesSuport = {
+        openglDesktop = true;
+        openglEs = false;
+        supportsHeadless = true;
+        loadedAsLibrary = false;
+      };
       fpcAttrs = rec {
+        lazarusExists = false;
         cpuArgs = [""];
         targetArg = "-Twin32";
         basename = "cross386";
@@ -202,7 +197,5 @@
     };
     */
   };
-in {
-  byArch = crossPkgs;
-  inherit universal architectures;
-}
+in
+  crossPkgs

@@ -25,6 +25,7 @@
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       fpcAttrs = rec {
+        lazarusExists = false;
         cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}"];
         targetArg = "-Tandroid";
         basename = "crossarm";
@@ -50,6 +51,7 @@
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       fpcAttrs = rec {
+        lazarusExists = false;
         cpuArgs = ["-CpARMV8" "-CfVFP" "-Fl${ndkLib}"];
         targetArg = "-Tandroid";
         basename = "crossa64";
