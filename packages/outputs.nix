@@ -6,6 +6,7 @@
   doom2df-res,
   executablesAttrs,
   mkExecutablePath,
+  mkGamePath,
   mkAndroidApk,
   androidRoot,
   androidRes,
@@ -171,17 +172,20 @@
       default = (builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv;
     };
     bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) {
-      default = callPackage mkExecutablePath rec {
-        byArchPkgsAttrs = {
-          "${arch}" = {
-            sharedLibraries = lib.map (drv: drv.out) executables.default.buildInputs;
-            doom2df = executables.default;
-            editor = archAttrs.editor;
-            isWindows = archAttrs.infoAttrs.isWindows;
-            asLibrary = info.loadedAsLibrary;
-            prefix = ".";
+      default = callPackage mkGamePath {
+        gameExecutablePath = callPackage mkExecutablePath rec {
+          byArchPkgsAttrs = {
+            "${arch}" = {
+              sharedLibraries = lib.map (drv: drv.out) executables.default.buildInputs;
+              doom2df = executables.default;
+              editor = archAttrs.editor;
+              isWindows = archAttrs.infoAttrs.isWindows;
+              asLibrary = info.loadedAsLibrary;
+              prefix = ".";
+            };
           };
         };
+        gameAssetsPath = defaultAssetsPath;
       };
     });
   in {

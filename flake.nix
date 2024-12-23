@@ -79,7 +79,7 @@
         inherit doom2df-res;
         inherit (assets) mkAssetsPath dirtyAssets androidRoot;
         androidRes = assets.androidIcons;
-        inherit (bundles) mkExecutablePath mkAndroidApk;
+        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
         executablesAttrs = self.legacyPackages.${system}.executables;
       };
 

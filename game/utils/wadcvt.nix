@@ -11,6 +11,7 @@ stdenv.mkDerivation (finalAttrs: {
   src = d2df-sdl;
   dontStrip = true;
   dontPatchELF = true;
+  dontFixup = true;
   nativeBuildInputs = [fpc];
 
   buildPhase = ''

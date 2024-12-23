@@ -19,6 +19,10 @@ in {
       version = "git";
       phases = ["buildPhase" "installPhase"];
 
+      dontStrip = true;
+      dontPatchELF = true;
+      dontFixup = true;
+
       nativeBuildInputs = [gawk gnused convmv dfwad];
 
       buildPhase =

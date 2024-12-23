@@ -17,6 +17,10 @@ stdenvNoCC.mkDerivation {
 
   src = null;
 
+  dontPatchELF = true;
+  dontStrip = true;
+  dontFixup = true;
+
   nativeBuildInputs = [gawk gnused zip findutils outils];
 
   buildPhase = let

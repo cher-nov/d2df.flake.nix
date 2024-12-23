@@ -30,6 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   dontStrip = true;
   dontPatchELF = true;
+  dontFixup = true;
 
   patches = [./temp-fix-error.patch];
 

@@ -135,6 +135,8 @@ in
     patches = [];
     dontStrip = true;
     dontPatchELF = true;
+    dontFixup = true;
+    enableDebugging = true;
 
     env = {
       D2DF_BUILD_USER = "nixbld";
