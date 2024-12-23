@@ -6,28 +6,13 @@ on:
 jobs:
   nix-matrix:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - name: Generate Nix Matrix
+      - name: Run Nix checks
         id: set-matrix
         run: |
-          set -Eeu
-          matrix="$(nix eval --json '.#githubActions.matrix')"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-
-  nix-build:
-    name: ${{ matrix.name }} (${{ matrix.system }})
-    needs: nix-matrix
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix: ${{fromJSON(needs.nix-matrix.outputs.matrix)}}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: nix build -L '.#${{ matrix.attr }}'
+          nix flake update d2df-sdl d2df-editor doom2df-res
+          nix flake check
