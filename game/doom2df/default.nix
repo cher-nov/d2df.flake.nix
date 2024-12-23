@@ -44,6 +44,7 @@
   withModplug ? false,
   libmodplug ? null,
   withFmod ? false,
+  fmodex ? null,
   ...
 }: let
   optional = lib.optional;
@@ -152,7 +153,7 @@ in
       ++ optional (soundActuallyUsed && withSDL2_mixer) SDL2_mixer
       ++ optional withLibXmp libxmp
       ++ optional (soundActuallyUsed && withMpg123) libmpg123
-      ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
+      ++ optionals (soundActuallyUsed && withOpus) [opusfile libopus]
       ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
       ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
       ++ optionals (soundActuallyUsed && withGme) [game-music-emu]
@@ -173,8 +174,9 @@ in
       ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
       ++ optionals (soundActuallyUsed && withVorbis) [libvorbis libogg]
       ++ optionals (soundActuallyUsed && withFluidsynth) [fluidsynth]
-      ++ optionals (soundActuallyUsed && withModplug) [libmodplug]
       ++ optionals (soundActuallyUsed && withGme) [game-music-emu]
+      ++ optionals (soundActuallyUsed && withModplug) [libmodplug]
+      ++ optionals withFmod [fmodex]
       ++ optional withMiniupnpc miniupnpc;
 
     buildPhase = ''

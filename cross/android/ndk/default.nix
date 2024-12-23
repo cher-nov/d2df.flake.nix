@@ -97,8 +97,8 @@ in rec {
     };
   };
 
-  ogg = androidCmakeDrv {
-    pname = "ogg";
+  libogg = androidCmakeDrv {
+    pname = "libogg";
     version = "1.3.5-git";
     src = fetchFromGitHub {
       owner = "xiph";
@@ -108,7 +108,7 @@ in rec {
     };
   };
 
-  opus = androidCmakeDrv {
+  libopus = androidCmakeDrv {
     pname = "opus";
     version = "1.5.2-git";
     src = fetchFromGitHub {
@@ -166,7 +166,7 @@ in rec {
     };
   };
 
-  vorbis = androidCmakeDrv {
+  libvorbis = androidCmakeDrv {
     pname = "vorbis";
     version = "1.3.8-git";
     src = fetchFromGitHub {
@@ -177,7 +177,7 @@ in rec {
     };
   };
 
-  libgme = androidCmakeDrv {
+  game-music-emu = androidCmakeDrv {
     pname = "game-music-emu";
     version = "0.6.3-git";
     src = fetchFromGitHub {

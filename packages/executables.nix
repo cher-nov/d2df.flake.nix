@@ -19,7 +19,7 @@
           archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;
         };
         lazarus =
-          if (lib.any (archAttrs: archAttrs.infoAttrs.lazarusExists) crossPkgs)
+          if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
           then
             (pkgs.callPackage fpcPkgs.lazarus {
               fpc = fpc;
@@ -46,20 +46,20 @@
               };
           };
           lazarus =
-            if (archAttrs.lazarusExists)
+            if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
             then
               (pkgs.callPackage fpcPkgs.lazarusWrapper {
-                fpc = universal.fpc-mingw;
-                fpcAttrs = archAttrs.fpcAttrs;
-                lazarus = universal.lazarus-mingw;
+                fpc = universal.fpc;
+                fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
+                lazarus = universal.lazarus;
               })
             else null;
           editor =
-            if (archAttrs.lazarusExists)
+            if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
             then
               (pkgs.callPackage d2dfPkgs.editor {
                 inherit d2df-editor;
-                inherit (crossPkgs) lazarus;
+                inherit lazarus;
               })
             else null;
           doom2d = pkgs.callPackage d2dfPkgs.doom2df-base {
@@ -76,14 +76,14 @@
               libvorbis
               libogg
               libxmp
-              mpg123
+              libmpg123
               libopus
               opusfile
-              libgme
+              game-music-emu
               miniupnpc
               fluidsynth
               libmodplug
-              game-music-emu
+              fmodex
               ;
           };
         };

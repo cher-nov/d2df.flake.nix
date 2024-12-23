@@ -77,7 +77,9 @@
         inherit (pkgs) callPackage;
         inherit (d2dfPkgs) buildWad;
         inherit doom2df-res;
-        inherit (assets) mkAssetsPath dirtyAssets;
+        inherit (assets) mkAssetsPath dirtyAssets androidRoot;
+        androidRes = assets.androidIcons;
+        inherit (bundles) mkExecutablePath mkAndroidApk;
         executablesAttrs = self.legacyPackages.${system}.executables;
       };
 

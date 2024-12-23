@@ -1,12 +1,12 @@
 let
-  buildWadScript = ./scripts/parse.awk;
+  standard = ./scripts/parse.awk;
 in {
-  inherit buildWadScript;
+  buildWadScript = standard;
   buildWad = {
     outName ? "game",
     lstPath ? "game.lst",
     doom2df-res,
-    buildWadScript ? buildWadScript,
+    buildWadScript ? standard,
     stdenvNoCC,
     gnused,
     gawk,

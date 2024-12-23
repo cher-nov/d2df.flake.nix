@@ -11,9 +11,11 @@
   lib,
 }:
 stdenvNoCC.mkDerivation {
-  pname = "d2df-bundle";
+  pname = "d2df-executable-path";
   version = "git";
   phases = ["buildPhase" "installPhase"];
+
+  src = null;
 
   nativeBuildInputs = [gawk gnused zip findutils outils];
 
@@ -54,7 +56,14 @@ stdenvNoCC.mkDerivation {
       ${copyGameAndEditor archAttrs}
     '';
   in
-    lib.foldlAttrs (acc: n: v: acc + (copyEachArch n v)) "" byArchPkgsAttrs;
+    # TODO
+    # WTF?!
+    # For some reason, without "padding" this would silently fail with some derivations
+    ''
+      echo padding...
+      ${lib.concatStringsSep "\n" (lib.map (x: copyEachArch x.name x.value) (lib.attrsToList byArchPkgsAttrs))}
+      echo padding...
+    '';
 
   installPhase = ''
     mkdir -p $out

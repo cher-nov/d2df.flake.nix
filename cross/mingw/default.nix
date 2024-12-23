@@ -29,7 +29,7 @@
         mv $out/bin/libenet-7.dll $out/bin/enet.dll
       '';
     });
-    SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2.override {stdenv = stdenvWin32Threads;};
+    SDL2 = (pkgs.pkgsCross.${crossTarget}.SDL2.override {stdenv = stdenvWin32Threads;}).overrideAttrs (finalAttrs: {});
     SDL2_mixer =
       (pkgs.pkgsCross.${crossTarget}.SDL2_mixer.override {
         enableSdltest = false;
@@ -62,11 +62,11 @@
           ];
       });
     libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
-    libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis;
+    libvorbis = pkgs.pkgsCross.${crossTarget}.vorbis;
     opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
     libopus = pkgs.pkgsCross.${crossTarget}.libopus;
-    mpg123 = pkgs.pkgsCross.${crossTarget}.mpg123;
-    libgme = pkgs.pkgsCross.${crossTarget}.game-music-emu;
+    libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123;
+    game-music-emu = pkgs.pkgsCross.${crossTarget}.game-music-emu;
     wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
     libxmp = pkgs.pkgsCross.${crossTarget}.libxmp;
     libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
@@ -154,8 +154,17 @@
         supportsHeadless = true;
         loadedAsLibrary = false;
       };
+      bundleFormats = ["zip"];
+      isWindows = true;
+      bundle = {
+        io = "SDL2";
+        sound = "FMOD";
+        graphics = "OpenGL2";
+        headless = "disable";
+        holmes = "enable";
+      };
       fpcAttrs = rec {
-        lazarusExists = false;
+        lazarusExists = true;
         cpuArgs = [""];
         targetArg = "-Twin32";
         basename = "cross386";

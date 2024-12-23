@@ -16,7 +16,7 @@
   findutils,
 }:
 stdenvNoCC.mkDerivation {
-  pname = "d2df-bundle";
+  pname = "d2df-assets-path";
   version = "git";
   phases = ["buildPhase" "installPhase"];
 

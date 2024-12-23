@@ -48,6 +48,9 @@
         supportsHeadless = false;
         loadedAsLibrary = true;
       };
+      isAndroid = true;
+      isWindows = false;
+      bundleFormats = ["apk"];
       fpcAttrs = rec {
         lazarusExists = false;
         cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}" "-XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${clangTriplet}/bin/"];
@@ -75,6 +78,9 @@
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       name = "android-arm64-v8a";
+      isAndroid = true;
+      isWindows = false;
+      bundleFormats = ["apk"];
       d2dforeverFeaturesSuport = {
         openglDesktop = false;
         openglEs = true;
@@ -109,10 +115,10 @@
       SDL2 = customNdkPkgs.SDL2 {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
-      ogg = customNdkPkgs.ogg {
+      libogg = customNdkPkgs.libogg {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
-      opus = customNdkPkgs.opus {
+      libopus = customNdkPkgs.libopus {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
       libxmp = customNdkPkgs.libxmp {
@@ -136,18 +142,18 @@
             rm -r build
           '';
         });
-      vorbis = customNdkPkgs.vorbis {
+      libvorbis = customNdkPkgs.libvorbis {
         inherit androidSdk androidNdk androidAbi androidPlatform;
         cmakeExtraArgs = lib.concatStringsSep " " [
           "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
-          "-DCMAKE_PREFIX_PATH=${ogg}"
-          "-DCMAKE_FIND_ROOT_PATH=${ogg}"
+          "-DCMAKE_PREFIX_PATH=${libogg}"
+          "-DCMAKE_FIND_ROOT_PATH=${libogg}"
         ];
       };
-      libgme = customNdkPkgs.libgme {
+      game-music-emu = customNdkPkgs.game-music-emu {
         inherit androidSdk androidNdk androidAbi androidPlatform;
       };
-      mpg123 = customNdkPkgs.libmpg123 {
+      libmpg123 = customNdkPkgs.libmpg123 {
         inherit androidSdk androidNdk androidAbi androidPlatform;
         cmakeListsPath = "ports/cmake";
       };
@@ -188,7 +194,7 @@
             "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
             "-DCMAKE_PREFIX_PATH=${pkgs.symlinkJoin {
               name = "cmake-packages";
-              paths = [ogg opus];
+              paths = [libogg libopus];
             }}"
           ];
         })
@@ -216,7 +222,7 @@
             libs = pkgs.symlinkJoin {
               name = "cmake-packages";
               paths =
-                [libxmp fluidsynth wavpack SDL2 opus ogg libgme libmodplug mpg123]
+                [libxmp fluidsynth wavpack SDL2 libopus libogg game-music-emu libmodplug libmpg123]
                 # These are projects which are broken regarding packaging.
                 # Specify their path manually.
                 ++ [
@@ -231,8 +237,8 @@
 
               "-DSDL2MIXER_VORBIS=VORBISFILE"
               "-DSDL2MIXER_VORBIS_VORBISFILE_SHARED=off"
-              "-DVorbis_vorbisfile_INCLUDE_PATH=${vorbis}/include"
-              "-DVorbis_vorbisfile_LIBRARY=${vorbis}/lib/libvorbisfile.so"
+              "-DVorbis_vorbisfile_INCLUDE_PATH=${libvorbis}/include"
+              "-DVorbis_vorbisfile_LIBRARY=${libvorbis}/lib/libvorbisfile.so"
 
               "-DSDL2MIXER_MP3=on"
               "-DSDL2MIXER_MP3_MPG123=on"
@@ -269,7 +275,8 @@
       name = abiAttrs.name;
       value = {
         infoAttrs = abiAttrs;
-        inherit enet SDL2 SDL2_mixer opusfile ogg opus libxmp fluidsynth wavpack vorbis libgme libmodplug openal mpg123;
+        inherit androidSdk;
+        inherit enet SDL2 SDL2_mixer opusfile libogg libopus libxmp fluidsynth wavpack libvorbis game-music-emu libmodplug openal libmpg123;
       };
     })
     architectures;
