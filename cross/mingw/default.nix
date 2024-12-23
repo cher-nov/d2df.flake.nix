@@ -62,7 +62,7 @@
           ];
       });
     libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
-    libvorbis = pkgs.pkgsCross.${crossTarget}.vorbis;
+    libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis;
     opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
     libopus = pkgs.pkgsCross.${crossTarget}.libopus;
     libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123;
@@ -156,6 +156,8 @@
       };
       bundleFormats = ["zip"];
       isWindows = true;
+      isAndroid = false;
+      pretty = "Windows ${toolchainPrefix}";
       bundle = {
         io = "SDL2";
         sound = "FMOD";

@@ -3,6 +3,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    nix-github-actions.url = "github:nix-community/nix-github-actions";
 
     doom2df-res = {
       url = "github:Doom2D/DF-Res";
@@ -21,6 +22,7 @@
     self,
     nixpkgs,
     flake-utils,
+    nix-github-actions,
     doom2df-res,
     d2df-sdl,
     d2df-editor,
@@ -56,23 +58,27 @@
       dfInputs = {
         inherit d2df-sdl d2df-editor doom2df-res;
       };
-      legacyPackages.android = (import ./packages/android.nix).default {
-        inherit pkgs lib fpcPkgs d2dfPkgs d2df-sdl doom2df-res d2df-editor;
-        androidRoot = assets.androidRoot;
-        androidRes = assets.androidIcons;
-        #gameAssetsPath = defaultAssetsPath;
-        inherit (bundles) mkAndroidApk mkExecutablePath;
+
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        # Inherit GHA actions matrix from a subset of platforms supported by hosted runners
+        checks = {
+          inherit (self.checks) x86_64-linux;
+        };
       };
 
-      legacyPackages.assets = assets;
-      # legacyPackages.defaultAssets = defaultAssetsPath;
+      checks = lib.listToAttrs (
+        lib.map
+        (x: {name = x.pretty; value = x.drv;})
+        (lib.foldl' (acc: elem: acc ++ (lib.attrValues elem)) [] (lib.map (x: x.executables) (lib.attrValues self.outputs'.${system}))));
 
-      legacyPackages.executables = import ./packages/executables.nix {
+      assets = assets;
+
+      executables = import ./packages/executables.nix {
         inherit pkgs lib fpcPkgs d2dfPkgs;
         inherit d2df-sdl d2df-editor;
       };
 
-      legacyPackages.outputs = import ./packages/outputs.nix {
+      outputs' = import ./packages/outputs.nix {
         inherit lib;
         inherit (pkgs) callPackage;
         inherit (d2dfPkgs) buildWad;
@@ -80,17 +86,8 @@
         inherit (assets) mkAssetsPath dirtyAssets androidRoot;
         androidRes = assets.androidIcons;
         inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
-        executablesAttrs = self.legacyPackages.${system}.executables;
+        executablesAttrs = self.executables.${system};
       };
-
-      legacyPackages.lazarus = pkgs.callPackage ./lazarus {
-        fpc-git = pkgs.fpc;
-      };
-
-      legacyPackages.fpc-git = pkgs.fpc;
-      legacyPackages.wadcvt = pkgs.wadcvt;
-      legacyPackages.dfwad = pkgs.dfwad;
-      #legacyPackages.wads = wads;
 
       devShell = with pkgs;
         mkShell rec {

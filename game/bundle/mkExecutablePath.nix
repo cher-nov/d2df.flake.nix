@@ -44,14 +44,14 @@ stdenvNoCC.mkDerivation {
             [ -d "${archAttrs.doom2df}/lib" ] && find -L ${archAttrs.doom2df}/lib -type f -exec cp {} ${archAttrs.prefix} \;
           ''
           else ''
-            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec cp {}.exe ${archAttrs.prefix} \;
+            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec cp {} ${archAttrs.prefix}/{}.exe \;
           ''
         )
       )
       + (
         lib.optionalString (!builtins.isNull archAttrs.editor)
         ''
-          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec cp {}.exe ${archAttrs.prefix} \;
+          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec cp {} ${archAttrs.prefix}/{}.exe \;
         ''
       );
     copyEachArch = arch: archAttrs: ''

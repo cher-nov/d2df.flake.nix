@@ -42,15 +42,16 @@
       ndkToolchain = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       ndkBinutilsToolchain = "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/bin";
       name = "android-armeabi-v7a";
+      isAndroid = true;
+      isWindows = false;
+      bundleFormats = ["apk"];
+      pretty = "Android ${androidAbi}, platform level ${androidPlatform}, NDK ${ndkVersion}";
       d2dforeverFeaturesSuport = {
         openglDesktop = false;
         openglEs = true;
         supportsHeadless = false;
         loadedAsLibrary = true;
       };
-      isAndroid = true;
-      isWindows = false;
-      bundleFormats = ["apk"];
       fpcAttrs = rec {
         lazarusExists = false;
         cpuArgs = ["-CpARMV7A" "-CfVFPV3" "-Fl${ndkLib}" "-XP${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${clangTriplet}/bin/"];
@@ -81,6 +82,7 @@
       isAndroid = true;
       isWindows = false;
       bundleFormats = ["apk"];
+      pretty = "Android ${androidAbi}, platform level ${androidPlatform}, NDK ${ndkVersion}";
       d2dforeverFeaturesSuport = {
         openglDesktop = false;
         openglEs = true;

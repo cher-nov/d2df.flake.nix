@@ -48,15 +48,15 @@
         SDL_mixer = archAttrs: archAttrs ? "SDL_mixer";
         SDL2_mixer = archAttrs: archAttrs ? "SDL2_mixer";
         OpenAL = archAttrs: archAttrs ? "openal";
-        disable = archAttrs: true;
+        NoSound = archAttrs: true;
       };
       headless = {
-        enable = archAttrs: info.supportsHeadless;
-        disable = archAttrs: true;
+        Enable = archAttrs: info.supportsHeadless;
+        Disable = archAttrs: true;
       };
       holmes = {
-        enable = archAttrs: info.openglDesktop;
-        disable = archAttrs: true;
+        Enable = archAttrs: info.openglDesktop;
+        Disable = archAttrs: true;
       };
     };
     featuresMatrix = features: archAttrs: let
@@ -71,8 +71,8 @@
       lib.filter (
         combo:
           !(
-            (combo.holmes == "enable" && combo.graphics != "OpenGL2")
-            || (combo.holmes == "enable" && combo.io != "SDL2")
+            (combo.holmes == "Enable" && combo.graphics != "OpenGL2")
+            || (combo.holmes == "Enable" && combo.io != "SDL2")
             #|| (combo.io == "sysStub" && combo.headless == "disable")
             #|| (combo.sound == "SDL2_mixer" && combo.io != "SDL2")
             #|| (combo.sound == "SDL" && combo.io != "SDL2")
@@ -117,23 +117,23 @@
         then {withSDL2_mixer = true;}
         else if x == "OpenAL"
         then {withOpenAL = true;}
-        else if x == "disable"
+        else if x == "NoSound"
         then {disableSound = true;}
         else builtins.throw "Unknown build flag";
       headlessFeature = let
         x = headless;
       in
-        if x == "enable"
+        if x == "Enable"
         then {headless = true;}
-        else if x == "disable"
+        else if x == "Disable"
         then {headless = false;}
         else builtins.throw "Unknown build flag";
       holmesFeature = let
         x = holmes;
       in
-        if x == "enable"
+        if x == "Enable"
         then {withHolmes = true;}
-        else if x == "disable"
+        else if x == "Disable"
         then {withHolmes = false;}
         else builtins.throw "Unknown build flag";
     in {
@@ -150,6 +150,7 @@
         defines = {
           inherit graphics headless sound holmes io;
         };
+        pretty = "Doom2D Forever for ${archAttrs.infoAttrs.pretty}: ${io}, ${sound}, ${graphics}${lib.optionalString (holmes == "Enable")  ", with Holmes"}${lib.optionalString (headless == "Enable") ", headless"}";
       };
       name = let
         soundStr =
@@ -161,16 +162,14 @@
           then "-IOStub"
           else "-${io}";
         graphicsStr = "-${graphics}";
-        headlessStr = lib.optionalString (headless == "enable") "-headless";
-        holmesStr = lib.optionalString (holmes == "enable") "-holmes";
+        headlessStr = lib.optionalString (headless == "Enable") "-headless";
+        holmesStr = lib.optionalString (holmes == "Enable") "-holmes";
       in "doom2df-${archAttrs.infoAttrs.name}${ioStr}${soundStr}${graphicsStr}${headlessStr}${holmesStr}";
     };
     matrix = featuresMatrix features archAttrs;
     allCombos = lib.listToAttrs (lib.map (x: mkExecutable archAttrs.doom2d x) matrix);
-    executables = lib.recursiveUpdate allCombos rec {
-      __archPkgs = archAttrs;
-      default = (builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv;
-    };
+    defaultExecutable = (builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv;
+    executables = allCombos;
     bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) {
       default = callPackage mkGamePath {
         gameExecutablePath = callPackage mkExecutablePath rec {
@@ -189,7 +188,8 @@
       };
     });
   in {
-    inherit executables bundles;
+    __archPkgs = archAttrs;
+    inherit defaultExecutable executables bundles;
   });
 in
   (createBundlesAndExecutables executablesAttrs)
@@ -236,5 +236,6 @@ in
           inherit androidRoot androidRes gameExecutablePath;
         };
       };
+      executables = {};
     };
   }
