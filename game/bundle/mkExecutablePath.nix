@@ -9,6 +9,7 @@
   findutils,
   outils,
   lib,
+  coreutils
 }:
 stdenvNoCC.mkDerivation {
   pname = "d2df-executable-path";
@@ -21,7 +22,7 @@ stdenvNoCC.mkDerivation {
   dontStrip = true;
   dontFixup = true;
 
-  nativeBuildInputs = [gawk gnused zip findutils outils];
+  nativeBuildInputs = [gawk gnused zip findutils outils coreutils];
 
   buildPhase = let
     copyLibraries = archAttrs: let
@@ -44,14 +45,14 @@ stdenvNoCC.mkDerivation {
             [ -d "${archAttrs.doom2df}/lib" ] && find -L ${archAttrs.doom2df}/lib -type f -exec cp {} ${archAttrs.prefix} \;
           ''
           else ''
-            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec cp {} ${archAttrs.prefix}/{}.exe \;
+            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}.exe' {} \;
           ''
         )
       )
       + (
         lib.optionalString (!builtins.isNull archAttrs.editor)
         ''
-          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec cp {} ${archAttrs.prefix}/{}.exe \;
+          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}.exe' {} \;
         ''
       );
     copyEachArch = arch: archAttrs: ''
