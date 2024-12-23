@@ -21,11 +21,11 @@
     "d2df-sdl": {
       "flake": false,
       "locked": {
-        "lastModified": 1734863628,
-        "narHash": "sha256-wZa6B9sZR4Ny1PsPn1GzsF2JoZ8LMgwsJdOMjsSh1QQ=",
+        "lastModified": 1734944502,
+        "narHash": "sha256-OXbzzKFeOUOxkyxxnaN/4v5vqODJ8iWuQ/aZ0D2+Yqo=",
         "ref": "refs/heads/master",
-        "rev": "fd2994f7dad77396c51883383080399d45a341ef",
-        "revCount": 1541,
+        "rev": "1b1dfdf943b79c00d03519d4f48fb4bada06eeb9",
+        "revCount": 1542,
         "submodules": true,
         "type": "git",
         "url": "git://repo.or.cz/d2df-sdl.git"
