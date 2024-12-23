@@ -162,8 +162,8 @@
         io = "SDL2";
         sound = "FMOD";
         graphics = "OpenGL2";
-        headless = "disable";
-        holmes = "enable";
+        headless = "Disable";
+        holmes = "Enable";
       };
       fpcAttrs = rec {
         lazarusExists = true;

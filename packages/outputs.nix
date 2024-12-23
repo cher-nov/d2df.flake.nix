@@ -175,8 +175,8 @@
         gameExecutablePath = callPackage mkExecutablePath rec {
           byArchPkgsAttrs = {
             "${arch}" = {
-              sharedLibraries = lib.map (drv: drv.out) executables.default.buildInputs;
-              doom2df = executables.default;
+              sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
+              doom2df = defaultExecutable;
               editor = archAttrs.editor;
               isWindows = archAttrs.infoAttrs.isWindows;
               asLibrary = info.loadedAsLibrary;
