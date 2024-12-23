@@ -150,7 +150,7 @@
         defines = {
           inherit graphics headless sound holmes io;
         };
-        pretty = "Doom2D Forever for ${archAttrs.infoAttrs.pretty}: ${io}, ${sound}, ${graphics}${lib.optionalString (holmes == "Enable")  ", with Holmes"}${lib.optionalString (headless == "Enable") ", headless"}";
+        pretty = "Doom2D Forever for ${archAttrs.infoAttrs.pretty}: ${io}, ${sound}, ${graphics}${lib.optionalString (holmes == "Enable") ", with Holmes"}${lib.optionalString (headless == "Enable") ", headless"}";
       };
       name = let
         soundStr =

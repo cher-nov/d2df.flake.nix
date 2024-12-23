@@ -59,17 +59,7 @@
         inherit d2df-sdl d2df-editor doom2df-res;
       };
 
-      githubActions = nix-github-actions.lib.mkGithubMatrix {
-        # Inherit GHA actions matrix from a subset of platforms supported by hosted runners
-        checks = {
-          inherit (self.checks) x86_64-linux;
-        };
-      };
-
-      checks = lib.listToAttrs (
-        lib.map
-        (x: {name = x.pretty; value = x.drv;})
-        (lib.foldl' (acc: elem: acc ++ (lib.attrValues elem)) [] (lib.map (x: x.executables) (lib.attrValues self.outputs'.${system}))));
+      checks = lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues self.outputs'.${system})));
 
       assets = assets;
 
@@ -101,5 +91,13 @@
             findutils
           ];
         };
-    });
+    })
+    // {
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        # Inherit GHA actions matrix from a subset of platforms supported by hosted runners
+        checks = {
+          inherit (self.checks) x86_64-linux;
+        };
+      };
+    };
 }
