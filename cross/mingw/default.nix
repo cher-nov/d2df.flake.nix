@@ -207,5 +207,14 @@
     };
     */
   };
+in let
+  dontStripIfDrv = drv:
+    if drv ? overrideAttrs
+    then
+      drv.overrideAttrs (final: {
+        dontStrip = true;
+      })
+    else drv;
 in
+  lib.mapAttrs (_: archAttrs: lib.mapAttrs (_: dontStripIfDrv) archAttrs)
   crossPkgs
