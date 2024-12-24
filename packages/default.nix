@@ -17,6 +17,7 @@
     value = callPackage buildWad {
       outName = wad;
       lstPath = "${wad}.lst";
+      dfwadCompression = "best";
       inherit doom2df-res;
     };
   }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
@@ -218,7 +219,7 @@ in
             sharedLibraries = lib.map (drv: drv.out) doom2d.buildInputs;
             # FIXME
             # Android version is hardcoded
-            doom2df = lib.trace "${doom2d}" doom2d;
+            doom2df = doom2d;
             isWindows = false;
             asLibrary = true;
             editor = null;

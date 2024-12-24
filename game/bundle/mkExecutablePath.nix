@@ -9,7 +9,7 @@
   findutils,
   outils,
   lib,
-  coreutils
+  coreutils,
 }:
 stdenvNoCC.mkDerivation {
   pname = "d2df-executable-path";

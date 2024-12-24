@@ -68,7 +68,7 @@
         inherit d2df-sdl d2df-editor;
       };
 
-      outputs' = import ./packages/outputs.nix {
+      outputs' = import ./packages {
         inherit lib;
         inherit (pkgs) callPackage;
         inherit (d2dfPkgs) buildWad;
