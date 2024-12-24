@@ -88,12 +88,19 @@
         lib,
         fetchurl,
         p7zip,
+        is64Bit ? false,
+        installerHasSuffix ? true,
       }: let
-        version = "4.26.36";
+        installerSuffix = lib.optionalString installerHasSuffix (
+          if is64Bit
+          then "64"
+          else "32"
+        );
+        version = "4.28.07";
         shortVersion = builtins.replaceStrings ["."] [""] version;
         src = fetchurl {
-          url = "https://zdoom.org/files/fmod/fmodapi${shortVersion}win32-installer.exe";
-          sha256 = "sha256-jAZP7D9/qt42sn4zz4NwLwc52jH8uQ1roSI0UmqE2aU=";
+          url = "https://zdoom.org/files/fmod/fmodapi${shortVersion}win${installerSuffix}-installer.exe";
+          sha256 = "sha256-aPK+/b1dwo1MsegzXTaxBozF56Rko0jxBJYuVi1f0LQ=";
         };
       in
         stdenv.mkDerivation rec {
@@ -108,11 +115,14 @@
           dontPatchELF = true;
           dontBuild = true;
 
-          installPhase = lib.optionalString stdenv.hostPlatform.isLinux ''
-            mkdir -p $out/bin
-            7z e -aoa ${src}
-            cp fmodex.dll $out/bin
-          '';
+          installPhase = let
+            dllSuffix = lib.optionalString (!installerHasSuffix) (lib.optionalString is64Bit "64");
+          in
+            lib.optionalString stdenv.hostPlatform.isLinux ''
+              mkdir -p $out/bin
+              7z e -aoa ${src}
+              cp fmodex${dllSuffix}.dll $out/bin/
+            '';
 
           meta = with lib; {
             description = "Programming library and toolkit for the creation and playback of interactive audio";
