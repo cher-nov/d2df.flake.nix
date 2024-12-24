@@ -68,6 +68,18 @@
     libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123;
     game-music-emu = pkgs.pkgsCross.${crossTarget}.game-music-emu;
     wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
+    miniupnpc = (pkgs.pkgsCross.${crossTarget}.miniupnpc.override {stdenv = stdenvWin32Threads;}).overrideAttrs (final: {
+      env.NIX_CFLAGS_COMPILE = "-static-libgcc";
+      postFixup =
+        (
+          if final ? postFixup
+          then final.postFixup
+          else ""
+        )
+        + ''
+          mv $out/bin/libminiupnpc.dll $out/bin/miniupnpc.dll
+        '';
+    });
     libxmp = pkgs.pkgsCross.${crossTarget}.libxmp;
     libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
     fmodex = let
