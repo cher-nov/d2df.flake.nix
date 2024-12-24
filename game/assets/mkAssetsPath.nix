@@ -8,6 +8,7 @@
   botlist,
   botnames,
   flexuiWad,
+  editorLangRu,
   extraRoot ? null,
   stdenvNoCC,
   gnused,
@@ -23,7 +24,7 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [gawk gnused zip findutils];
 
   buildPhase = ''
-    mkdir -p data/models wads maps/megawads/
+    mkdir -p data/models wads maps/megawads/ data/lang
     cp ${doom2dWad} maps/megawads/doom2d.wad
     cp ${doomerWad} data/models/doomer.wad
     cp ${shrshadeWad} wads/shrshade.wad
@@ -33,6 +34,7 @@ stdenvNoCC.mkDerivation {
     cp ${flexuiWad} data/flexui.wad
     cp ${botlist} data/botlist.txt
     cp ${botnames} data/botnames.txt
+    cp ${editorLangRu} data/lang/
   '';
 
   installPhase = ''

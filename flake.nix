@@ -72,7 +72,7 @@
         inherit lib;
         inherit (pkgs) callPackage;
         inherit (d2dfPkgs) buildWad;
-        inherit doom2df-res;
+        inherit doom2df-res d2df-editor;
         inherit (assets) mkAssetsPath dirtyAssets androidRoot;
         androidRes = assets.androidIcons;
         inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;

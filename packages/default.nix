@@ -4,6 +4,7 @@
   buildWad,
   mkAssetsPath,
   doom2df-res,
+  d2df-editor,
   executablesAttrs,
   mkExecutablePath,
   mkGamePath,
@@ -28,6 +29,7 @@
     shrshadeWad = wads.shrshade;
     gameWad = wads.game;
     editorWad = wads.editor;
+    editorLangRu = "${d2df-editor}/lang/editor.ru_RU.lng";
     inherit (dirtyAssets) flexuiWad botlist botnames;
   };
   createBundlesAndExecutables = lib.mapAttrs (arch: archAttrs: let
