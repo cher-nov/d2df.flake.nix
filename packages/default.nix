@@ -44,9 +44,7 @@
 
           installPhase = ''
             mkdir $out
-            cp ${writeText "${name'}" ''
-              ${txt}
-            ''} "$out/${name'}"
+            cp ${writeText "${name'}" txt} "$out/${name'}"
           '';
         };
       findMoreContentTxt = mkTxtFile "Get MORE game content HERE.txt" ''
