@@ -9,12 +9,13 @@
   botnames,
   flexuiWad,
   editorLangRu,
-  extraRoot ? null,
+  extraRoots ? [],
   stdenvNoCC,
   gnused,
   gawk,
   zip,
   findutils,
+  lib,
 }:
 stdenvNoCC.mkDerivation {
   pname = "d2df-assets-path";
@@ -35,6 +36,10 @@ stdenvNoCC.mkDerivation {
     cp ${botlist} data/botlist.txt
     cp ${botnames} data/botnames.txt
     cp ${editorLangRu} data/lang/
+    ${lib.concatStringsSep "\n"
+      (lib.map
+        (root: "find ${root} -type f -exec sh -c 'cp \"$0\" $(pwd)' {} +")
+        extraRoots)}
   '';
 
   installPhase = ''

@@ -70,7 +70,7 @@
 
       outputs' = import ./packages {
         inherit lib;
-        inherit (pkgs) callPackage;
+        inherit (pkgs) callPackage writeText stdenv;
         inherit (d2dfPkgs) buildWad;
         inherit doom2df-res d2df-editor;
         inherit (assets) mkAssetsPath dirtyAssets androidRoot;
