@@ -68,7 +68,7 @@
         inherit d2df-sdl d2df-editor;
       };
 
-      outputs' = import ./packages {
+      legacyPackages = import ./packages {
         inherit lib;
         inherit (pkgs) callPackage writeText stdenv;
         inherit (d2dfPkgs) buildWad;
