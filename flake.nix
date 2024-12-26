@@ -79,9 +79,9 @@
         executablesAttrs = self.executables.${system};
       };
 
-      devShell = with pkgs;
-        mkShell rec {
-          buildInputs = [
+      devShells = {
+        default = pkgs.mkShell {
+          buildInputs = with pkgs; [
             bash
             alejandra
             nixd
@@ -89,8 +89,10 @@
             _7zz
             git
             findutils
+            dos2unix
           ];
         };
+      };
     })
     // {
       githubActions = nix-github-actions.lib.mkGithubMatrix {
