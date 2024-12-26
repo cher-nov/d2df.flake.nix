@@ -33,11 +33,9 @@
     editorWad = wads.editor;
     editorLangRu = "${d2df-editor}/lang/editor.ru_RU.lng";
     extraRoots = let
-      mkTxtFile = name: txt: let
-        name' = lib.replaceStrings [" "] ["_"] name;
-      in
+      mkTxtFile = name': txt:
         stdenv.mkDerivation {
-          name = name';
+          name = lib.replaceStrings [" "] ["_"] name';
 
           src = null;
           phases = ["installPhase"];
