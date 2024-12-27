@@ -248,6 +248,46 @@ in rec {
       }) {
         inherit (pkgs) system;
       };
+    drv = {archsAttrs ? {}, ...} @ args:
+      (oldPkgs.fpc.override (lib.removeAttrs args ["archsAttrs"])).overrideAttrs (final: let
+        default = ["NOGDB=1" "INSTALL_PREFIX=$out"];
+      in {
+        buildPhase =
+          (
+            if final ? buildPhase
+            then final.buildPhase
+            else ""
+          )
+          +
+          # At the moment of writing this comment, author couldn't find a way to
+          # compile a crosscompiling FPC without compiling an FPC native to the host system.
+          # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
+          (lib.concatStringsSep "\n" (
+            lib.map (x: let
+              arch = x.name;
+              fpcAttrs = x.value;
+            in ''
+              PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
+                make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+            '') (lib.attrsToList archsAttrs)
+          ));
+
+        installPhase =
+          (
+            if final ? installPhase
+            then final.installPhase
+            else ""
+          )
+          + lib.concatStringsSep "\n" (
+            lib.map (x: let
+              abi = x.name;
+              fpcAttrs = x.value;
+            in ''
+              PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
+                make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+            '') (lib.attrsToList archsAttrs)
+          );
+      });
   in
-    oldPkgs.fpc;
+    callPackage drv {};
 }
