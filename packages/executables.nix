@@ -34,7 +34,7 @@
       arch: archAttrs: let
         fpcWrapper = fpc:
           pkgs.callPackage fpcPkgs.fpcWrapper rec {
-            fpc = universal.fpc;
+            inherit fpc;
             fpcAttrs = let
               prevFpcAttrs = archAttrs.infoAttrs.fpcAttrs;
             in
