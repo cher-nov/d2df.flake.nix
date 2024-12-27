@@ -23,7 +23,7 @@ echo "EDITOR_LAST_COMMIT_DATE=\"$EDITOR_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 echo "RES_LAST_COMMIT_DATE=\"$RES_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 
 mkdir -p doom2df-win32
-nix build --print-build-logs .#legacyPackages.x86_64-linux.mingw32.bundles.default
+nix build --print-build-logs .#mingw32.bundles.default
 cp -r result/* doom2df-win32/
 # Because the result is copied from the nix store, files are readonly.
 # Make them writable.
