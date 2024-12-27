@@ -90,6 +90,8 @@
             git
             findutils
             dos2unix
+            libfaketime
+            coreutils
           ];
         };
       };
