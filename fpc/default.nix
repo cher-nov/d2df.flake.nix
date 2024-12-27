@@ -1,4 +1,109 @@
 {
+  callPackage,
+  fetchgit,
+  stdenv,
+  lib,
+  pkgs,
+}: let
+  fpcDrv = {
+    lib,
+    stdenv,
+    fetchgit,
+    gawk,
+    fpc,
+    archsAttrs,
+    glibc,
+    binutils,
+  }: let
+    default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
+  in
+    stdenv.mkDerivation rec {
+      version = "3.3.1";
+      pname = "fpc";
+      src = fetchgit {
+        url = "https://gitlab.com/freepascal.org/fpc/source.git";
+        rev = "a7dab71da1074b50ffd81e593537072869031242";
+        sha256 = "sha256-JEH/TWNTxpbIBZ0JelqDb7FHZGm0j4O/No/8iFlxxAg=";
+      };
+
+      nativeBuildInputs = [binutils gawk fpc];
+      glibc = stdenv.cc.libc.out;
+
+      patches = [
+        ./mark-paths-trunk.patch
+      ];
+
+      postPatch = ''
+        # substitute the markers set by the mark-paths patch
+        substituteInPlace compiler/systems/t_linux.pas --subst-var-by dynlinker-prefix "${glibc}"
+        substituteInPlace compiler/systems/t_linux.pas --subst-var-by syslibpath "${glibc}/lib"
+        # Replace the `codesign --remove-signature` command with a custom script, since `codesign` is not available
+        # in nixpkgs
+        # Remove the -no_uuid strip flag which does not work on llvm-strip, only
+        # Apple strip.
+        substituteInPlace compiler/Makefile \
+          --replace \
+            "\$(CODESIGN) --remove-signature" \
+            "${fpc}/remove-signature.sh}" \
+          --replace "ifneq (\$(CODESIGN),)" "ifeq (\$(OS_TARGET), darwin)" \
+          --replace "-no_uuid" ""
+      '';
+
+      # At the moment of writing this comment, author couldn't find a way to
+      # compile a crosscompiling FPC without compiling an FPC native to the host system.
+      # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
+
+      buildPhase = (
+        (lib.concatStringsSep "\n" (
+          lib.map (x: let
+            abi = x.name;
+            fpcAttrs = x.value;
+          in ''
+            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
+              make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+          '') (lib.attrsToList archsAttrs)
+        ))
+        + ''
+          make all ${lib.concatStringsSep " " default}
+        ''
+      );
+
+      installPhase =
+        (lib.concatStringsSep "\n" (
+          lib.map (x: let
+            abi = x.name;
+            fpcAttrs = x.value;
+          in ''
+            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
+              make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+          '') (lib.attrsToList archsAttrs)
+        ))
+        + ''
+          make install ${lib.concatStringsSep " " default}
+        ''
+        + ''
+          for i in $out/lib/fpc/*/ppc*; do
+            ln -fs $i $out/bin/$(basename $i)
+          done
+
+          mkdir -p $out/lib/fpc/etc/
+          $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/lib/fpc/etc/
+
+          # Generate config files in /etc since on darwin, ppc* does not follow symlinks
+          # to resolve the location of /etc
+          mkdir -p $out/etc
+          $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/etc
+        '';
+
+      meta = with lib; {
+        description = "Free Pascal Compiler from a source distribution";
+        homepage = "https://www.freepascal.org";
+        maintainers = [maintainers.raskin];
+        license = with licenses; [gpl2 lgpl2];
+        platforms = platforms.unix;
+      };
+    };
+in rec {
   fpcWrapper = {
     fpc,
     fpcAttrs,
@@ -119,103 +224,30 @@
       };
     };
 
-  fpc = {
-    lib,
-    stdenv,
-    fetchgit,
-    gawk,
-    fpc,
-    archsAttrs,
-    binutils,
-  }: let
-    default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
-  in
-    stdenv.mkDerivation rec {
-      version = "3.3.1";
-      pname = "fpc-custom";
-      src = fetchgit {
-        url = "https://gitlab.com/freepascal.org/fpc/source.git";
-        rev = "0d122c49534b480be9284c21bd60b53d99904346";
-        sha256 = "sha256-MBrcthXl6awecRe8CnMpPmLAsVhdMZHQD8GBukiuqeE=";
-      };
+  fpc-trunk = callPackage fpcDrv {archsAttrs = {};};
+  fpc = fpc-trunk;
 
-      nativeBuildInputs = [binutils gawk fpc];
-      glibc = stdenv.cc.libc.out;
-
-      patches = [
-        #./0001-Mark-paths-for-NixOS.patch
-        ./mark-paths-3_2_2.patch
-        #./allow-trunk.patch
-      ];
-
-      postPatch = ''
-        # substitute the markers set by the mark-paths patch
-        substituteInPlace compiler/systems/t_linux.pas --subst-var-by dynlinker-prefix "${glibc}"
-        substituteInPlace compiler/systems/t_linux.pas --subst-var-by syslibpath "${glibc}/lib"
-        # Replace the `codesign --remove-signature` command with a custom script, since `codesign` is not available
-        # in nixpkgs
-        # Remove the -no_uuid strip flag which does not work on llvm-strip, only
-        # Apple strip.
-        substituteInPlace compiler/Makefile \
-          --replace \
-            "\$(CODESIGN) --remove-signature" \
-            "${fpc}/remove-signature.sh}" \
-          --replace "ifneq (\$(CODESIGN),)" "ifeq (\$(OS_TARGET), darwin)" \
-          --replace "-no_uuid" ""
-      '';
-
-      # At the moment of writing this comment, author couldn't find a way to
-      # compile a crosscompiling FPC without compiling an FPC native to the host system.
-      # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
-
-      buildPhase = (
-        (lib.concatStringsSep "\n" (
-          lib.map (x: let
-            abi = x.name;
-            fpcAttrs = x.value;
-          in ''
-            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-              make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
-          '') (lib.attrsToList archsAttrs)
-        ))
-        + ''
-          make all ${lib.concatStringsSep " " default}
-        ''
-      );
-
-      installPhase =
-        (lib.concatStringsSep "\n" (
-          lib.map (x: let
-            abi = x.name;
-            fpcAttrs = x.value;
-          in ''
-            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-              make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
-          '') (lib.attrsToList archsAttrs)
-        ))
-        + ''
-          make install ${lib.concatStringsSep " " default}
-        ''
-        + ''
-          for i in $out/lib/fpc/*/ppc*; do
-            ln -fs $i $out/bin/$(basename $i)
-          done
-
-          mkdir -p $out/lib/fpc/etc/
-          $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/lib/fpc/etc/
-
-          # Generate config files in /etc since on darwin, ppc* does not follow symlinks
-          # to resolve the location of /etc
-          mkdir -p $out/etc
-          $out/lib/fpc/*/samplecfg $out/lib/fpc/${version} $out/etc
-        '';
-
-      meta = with lib; {
-        description = "Free Pascal Compiler from a source distribution";
-        homepage = "https://www.freepascal.org";
-        maintainers = [maintainers.raskin];
-        license = with licenses; [gpl2 lgpl2];
-        platforms = platforms.unix;
-      };
+  fpc-3_2_2 = fpc.overrideAttrs (final: prev: {
+    version = "3.2.2";
+    src = fetchgit {
+      url = "https://gitlab.com/freepascal.org/fpc/source.git";
+      rev = "0d122c49534b480be9284c21bd60b53d99904346";
+      sha256 = "sha256-MBrcthXl6awecRe8CnMpPmLAsVhdMZHQD8GBukiuqeE=";
     };
+
+    patches = [./mark-paths-3_2_2.patch];
+  });
+
+  fpc-3_0_4 = let
+    oldPkgs =
+      import (fetchgit {
+        name = "fpc-3_0_4-revision";
+        url = "https://github.com/NixOS/nixpkgs/";
+        sha256 = "sha256-RRx+Tk/PKKoTDZh9HDi7cOEHx6sI5zx1Puxv67zS9Ng=";
+        rev = "b5e903cedb331f9ee268ceebffb58069f1dae9fb";
+      }) {
+        inherit (pkgs) system;
+      };
+  in
+    oldPkgs.fpc;
 }

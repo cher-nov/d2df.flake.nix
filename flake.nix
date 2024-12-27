@@ -37,16 +37,16 @@
         };
         overlays = [
           (final: prev: {
-            fpc = prev.callPackage fpcPkgs.fpc {
-              fpc = prev.fpc;
-              archsAttrs = {};
-            };
             dfwad = final.callPackage d2dfPkgs.dfwad {};
           })
         ];
       };
       lib = pkgs.lib;
-      fpcPkgs = import ./fpc;
+      fpcPkgs = import ./fpc {
+        inherit (pkgs) callPackage fetchgit stdenv;
+        inherit pkgs;
+        inherit lib;
+      };
       d2dfPkgs = import ./game;
       bundles = import ./game/bundle {
         inherit (pkgs) callPackage;
@@ -59,7 +59,7 @@
         inherit d2df-sdl d2df-editor doom2df-res;
       };
 
-      checks = lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues self.outputs'.${system})));
+      checks = lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues self.legacyPackages.${system})));
 
       assets = assets;
 
@@ -68,16 +68,22 @@
         inherit d2df-sdl d2df-editor;
       };
 
-      legacyPackages = import ./packages {
-        inherit lib;
-        inherit (pkgs) callPackage writeText stdenv;
-        inherit (d2dfPkgs) buildWad;
-        inherit doom2df-res d2df-editor;
-        inherit (assets) mkAssetsPath dirtyAssets androidRoot;
-        androidRes = assets.androidIcons;
-        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
-        executablesAttrs = self.executables.${system};
-      };
+      legacyPackages =
+        (import ./packages {
+          inherit lib;
+          inherit (pkgs) callPackage writeText stdenv;
+          inherit (d2dfPkgs) buildWad;
+          inherit doom2df-res d2df-editor;
+          inherit (assets) mkAssetsPath dirtyAssets androidRoot;
+          androidRes = assets.androidIcons;
+          inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
+          executablesAttrs = self.executables.${system};
+        })
+        // {
+          fpc-trunk = fpcPkgs.fpc-trunk;
+          fpc-3_0_4 = fpcPkgs.fpc-3_0_4;
+          fpc-3_2_2 = fpcPkgs.fpc-3_2_2;
+        };
 
       devShells = {
         default = pkgs.mkShell {

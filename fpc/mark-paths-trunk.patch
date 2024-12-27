@@ -37,32 +37,32 @@ index 4239976b98..28ee606a97 100644
        LibrarySearchPath.AddLibraryPath(sysrootpath,'=/usr/lib/powerpc-linux-gnu',true);
 @@ -217,53 +217,53 @@ procedure SetupLibrarySearchPath;
  end;
- 
+
  {$ifdef m68k}
 -  const defdynlinker='/lib/ld.so.1';
 +  const defdynlinker='@dynlinker-prefix@/lib/ld.so.1';
  {$endif m68k}
- 
+
  {$ifdef i386}
 -  const defdynlinker='/lib/ld-linux.so.2';
 +  const defdynlinker='@dynlinker-prefix@/lib/ld-linux.so.2';
  {$endif}
- 
+
  {$ifdef x86_64}
 -  const defdynlinker='/lib64/ld-linux-x86-64.so.2';
 +  const defdynlinker='@dynlinker-prefix@/lib64/ld-linux-x86-64.so.2';
  {$endif x86_64}
- 
+
  {$ifdef sparc}
 -  const defdynlinker='/lib/ld-linux.so.2';
 +  const defdynlinker='@dynlinker-prefix@/lib/ld-linux.so.2';
  {$endif sparc}
- 
+
  {$ifdef powerpc}
 -  const defdynlinker='/lib/ld.so.1';
 +  const defdynlinker='@dynlinker-prefix@/lib/ld.so.1';
  {$endif powerpc}
- 
+
  {$ifdef powerpc64}
 -  const defdynlinkerv1='/lib64/ld64.so.1';
 -  const defdynlinkerv2='/lib64/ld64.so.2';
@@ -70,7 +70,7 @@ index 4239976b98..28ee606a97 100644
 +  const defdynlinkerv2='@dynlinker-prefix@/lib64/ld64.so.2';
    var defdynlinker: string;
  {$endif powerpc64}
- 
+
  {$ifdef arm}
  {$ifdef FPC_ARMHF}
 -  const defdynlinker='/lib/ld-linux-armhf.so.3';
@@ -85,22 +85,22 @@ index 4239976b98..28ee606a97 100644
  {$endif FPC_ARMEL}
  {$endif FPC_ARMHF}
  {$endif arm}
- 
+
  {$ifdef aarch64}
 -const defdynlinker='/lib/ld-linux-aarch64.so.1';
 +const defdynlinker='@dynlinker-prefix@/lib/ld-linux-aarch64.so.1';
  {$endif aarch64}
- 
+
  {$ifdef mips}
 -  const defdynlinker='/lib/ld.so.1';
 +  const defdynlinker='@dynlinker-prefix@/lib/ld.so.1';
  {$endif mips}
- 
+
  {$ifdef sparc64}
 -  const defdynlinker='/lib64/ld-linux.so.2';
 +  const defdynlinker='@dynlinker-prefix@/lib64/ld-linux.so.2';
  {$endif sparc64}
- 
+
  {$ifdef riscv32}
 @@ -354,9 +354,9 @@ procedure SetupDynlinker(out DynamicLinker:string;out libctype:TLibcType);
        libctype:=uclibc;
@@ -114,5 +114,5 @@ index 4239976b98..28ee606a97 100644
        libctype:=glibc2;
      end
  {$endif i386}
--- 
+--
 2.43.0

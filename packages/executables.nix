@@ -14,22 +14,26 @@
   };
   f = crossPkgs: let
     fromCrossPkgsAttrs = let
+      archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;
       universal = rec {
-        fpc = pkgs.callPackage fpcPkgs.fpc {
-          archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;
-        };
+        fpc-trunk = fpcPkgs.fpc-trunk.override {inherit archsAttrs;};
+        fpc-3_0_4 = fpcPkgs.fpc-3_0_4.override {inherit archsAttrs;};
+        fpc-3_2_2 = fpcPkgs.fpc-3_2_2.override {inherit archsAttrs;};
+        fpc = fpc-trunk;
         lazarus =
           if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
           then
             (pkgs.callPackage fpcPkgs.lazarus {
+              # TODO
+              # Check if it still crashes with trunk
               fpc = fpc;
             })
           else null;
       };
     in
       arch: archAttrs: let
-        gamePkgs = rec {
-          fpc = pkgs.callPackage fpcPkgs.fpcWrapper rec {
+        fpcWrapper = fpc:
+          pkgs.callPackage fpcPkgs.fpcWrapper rec {
             fpc = universal.fpc;
             fpcAttrs = let
               prevFpcAttrs = archAttrs.infoAttrs.fpcAttrs;
@@ -46,11 +50,18 @@
                   ];
               };
           };
+        gamePkgs = rec {
+          fpc-3_0_4 = fpcWrapper universal.fpc-3_0_4;
+          fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2;
+          fpc-trunk = fpcWrapper universal.fpc-trunk;
+          fpc = fpcWrapper universal.fpc-trunk;
           lazarus =
             if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
             then
               (pkgs.callPackage fpcPkgs.lazarusWrapper {
-                fpc = universal.fpc;
+                # FIXME
+                # lazarus doesn't compile editor with trunk fpc
+                fpc = universal.fpc-3_2_2;
                 fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
                 lazarus = universal.lazarus;
               })
