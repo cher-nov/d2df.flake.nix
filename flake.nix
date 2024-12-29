@@ -68,22 +68,16 @@
         inherit d2df-sdl d2df-editor;
       };
 
-      legacyPackages =
-        (import ./packages {
-          inherit lib;
-          inherit (pkgs) callPackage writeText stdenv;
-          inherit (d2dfPkgs) buildWad;
-          inherit doom2df-res d2df-editor;
-          inherit (assets) mkAssetsPath dirtyAssets androidRoot;
-          androidRes = assets.androidIcons;
-          inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
-          executablesAttrs = self.executables.${system};
-        })
-        // {
-          fpc-trunk = fpcPkgs.fpc-trunk;
-          fpc-3_0_4 = fpcPkgs.fpc-3_0_4;
-          fpc-3_2_2 = fpcPkgs.fpc-3_2_2;
-        };
+      legacyPackages = import ./packages {
+        inherit lib;
+        inherit (pkgs) callPackage writeText stdenv;
+        inherit (d2dfPkgs) buildWad;
+        inherit doom2df-res d2df-editor;
+        inherit (assets) mkAssetsPath dirtyAssets androidRoot;
+        androidRes = assets.androidIcons;
+        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
+        executablesAttrs = self.executables.${system};
+      };
 
       devShells = {
         default = pkgs.mkShell {
