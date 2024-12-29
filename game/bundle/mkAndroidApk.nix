@@ -52,6 +52,6 @@ in {
     '';
 
   installPhase = ''
-    cp bin/d2df.signed.apk $out
+    cp bin/d2df.unsigned.apk $out
   '';
 })

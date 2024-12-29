@@ -53,8 +53,7 @@ jobs:
           printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
       - name: Build debug APK
         run: |
-          nix build --print-build-logs .#android.bundles.default
-          cp result doom2df-android.apk
+          bash ./game/bundle/mkAndroid.bash
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-android
