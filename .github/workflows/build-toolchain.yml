@@ -18,16 +18,10 @@ jobs:
           # this might remove tools that are actually needed,
           # if set to "true" but frees about 6 GB
           tool-cache: true
+      - uses: DeterminateSystems/magic-nix-cache-action@main          
       - name: Build fpc-3_2_2
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-3_2_2
-      - name: Build fpc-trunk
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-trunk
       - name: Build lazarus-3_6
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus-3_6
-      - name: Save Nix store
-        uses: nix-community/cache-nix-action/save@v5
-        with:
-          primary-key: build-${{ runner.os }}-${{ hashFiles('flake.nix') }}

@@ -93,6 +93,8 @@
             libfaketime
             coreutils
           ];
+
+          nativeBuildInputs = [pkgs.libgcc];
         };
       };
     })

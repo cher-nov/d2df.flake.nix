@@ -13,8 +13,15 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
+      - uses: nixbuild/nix-quick-install-action@v29
+      - name: Remove unnecessary packages
+        run: | # stolen from https://github.com/easimon/maximize-build-space
+          echo "=== Before pruning ==="
+          df -h
+          sudo rm -rf /opt || true
+          echo
+          echo "=== After pruning ==="
+          df -h
       - uses: DeterminateSystems/magic-nix-cache-action@main
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
