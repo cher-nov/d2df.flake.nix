@@ -92,6 +92,7 @@
             dos2unix
             libfaketime
             coreutils
+            openjdk
           ];
 
           nativeBuildInputs = [pkgs.libgcc];

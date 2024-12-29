@@ -49,8 +49,6 @@ in {
       ${d8} $(find obj -name '*.class') --lib ${ANDROID_JAR} --output bin/classes.jar
       ${d8} ${ANDROID_JAR} bin/classes.jar --output bin
       ${aapt} package -f -M ./AndroidManifest.xml -S res -I ${ANDROID_JAR} -F bin/d2df.unsigned.apk -A resources bin aux
-      ${jdk}/bin/keytool -genkey -validity 10000 -dname "CN=AndroidDebug, O=Android, C=US" -keystore d2df.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -v
-      ${jdk}/bin/jarsigner -sigalg SHA1withRSA -digestalg SHA1 -keystore d2df.keystore -storepass android -keypass android -signedjar bin/d2df.signed.apk bin/d2df.unsigned.apk androiddebugkey
     '';
 
   installPhase = ''

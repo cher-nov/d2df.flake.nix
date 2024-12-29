@@ -23,6 +23,12 @@ echo "EDITOR_LAST_COMMIT_DATE=\"$EDITOR_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 echo "RES_LAST_COMMIT_DATE=\"$RES_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 
 mkdir -p doom2df-win32
+[ ! -f "df_distro_content.7z" ] && wget https://doom2d.org/doom2d_forever/latest/df_distro_content.7z
+if [ ! -d "content" ]; then
+    mkdir -p content
+    7zz x -y -ssp df_distro_content.7z -ocontent
+fi
+
 nix build --print-build-logs .#mingw32.bundles.default
 cp -r result/* doom2df-win32/
 # Because the result is copied from the nix store, files are readonly.
@@ -39,5 +45,6 @@ else
     find doom2df-win32/executables/ -type f -iname '*.so' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
 fi
 
-7zz a -mtm -stl -ssp -tzip doom2df-win32.zip -w doom2df-win32/executables/.
-7zz a -mtm -stl -ssp -tzip doom2df-win32.zip -w doom2df-win32/assets/.
+7zz a -y -mtm -ssp -tzip doom2df-win32.zip -w content/.
+7zz a -y -mtm -ssp -tzip doom2df-win32.zip -w doom2df-win32/executables/.
+7zz a -y -mtm -ssp -tzip doom2df-win32.zip -w doom2df-win32/assets/.
