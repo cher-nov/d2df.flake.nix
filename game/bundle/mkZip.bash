@@ -23,7 +23,7 @@ echo "EDITOR_LAST_COMMIT_DATE=\"$EDITOR_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 echo "RES_LAST_COMMIT_DATE=\"$RES_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 
 mkdir -p doom2df-win32
-[ ! -f "df_distro_content.7z" ] && wget https://doom2d.org/doom2d_forever/latest/df_distro_content.7z
+[ ! -f "df_distro_content.7z" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.7z
 if [ ! -d "content" ]; then
     mkdir -p content
     7zz x -y -ssp df_distro_content.7z -ocontent
