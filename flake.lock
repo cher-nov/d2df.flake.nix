@@ -1,5 +1,17 @@
 {
   "nodes": {
+    "d2df-distro-content": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-rPt8UnBUMdjIqyLxD4c5289wNZvCzC9b0FS4blIaAfc=",
+        "type": "file",
+        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z"
+      }
+    },
     "d2df-editor": {
       "flake": false,
       "locked": {
@@ -120,6 +132,7 @@
     },
     "root": {
       "inputs": {
+        "d2df-distro-content": "d2df-distro-content",
         "d2df-editor": "d2df-editor",
         "d2df-sdl": "d2df-sdl",
         "doom2df-res": "doom2df-res",

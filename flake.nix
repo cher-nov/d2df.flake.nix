@@ -17,6 +17,10 @@
       url = "git://repo.or.cz/d2df-editor.git?submodules=1";
       flake = false;
     };
+    d2df-distro-content = {
+      url = "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z";
+      flake = false;
+    };
   };
   outputs = inputs @ {
     self,
@@ -26,6 +30,7 @@
     doom2df-res,
     d2df-sdl,
     d2df-editor,
+    d2df-distro-content,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
