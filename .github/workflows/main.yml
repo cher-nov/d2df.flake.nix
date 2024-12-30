@@ -60,7 +60,7 @@ jobs:
           printf 'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s' $D2DF_REV $RES_REV $EDITOR_REV > release_body
       - name: Build debug APK
         run: |
-          bash ./game/bundle/mkAndroid.bash
+          bash ./game/bundle/scripts/mkAndroid.bash
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-android
@@ -72,7 +72,7 @@ jobs:
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
           EDITOR_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
         run: |
-          bash ./game/bundle/mkZip.bash
+          bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-win32
