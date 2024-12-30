@@ -27,4 +27,4 @@ jobs:
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
-          primary-key: build-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+          primary-key: build-fpc-${{ runner.os }}-${{ hashFiles('flake.nix') }}

@@ -24,7 +24,7 @@ jobs:
           df -h
       - uses: nix-community/cache-nix-action/restore@v5.1.0
         with:
-          primary-key: build-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+          primary-key: build-fpc-${{ runner.os }}-${{ hashFiles('flake.nix') }}
           fail-on: primary-key.miss
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
