@@ -18,6 +18,14 @@ jobs:
           # this might remove tools that are actually needed,
           # if set to "true" but frees about 6 GB
           tool-cache: true
+      # To make the environment in the flake's devShell available to future steps:
+      - uses: rrbutani/use-nix-shell-action@v1
+        with:
+          devShell: .#default          
+      - name: Calculate cache hash based on nixpkgs' revision
+        run: |
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - name: Build fpc-3_2_2
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-3_2_2
@@ -27,4 +35,4 @@ jobs:
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
-          primary-key: build-fpc-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+          primary-key: build-fpc-${{ runner.os }}-${{ env.NIXPKGS_REV }}

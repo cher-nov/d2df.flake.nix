@@ -22,14 +22,18 @@ jobs:
           echo
           echo "=== After pruning ==="
           df -h
-      - uses: nix-community/cache-nix-action/restore@v5.1.0
-        with:
-          primary-key: build-fpc-${{ runner.os }}-${{ hashFiles('flake.nix') }}
-          fail-on: primary-key.miss
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
         with:
           devShell: .#default
+      - name: Calculate cache hash based on nixpkgs' revision
+        run: |
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"            
+      - uses: nix-community/cache-nix-action/restore@v5.1.0
+        with:
+          primary-key: build-fpc-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          fail-on: primary-key.miss        
       - name: Update Doom2D related inputs
         run: |
           nix flake update d2df-sdl d2df-editor doom2df-res
