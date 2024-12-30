@@ -22,7 +22,10 @@ jobs:
           echo
           echo "=== After pruning ==="
           df -h
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: nix-community/cache-nix-action/restore@v5.1.0
+        with:
+          primary-key: build-${{ runner.os }}-${{ hashFiles('flake.nix') }}
+          fail-on: primary-key.miss
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
         with:
