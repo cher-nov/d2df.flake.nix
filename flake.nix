@@ -64,7 +64,10 @@
         inherit d2df-sdl d2df-editor doom2df-res d2df-distro-content;
       };
 
-      checks = lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues self.legacyPackages.${system})));
+      checks = let
+        nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
+      in
+        lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues nativeArches)));
 
       assets = assets;
 
