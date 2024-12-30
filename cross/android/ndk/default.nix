@@ -61,8 +61,8 @@ in rec {
 
   enet = androidCmakeDrv {
     pname = "enet";
-    version = pins.enet_git.revision;
-    src = pins.enet_git;
+    version = pins.enet.revision;
+    src = pins.enet;
   };
 
   SDL2_mixer = androidCmakeDrv {
