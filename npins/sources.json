@@ -23,7 +23,7 @@
       "url": "https://github.com/libsdl-org/SDL_mixer/archive/f6c08cd98ec962b15c398ebf9af2a74745076fae.tar.gz",
       "hash": "0n5nz57j1r0wsim79cz1j4v3al6705flyv7rmsdyxzs0nlgb1qvx"
     },
-    "enet_git": {
+    "enet": {
       "type": "Git",
       "repository": {
         "type": "GitHub",
