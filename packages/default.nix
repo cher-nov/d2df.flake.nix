@@ -110,55 +110,37 @@
       holmes,
     }: let
       ioFeature = let
-        x = io;
+        table = {
+          "SDL1" = {withSDL1 = true;};
+          "SDL2" = {withSDL2 = true;};
+          "sysStub" = {disableIo = true;};
+        };
       in
-        if x == "SDL1"
-        then {withSDL1 = true;}
-        else if x == "SDL2"
-        then {withSDL2 = true;}
-        else if x == "sysStub"
-        then {disableIo = true;}
-        else builtins.throw "Unknown build flag";
+        table.${io};
       graphicsFeature = let
-        x = graphics;
+        table = {
+          "OpenGL2" = {withOpenGL2 = true;};
+          "OpenGLES" = {withOpenGLES = true;};
+          "GLStub" = {disableGraphics = true;};
+        };
       in
-        if x == "OpenGL2"
-        then {withOpenGL2 = true;}
-        else if x == "OpenGLES"
-        then {withOpenGLES = true;}
-        else if x == "GLStub"
-        then {disableGraphics = true;}
-        else builtins.throw "Unknown build flag";
+        table.${graphics};
       soundFeature = let
-        x = sound;
+        table = {
+          "FMOD" = {withFmod = true;};
+          "SDL_mixer" = {withSDL1_mixer = true;};
+          "SDL2_mixer" = {withSDL2_mixer = true;};
+          "OpenAL" = {withOpenAL = true;};
+          "NoSound" = {disableSound = true;};
+        };
       in
-        if x == "FMOD"
-        then {withFmod = true;}
-        else if x == "SDL_mixer"
-        then {withSDL1_mixer = true;}
-        else if x == "SDL2_mixer"
-        then {withSDL2_mixer = true;}
-        else if x == "OpenAL"
-        then {withOpenAL = true;}
-        else if x == "NoSound"
-        then {disableSound = true;}
-        else builtins.throw "Unknown build flag";
-      headlessFeature = let
-        x = headless;
-      in
+        table."${sound}";
+      boolFeature = flag: x:
         if x == "Enable"
-        then {headless = true;}
-        else if x == "Disable"
-        then {headless = false;}
-        else builtins.throw "Unknown build flag";
-      holmesFeature = let
-        x = holmes;
-      in
-        if x == "Enable"
-        then {withHolmes = true;}
-        else if x == "Disable"
-        then {withHolmes = false;}
-        else builtins.throw "Unknown build flag";
+        then {"${flag}" = true;}
+        else {"${flag}" = false;};
+      headlessFeature = boolFeature "headless" headless;
+      holmesFeature = boolFeature "holmes" holmes;
     in {
       value = {
         drv = doom2d.override ({
