@@ -59,6 +59,8 @@
       assets = import ./game/assets {
         inherit (pkgs) callPackage;
       };
+
+      pins = import ./npins;
     in {
       dfInputs = {
         inherit d2df-sdl d2df-editor doom2df-res d2df-distro-content;
@@ -74,10 +76,14 @@
       executables = import ./packages/executables.nix {
         inherit pkgs lib fpcPkgs d2dfPkgs;
         inherit d2df-sdl d2df-editor;
+        inherit pins;
       };
+
+      inherit pins;
 
       legacyPackages = import ./packages {
         inherit lib;
+        inherit pins;
         inherit (pkgs) callPackage writeText stdenv;
         inherit (d2dfPkgs) buildWad;
         inherit doom2df-res d2df-editor;
@@ -101,9 +107,8 @@
             libfaketime
             coreutils
             openjdk
+            npins
           ];
-
-          nativeBuildInputs = [pkgs.libgcc];
         };
       };
     })

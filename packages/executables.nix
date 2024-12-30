@@ -1,16 +1,17 @@
 {
   pkgs,
   lib,
+  pins,
   fpcPkgs,
   d2dfPkgs,
   d2df-sdl,
   d2df-editor,
 }: let
   android = (import ../cross/android) {
-    inherit pkgs lib;
+    inherit pkgs lib pins;
   };
   mingw = (import ../cross/mingw) {
-    inherit pkgs lib;
+    inherit pkgs lib pins;
   };
   f = crossPkgs: let
     archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;

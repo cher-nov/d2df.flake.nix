@@ -3,6 +3,7 @@
   pkgs,
   fetchFromGitHub,
   stdenv,
+  pins,
 }: let
   androidCmakeDrv = {
     pname,
@@ -54,159 +55,86 @@
 in rec {
   SDL2 = androidCmakeDrv rec {
     pname = "SDL2";
-    version = "2.30.6";
-    src = fetchFromGitHub {
-      owner = "libsdl-org";
-      repo = "SDL";
-      rev = "ad93f50ee6408c90eec0d96867b41046392bb426";
-      hash = "sha256-rajAfb7NoF63Bv2JZsO8WJrRkqKBIc39u7fLWFrpanU=";
-    };
+    version = pins.SDL2.revision;
+    src = pins.SDL2;
   };
 
   enet = androidCmakeDrv {
     pname = "enet";
-    version = "1.3.18";
-    src = fetchFromGitHub {
-      owner = "lsalzman";
-      repo = "enet";
-      rev = "1e80a78f481cb2d2e4d9a0e2718b91995f2de51c";
-      hash = "sha256-YIqJC5wMTX4QiWebvGGm5EfZXLzufXBxUO7YdeQ+6Bk=";
-    };
+    version = pins.enet_git.revision;
+    src = pins.enet_git;
   };
 
   SDL2_mixer = androidCmakeDrv {
     pname = "SDL2_mixer";
-    version = "2.8.0-git";
-    src = fetchFromGitHub {
-      owner = "libsdl-org";
-      repo = "SDL_mixer";
-      rev = "73a3e316728646ded6495b4dfddf1869ace43edf";
-      hash = "sha256-mMqgRGa9NhOJEhvVTaolp5P5s8qFCi1PspO+7s/kTMw=";
-    };
+    version = pins.SDL2_mixer.revision;
+    src = pins.SDL2_mixer;
   };
 
   # Upstream packaging is horrendous.
   opusfile = androidCmakeDrv {
     pname = "opusfile";
-    version = "0.12-git";
-    src = fetchFromGitHub {
-      owner = "xiph";
-      repo = "opusfile";
-      rev = "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166";
-      hash = "sha256-kyvH3b/6ouAXffAE4xmck4L5c3/nd2VWq0ss/XJlX7Q=";
-    };
+    version = pins.opusfile_git.revision;
+    src = pins.opusfile_git;
   };
 
   libogg = androidCmakeDrv {
     pname = "libogg";
-    version = "1.3.5-git";
-    src = fetchFromGitHub {
-      owner = "xiph";
-      repo = "ogg";
-      rev = "db5c7a49ce7ebda47b15b78471e78fb7f2483e22";
-      hash = "sha256-A8J/V8OSBG0Vkr9GLPmj3aNHe7wIYwdxTsvBJhJc0Qk=";
-    };
+    version = pins.libogg.revision;
+    src = pins.libogg;
   };
 
   libopus = androidCmakeDrv {
     pname = "opus";
-    version = "1.5.2-git";
-    src = fetchFromGitHub {
-      owner = "xiph";
-      repo = "opus";
-      rev = "7db26934e4156597cb0586bb4d2e44dccdde1a59";
-      hash = "sha256-FTN7OeMpYfD9Dwj4sOROvu0WeZDNyhK73AZi1XLLKj8=";
-    };
+    version = pins.libopus.revision;
+    src = pins.libopus;
   };
 
   libxmp = androidCmakeDrv {
     pname = "libxmp";
-    version = "4.6.0-git";
-    src = fetchFromGitHub {
-      owner = "libxmp";
-      repo = "libxmp";
-      rev = "343a02327806d4d7da98100408cb7d3f8da56858";
-      hash = "sha256-SJuB0kjXJTMhR40xOOv+ygl1wIiLgp+YJiuj9jl3fVc=";
-    };
+    version = pins.libxmp.revision;
+    src = pins.libxmp;
   };
 
-  # fluidsynth pulls glib, which is totally unnecessary
-  # For now, use a fork I've found while scrolling discussions below
-  # https://github.com/FluidSynth/fluidsynth/discussions/847
   fluidsynth = androidCmakeDrv {
     pname = "fluidsynth";
-    version = "2.4.1-git";
-    src = fetchFromGitHub {
-      owner = "DominusExult";
-      repo = "fluidsynth-sans-glib";
-      rev = "aefd0a1083270810273ceb0373191fe3b3e4e83e";
-      hash = "sha256-Z6kn1lAdYsV/hBEvVZmPc4f2Uzo7qxCXpYxFb9323GU=";
-    };
+    version = pins.fluidsynth.revision;
+    src = pins.fluidsynth;
   };
 
   wavpack = androidCmakeDrv {
     pname = "wavpack";
-    version = "5.7.0-git";
-    src = fetchFromGitHub {
-      owner = "dbry";
-      repo = "wavpack";
-      rev = "d9c4a35e822bb274b8c94fc95ff16c5b4c04d346";
-      hash = "sha256-I2Ggo93YAdU/knMMPDB4HXNn9fLQQ+xbCRKy6d6xP0c=";
-    };
+    version = pins.wavpack.revision;
+    src = pins.wavpack;
   };
 
   libmpg123 = androidCmakeDrv {
     pname = "mpg123";
-    version = "1.32.8-git";
-    src = fetchFromGitHub {
-      owner = "madebr";
-      repo = "mpg123";
-      rev = "3c34e2af2ff4737959580c095e3e158af8adccb2";
-      hash = "sha256-0BYPWEIz1Lzig6JXhidL4VrMJi2+PJbYje4N8UXKhoQ=";
-    };
+    version = pins.mpg123.revision;
+    src = pins.mpg123;
   };
 
   libvorbis = androidCmakeDrv {
     pname = "vorbis";
-    version = "1.3.8-git";
-    src = fetchFromGitHub {
-      owner = "xiph";
-      repo = "vorbis";
-      rev = "84c023699cdf023a32fa4ded32019f194afcdad0";
-      hash = "sha256-wCaqRF6Wa08ut9vcjjoxQ0/HKHV9AeDsHC/15Iq06QE=";
-    };
+    version = pins.vorbis.revision;
+    src = pins.vorbis;
   };
 
   game-music-emu = androidCmakeDrv {
     pname = "game-music-emu";
-    version = "0.6.3-git";
-    src = fetchFromGitHub {
-      owner = "libgme";
-      repo = "game-music-emu";
-      rev = "cb2c1ccc7563ed58321cc3b6b8507b9015192b80";
-      hash = "sha256-NP55kJp94fOwPq1sA4Z+LmAsYwWqnlPTqqrSGM6tqfI=";
-    };
+    version = pins.game-music-emu.revision;
+    src = pins.game-music-emu;
   };
 
   libmodplug = androidCmakeDrv {
     pname = "libmodplug";
-    version = "d1b97ed";
-    src = fetchFromGitHub {
-      owner = "Konstanty";
-      repo = "libmodplug";
-      rev = "d1b97ed0020bc620a059d3675d1854b40bd2608d";
-      hash = "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=";
-    };
+    version = pins.modplug.revision;
+    src = pins.modplug;
   };
 
   openal = androidCmakeDrv {
     pname = "openal-soft";
-    version = "1.24.1-git";
-    src = fetchFromGitHub {
-      owner = "kcat";
-      repo = "openal-soft";
-      rev = "ff497ad11182b48d1bfa57216c51a2ac0c723c7d";
-      hash = "sha256-YejeK1qiddRjPAls+14HwUUWEk3kQR5eY/e1Uf/76aA=";
-    };
+    version = pins.openal.revision;
+    src = pins.openal;
   };
 }

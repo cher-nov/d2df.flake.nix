@@ -1,9 +1,10 @@
 {
   lib,
   pkgs,
+  pins,
 }: let
   customNdkPkgs = import ./ndk {
-    inherit lib pkgs;
+    inherit lib pkgs pins;
     inherit (pkgs) fetchFromGitHub stdenv;
   };
 

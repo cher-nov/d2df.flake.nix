@@ -1,11 +1,10 @@
 {
   pkgs,
   lib,
+  pins,
 }: let
   createCrossPkgSet = arch: archInfoAttrs: let
     crossTarget = arch;
-  in rec {
-    infoAttrs = archInfoAttrs;
     gcc = pkgs.pkgsCross.${crossTarget}.buildPackages.wrapCC (pkgs.pkgsCross.${crossTarget}.buildPackages.gcc-unwrapped.override {
       threadsCross = {
         model = "win32";
@@ -13,6 +12,8 @@
       };
     });
     stdenvWin32Threads = pkgs.pkgsCross.${crossTarget}.buildPackages.overrideCC pkgs.pkgsCross.${crossTarget}.stdenv gcc;
+  in rec {
+    infoAttrs = archInfoAttrs;
     enet = (pkgs.pkgsCross.${crossTarget}.enet.override {stdenv = stdenvWin32Threads;}).overrideAttrs (prev: let
       mingwPatchNoUndefined = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/msys2/MINGW-packages/a4bc312869703bda3703fc1cb327fdd7659f0c4b/mingw-w64-enet/001-no-undefined.patch";

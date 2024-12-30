@@ -1,0 +1,184 @@
+{
+  "pins": {
+    "SDL2": {
+      "type": "Git",
+      "repository": {
+        "type": "Git",
+        "url": "https://github.com/libsdl-org/SDL"
+      },
+      "branch": "SDL2",
+      "revision": "fc608ffb5f61caae0e1034da181ac90760285410",
+      "url": null,
+      "hash": "02bnarc6s5yj64mllaqzai16x1hadj4d38mqa6wd6q0jsr9srfwd"
+    },
+    "SDL2_mixer": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "libsdl-org",
+        "repo": "SDL_mixer"
+      },
+      "branch": "SDL2",
+      "revision": "f6c08cd98ec962b15c398ebf9af2a74745076fae",
+      "url": "https://github.com/libsdl-org/SDL_mixer/archive/f6c08cd98ec962b15c398ebf9af2a74745076fae.tar.gz",
+      "hash": "0n5nz57j1r0wsim79cz1j4v3al6705flyv7rmsdyxzs0nlgb1qvx"
+    },
+    "enet_git": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "lsalzman",
+        "repo": "enet"
+      },
+      "branch": "master",
+      "revision": "657eaf97d9d335917c58484a4a4b5e03838ebd8e",
+      "url": "https://github.com/lsalzman/enet/archive/657eaf97d9d335917c58484a4a4b5e03838ebd8e.tar.gz",
+      "hash": "1isvyf88chh4n5rmhyyhz8c5n8lv4j3pwgfqnvb0hjamwyrdm2r4"
+    },
+    "fluidsynth": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "DominusExult",
+        "repo": "fluidsynth-sans-glib"
+      },
+      "branch": "sans_glib",
+      "revision": "fd252ae5c73c668bf72b70c11085d94a62e140b5",
+      "url": "https://github.com/DominusExult/fluidsynth-sans-glib/archive/fd252ae5c73c668bf72b70c11085d94a62e140b5.tar.gz",
+      "hash": "084j9m5970yz12b2k1gw81di3wmgkciydfpv2g3biizpgvfvjk73"
+    },
+    "game-music-emu": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "libgme",
+        "repo": "game-music-emu"
+      },
+      "branch": "master",
+      "revision": "cb2c1ccc7563ed58321cc3b6b8507b9015192b80",
+      "url": "https://github.com/libgme/game-music-emu/archive/cb2c1ccc7563ed58321cc3b6b8507b9015192b80.tar.gz",
+      "hash": "1wm9mp71ilmamb9m77ma0mijqq1fgs306v5d7sqg7qbxka87kzil"
+    },
+    "libogg": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "xiph",
+        "repo": "ogg"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "version": "v1.3.5",
+      "revision": "65b355cc20171010ecabf245e7b339aeab8ddbb9",
+      "url": "https://api.github.com/repos/xiph/ogg/tarball/v1.3.5",
+      "hash": "1jxnh8skfw7xqq7qsrwbxivja6ryw59daf7q8yskfdiskyg3cxya"
+    },
+    "libopus": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "xiph",
+        "repo": "opus"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "version": "v1.5.2",
+      "revision": "5ec2f3c915d0529b94a3a302969c673531654824",
+      "url": "https://api.github.com/repos/xiph/opus/tarball/v1.5.2",
+      "hash": "1w0asn13pip0rfri7r0d905gyd7apn0wl93qk74vkcqzjz5bnl9k"
+    },
+    "libxmp": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "libxmp",
+        "repo": "libxmp"
+      },
+      "branch": "master",
+      "revision": "2b32c90b6630a3ed9b06013da5e9c41215633788",
+      "url": "https://github.com/libxmp/libxmp/archive/2b32c90b6630a3ed9b06013da5e9c41215633788.tar.gz",
+      "hash": "184rl30xpla1s6iiq8jkbp8q9k8zx4991qb7yd4y8d37n3cvfs0q"
+    },
+    "modplug": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "Konstanty",
+        "repo": "libmodplug"
+      },
+      "branch": "master",
+      "revision": "d1b97ed0020bc620a059d3675d1854b40bd2608d",
+      "url": "https://github.com/Konstanty/libmodplug/archive/d1b97ed0020bc620a059d3675d1854b40bd2608d.tar.gz",
+      "hash": "1s1j9bqi4b31nwj1aq1crja1gi0b44l3afdqz9a1f4yl49n804y0"
+    },
+    "mpg123": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "madebr",
+        "repo": "mpg123"
+      },
+      "branch": "master",
+      "revision": "45fbaaeb00072d689b9c2ac4b7d109343f30abee",
+      "url": "https://github.com/madebr/mpg123/archive/45fbaaeb00072d689b9c2ac4b7d109343f30abee.tar.gz",
+      "hash": "15axr8cw6n4nv97x44bzv2cvmhr26kk0afv45f6c5kq4h5f9r6kn"
+    },
+    "openal": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "kcat",
+        "repo": "openal-soft"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "version": "1.24.1",
+      "revision": "90191edd20bb877c5cbddfdac7ec0fe49ad93727",
+      "url": "https://api.github.com/repos/kcat/openal-soft/tarball/1.24.1",
+      "hash": "12hwksc1qdjqidm7izrv79p6vdh9sx10g00pah0hsj8y9rsyyfaq"
+    },
+    "opusfile_git": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "xiph",
+        "repo": "opusfile"
+      },
+      "branch": "master",
+      "revision": "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166",
+      "url": "https://github.com/xiph/opusfile/archive/9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166.tar.gz",
+      "hash": "1d2zcmrgsb2bmdb6axz7gxrzk0lkkhcy617hglby18pspzfwfawk"
+    },
+    "vorbis": {
+      "type": "Git",
+      "repository": {
+        "type": "GitHub",
+        "owner": "xiph",
+        "repo": "vorbis"
+      },
+      "branch": "master",
+      "revision": "84c023699cdf023a32fa4ded32019f194afcdad0",
+      "url": "https://github.com/xiph/vorbis/archive/84c023699cdf023a32fa4ded32019f194afcdad0.tar.gz",
+      "hash": "00g9nj5f9x9g3knf00bxfllcfks364x8xp6vnwp4yswnbr2al9n0"
+    },
+    "wavpack": {
+      "type": "GitRelease",
+      "repository": {
+        "type": "GitHub",
+        "owner": "dbry",
+        "repo": "WavPack"
+      },
+      "pre_releases": false,
+      "version_upper_bound": null,
+      "release_prefix": null,
+      "version": "5.7.0",
+      "revision": "63dd3fa3b69fc236cc17886af6d4bd7dbe856125",
+      "url": "https://api.github.com/repos/dbry/WavPack/tarball/5.7.0",
+      "hash": "0kbyclc8n4cma5nc3cm17avbdjap75h10bvzlz54xa4mb61p2mmw"
+    }
+  },
+  "version": 3
+}

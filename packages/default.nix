@@ -1,5 +1,6 @@
 {
   lib,
+  pins,
   writeText,
   stdenv,
   callPackage,
