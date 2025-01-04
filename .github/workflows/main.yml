@@ -29,11 +29,11 @@ jobs:
       - name: Calculate cache hash based on nixpkgs' revision
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
-          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"            
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - uses: nix-community/cache-nix-action/restore@v5.1.0
         with:
           primary-key: build-fpc-${{ runner.os }}-${{ env.NIXPKGS_REV }}
-          fail-on: primary-key.miss        
+          fail-on: primary-key.miss
       - name: Update Doom2D related inputs and populate environment variables
         run: |
           bash ./game/bundle/scripts/mkEnv.bash
@@ -57,15 +57,29 @@ jobs:
           name: doom2df-win32
           path: doom2df-win32.zip
           if-no-files-found: error
+      - name: Calculate new build number
+        run: |
+          bash ./game/bundle/scripts/mkZip.bash
+          GITHUB_RESPONSE_FILE=github_response
+          TODAY=$(date +'%Y-%m-%d')
+          curl \
+            -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/releases \
+            -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
+            > $GITHUB_RESPONSE_FILE
+          TODAY_RELEASES_COUNT=$(jq --arg TODAY $TODAY '[.[] | select(.prerelease == true and (.created_at | startswith($TODAY) ) )] | length' $GITHUB_RESPONSE_FILE)
+          THIS_RELEASE_COUNT=$(( $TODAY_RELEASES_COUNT + 1 ))
+          RELEASE_PREFIX="0.667b"
+          RELEASE_NAME="${RELEASE_PREFIX}-$(date +'%Y.%m.%d')-$THIS_RELEASE_COUNT"
+          echo "RELEASE_NAME=\"$RELEASE_NAME\"" >> $GITHUB_ENV
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
           artifacts: doom2df-win32.zip, doom2df-android.apk
           token: ${{ secrets.GITHUB_TOKEN }}
-          name: Doom2D Forever builds (latest commit)
+          name: ${{ env.RELEASE_NAME }}
           bodyFile: release_body
-          tag: doom2dforever
-          allowUpdates: true
+          tag: ${{ env.RELEASE_NAME }}
+          allowUpdates: false
           artifactErrorsFailBuild: true
           prerelease: true
           replacesArtifacts: true
