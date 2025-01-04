@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 [ ! -f "df_distro_content.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.rar
 if [ ! -d "android" ]; then
     mkdir -p android/assets

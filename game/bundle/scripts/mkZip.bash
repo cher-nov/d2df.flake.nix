@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 export IS_WINDOWS=1
 
 mkdir -p doom2df-win32
