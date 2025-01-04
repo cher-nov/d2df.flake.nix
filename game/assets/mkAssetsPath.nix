@@ -5,9 +5,6 @@
   shrshadeWad,
   gameWad,
   editorWad,
-  botlist,
-  botnames,
-  flexuiWad,
   editorLangRu,
   extraRoots ? [],
   stdenvNoCC,
@@ -32,9 +29,6 @@ stdenvNoCC.mkDerivation {
     cp ${standartWad} wads/standart.wad
     cp ${editorWad} data/editor.wad
     cp ${gameWad} data/game.wad
-    cp ${flexuiWad} data/flexui.wad
-    cp ${botlist} data/botlist.txt
-    cp ${botnames} data/botnames.txt
     cp ${editorLangRu} data/lang/
     ${lib.concatStringsSep "\n"
       (lib.map

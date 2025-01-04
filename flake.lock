@@ -3,13 +3,13 @@
     "d2df-distro-content": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-rPt8UnBUMdjIqyLxD4c5289wNZvCzC9b0FS4blIaAfc=",
+        "narHash": "sha256-9zJDaoilo1Wng2GjpdPqPq/BBbkt3t4xdD+2x0ReImc=",
         "type": "file",
-        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z"
+        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.rar"
       },
       "original": {
         "type": "file",
-        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z"
+        "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.rar"
       }
     },
     "d2df-editor": {

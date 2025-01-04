@@ -18,7 +18,7 @@
       flake = false;
     };
     d2df-distro-content = {
-      url = "https://doom2d.org/doom2d_forever/latest/df_distro_content.7z";
+      url = "https://doom2d.org/doom2d_forever/latest/df_distro_content.rar";
       flake = false;
     };
   };
@@ -108,6 +108,8 @@
             coreutils
             openjdk
             npins
+            unrar-wrapper
+            rar
           ];
         };
       };

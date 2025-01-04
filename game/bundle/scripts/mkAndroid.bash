@@ -1,8 +1,8 @@
 #!/bin/bash
-[ ! -f "df_distro_content.7z" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.7z
+[ ! -f "df_distro_content.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.rar
 if [ ! -d "android" ]; then
     mkdir -p android/assets
-    7zz x -y -ssp df_distro_content.7z -oandroid/assets
+    rar x -tsp df_distro_content.rar android/assets
 fi
 
 nix build --print-build-logs .#android.bundles.default

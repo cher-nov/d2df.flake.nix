@@ -51,7 +51,6 @@
         You can download additional maps or user skins on our website: https://doom2d.org
       '';
     in [findMoreContentTxt];
-    inherit (dirtyAssets) flexuiWad botlist botnames;
   };
   createBundlesAndExecutables = lib.mapAttrs (arch: archAttrs: let
     info = archAttrs.infoAttrs.d2dforeverFeaturesSuport;
