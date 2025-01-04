@@ -171,7 +171,7 @@
     lib.mapAttrs (name: value:
       if pins ? "${name}"
       then
-        lib.trace "${name}" (value.overrideAttrs (final: prev: {
+        (value.overrideAttrs (final: prev: {
           version = pins.${name}.revision;
           src = pins.${name};
         }))

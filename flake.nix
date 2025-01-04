@@ -84,7 +84,7 @@
       legacyPackages = import ./packages {
         inherit lib;
         inherit pins;
-        inherit (pkgs) callPackage writeText stdenv;
+        inherit (pkgs) callPackage writeText linkFarmFromDrvs stdenv;
         inherit (d2dfPkgs) buildWad;
         inherit doom2df-res d2df-editor;
         inherit (assets) mkAssetsPath dirtyAssets androidRoot;
@@ -92,6 +92,13 @@
         inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
         executablesAttrs = self.executables.${system};
       };
+
+      forPrebuild = let
+        thisPkgs = self.legacyPackages.${system};
+        allArches = lib.filter (x: x != "universal" && x != "android") (lib.attrNames thisPkgs);
+        allDrvs = lib.flatten (lib.map (arch: thisPkgs.${arch}.__forPrebuild) allArches);
+      in
+        pkgs.linkFarmFromDrvs "cache" allDrvs;
 
       devShells = {
         default = pkgs.mkShell {

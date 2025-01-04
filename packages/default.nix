@@ -197,6 +197,13 @@
     });
   in {
     __archPkgs = archAttrs;
+    __forPrebuild = lib.filterAttrs (n: v:
+      !((lib.hasPrefix "fpc" n)
+        || (lib.hasPrefix "lazarus" n)
+        || (lib.hasPrefix "infoAttrs" n)
+        || (lib.hasPrefix "doom2d" n)
+        || (lib.hasPrefix "editor" n)))
+    archAttrs;
     inherit defaultExecutable executables bundles;
   });
 in
