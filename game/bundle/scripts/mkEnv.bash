@@ -2,6 +2,7 @@
 export TZ="Europe/Moscow"
 nix flake update d2df-sdl d2df-editor doom2df-res
 
+NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
 D2DF_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-sdl".locked.rev')
 EDITOR_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-editor".locked.rev')
 RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."doom2df-res".locked.rev')
@@ -17,6 +18,7 @@ RES_LAST_COMMIT_DATE=$(git    --git-dir DF-Res/.git      show -s --format=%ad --
 DISTRO_CONTENT_CREATION_DATE="$(rar ltb '-x*' "$DISTRO_CONTENT_PATH" | grep "Original time" | cut -d' ' -f3-)"
 DISTRO_CONTENT_CREATION_DATE_PRETTY="$(date --date="$DISTRO_CONTENT_CREATION_DATE" +'%d %B %Y %H:%M %Z')"
 
+echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
 echo "D2DF_REV=$D2DF_REV" >> "$GITHUB_ENV"
 echo "EDITOR_REV=$RES_REV" >> "$GITHUB_ENV"
 echo "RES_REV=$RES_REV" >> "$GITHUB_ENV"
@@ -26,5 +28,5 @@ echo "RES_LAST_COMMIT_DATE=\"$RES_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
 echo "DISTRO_CONTENT_CREATION_DATE=\"$DISTRO_CONTENT_CREATION_DATE\"" >> "$GITHUB_ENV"
 echo "DISTRO_CONTENT_CREATION_DATE_PRETTY=\"$DISTRO_CONTENT_CREATION_DATE_PRETTY\"" >> "$GITHUB_ENV"
 printf \
-    'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s\n\nGame content used for this build is as of: %s' \
-    "$D2DF_REV" "$RES_REV" "$EDITOR_REV" "$DISTRO_CONTENT_CREATION_DATE_PRETTY" > release_body
+    'This build has the following inputs:\nd2df-sdl: %s\ndoom2d-res: %s\nd2df-editor: %s\nnixpkgs: %s\n\nGame content used for this build is as of: %s' \
+    "$D2DF_REV" "$RES_REV" "$EDITOR_REV" "$NIXPKGS_REV" "$DISTRO_CONTENT_CREATION_DATE_PRETTY" > release_body
