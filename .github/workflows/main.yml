@@ -30,15 +30,10 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Restore toolchain cache
+      - name: Restore cache
         uses: nix-community/cache-nix-action/restore@v5.1.0
         with:
-          primary-key: build-fpc-${{ runner.os }}-${{ env.NIXPKGS_REV }}
-          fail-on: primary-key.miss
-      - name: Restore auxiliary cache
-        uses: nix-community/cache-nix-action/restore@v5.1.0
-        with:
-          primary-key: build-aux-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
           fail-on: primary-key.miss
       - name: Update Doom2D related inputs and populate environment variables
         run: |

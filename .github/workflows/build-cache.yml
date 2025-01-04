@@ -32,7 +32,13 @@ jobs:
       - name: Build lazarus-3_6
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus-3_6
+      - name: Build assets
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath
+      - name: Build libraries for all platforms
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux          
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
-          primary-key: build-fpc-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
