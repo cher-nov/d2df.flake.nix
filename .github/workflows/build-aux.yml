@@ -1,0 +1,38 @@
+name: Build auxiliary cache with libraries and assets
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nixbuild/nix-quick-install-action@v29
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: true
+      # To make the environment in the flake's devShell available to future steps:
+      - uses: rrbutani/use-nix-shell-action@v1
+        with:
+          devShell: .#default
+      - name: Calculate cache hash based on nixpkgs' revision
+        run: |
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
+      - name: Build assets
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath
+      - name: Build libraries for all platforms
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux
+      - name: Save Nix store
+        uses: nix-community/cache-nix-action/save@v5.1.0
+        with:
+          primary-key: build-aux-${{ runner.os }}-${{ env.NIXPKGS_REV }}

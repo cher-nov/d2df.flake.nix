@@ -17,6 +17,8 @@ find doom2df-win32 -exec chmod 777 {} \;
 find doom2df-win32/executables/ -type f -iname 'doom2df*' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
 find doom2df-win32/executables/ -type f -iname 'editor*' -exec touch -d "$EDITOR_LAST_COMMIT_DATE" {} \;
 find doom2df-win32/assets/ -type f -exec touch -d "$RES_LAST_COMMIT_DATE" {} \;
+find doom2df-win32/assets/data/lang/ -type f  -iname 'editor*.lng' -exec touch -d "$EDITOR_LAST_COMMIT_DATE" {} \;
+touch -d "$DISTRO_CONTENT_CREATION_DATE" 'doom2df-win32/assets/Get MORE game content HERE.txt'
 
 if [[ -n "$IS_WINDOWS" ]]; then
     find doom2df-win32/executables/ -type f -iname '*.dll' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
