@@ -8,7 +8,7 @@
   lib,
   SDL2ForJava,
   androidRoot,
-  androidRes,
+  androidIcons,
   gameAssetsPath,
   gameExecutablePath,
 }:
@@ -34,7 +34,7 @@ in {
       mkdir -p resources aux/lib
     ''
     + ''
-      cp -r ${androidRes}/* res
+      cp -r ${androidIcons}/* res
       cp -r ${gameAssetsPath}/* resources/
       cp -r ${gameExecutablePath}/* aux/lib/
     ''

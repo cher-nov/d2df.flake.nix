@@ -8,7 +8,7 @@
   mkGamePath,
   mkAndroidApk,
   androidRoot,
-  androidRes,
+  androidIcons,
 }: let
   createBundlesAndExecutables = lib.mapAttrs (arch: archAttrs: let
     info = archAttrs.infoAttrs.d2dforeverFeaturesSuport;
@@ -210,7 +210,7 @@ in
           androidSdk = sdk;
           SDL2ForJava = sdl;
           gameAssetsPath = defaultAssetsPath;
-          inherit androidRoot androidRes gameExecutablePath;
+          inherit androidRoot androidIcons gameExecutablePath;
         };
       };
       executables = {};
