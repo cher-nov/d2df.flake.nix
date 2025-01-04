@@ -66,7 +66,9 @@
       libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
       libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis;
       opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
-      libopus = pkgs.pkgsCross.${crossTarget}.libopus;
+      libopus = pkgs.pkgsCross.${crossTarget}.libopus.overrideAttrs (final: prev: {
+        nativeBuildInputs = [pkgs.autoreconfHook];
+      });
       libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123;
       game-music-emu = pkgs.pkgsCross.${crossTarget}.game-music-emu;
       wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
@@ -82,7 +84,9 @@
             mv $out/bin/libminiupnpc.dll $out/bin/miniupnpc.dll
           '';
       });
-      libxmp = pkgs.pkgsCross.${crossTarget}.libxmp;
+      libxmp = pkgs.pkgsCross.${crossTarget}.libxmp.overrideAttrs (final: prev: {
+        nativeBuildInputs = [pkgs.autoreconfHook];
+      });
       libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
       fmodex = let
         drv = {

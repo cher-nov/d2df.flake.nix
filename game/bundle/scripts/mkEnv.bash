@@ -1,5 +1,5 @@
 #!/bin/bash
-export TZ=Europe/Moscow
+export TZ="Europe/Moscow"
 nix flake update d2df-sdl d2df-editor doom2df-res
 
 D2DF_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."d2df-sdl".locked.rev')

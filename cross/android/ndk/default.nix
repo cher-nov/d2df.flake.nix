@@ -22,7 +22,8 @@
     cmake = "${androidSdk}/libexec/android-sdk/cmake/3.22.1/bin/cmake";
   in
     pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
-      inherit pname version src;
+      inherit version src;
+      pname = "${pname}-${androidAbi}";
 
       dontStrip = true;
       dontPatchELF = true;

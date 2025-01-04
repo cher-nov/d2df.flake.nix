@@ -56,7 +56,7 @@
       bundles = import ./game/bundle {
         inherit (pkgs) callPackage;
       };
-      assets = import ./game/assets {
+      assetsLib = import ./game/assets {
         inherit (pkgs) callPackage;
       };
 
@@ -71,7 +71,7 @@
       in
         lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues nativeArches)));
 
-      assets = assets;
+      assetsLib = assetsLib;
 
       executables = import ./packages/executables.nix {
         inherit pkgs lib fpcPkgs d2dfPkgs;
@@ -79,16 +79,22 @@
         inherit pins;
       };
 
+      assets = import ./packages/assets.nix {
+        inherit lib;
+        inherit (pkgs) callPackage stdenv writeText;
+        inherit doom2df-res d2df-editor;
+        inherit (d2dfPkgs) buildWad;
+        inherit (assetsLib) mkAssetsPath;
+      };
+
       inherit pins;
 
       legacyPackages = import ./packages {
         inherit lib;
         inherit pins;
-        inherit (pkgs) callPackage writeText linkFarmFromDrvs stdenv;
-        inherit (d2dfPkgs) buildWad;
-        inherit doom2df-res d2df-editor;
-        inherit (assets) mkAssetsPath dirtyAssets androidRoot;
-        androidRes = assets.androidIcons;
+        inherit (pkgs) callPackage;
+        inherit (assetsLib) androidRoot androidRes;
+        defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
         inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
         executablesAttrs = self.executables.${system};
       };
