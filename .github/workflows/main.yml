@@ -50,9 +50,14 @@ jobs:
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
           DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
         run: |
+          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
+          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
+          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
+          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
+
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
