@@ -5,7 +5,7 @@ in {
   buildWad = {
     outName ? "game",
     lstPath ? "game.lst",
-    doom2df-res,
+    DF-res,
     buildWadScript ? standard,
     stdenvNoCC,
     gnused,
@@ -28,9 +28,9 @@ in {
       buildPhase =
         # FIXME
         # Script should be able to support arbitrary paths, not just in the current directory
-        # But it doesn't for now, so we copy files from doom2df-res to build directory.
+        # But it doesn't for now, so we copy files from DF-ress to build directory.
         ''
-          cp -r ${doom2df-res}/*WAD ${doom2df-res}/*.lst .
+          cp -r ${DF-res}/*WAD ${DF-res}/*.lst .
         ''
         # FIXME
         # For some reason, shrshade.lst specifies the source folder in lowercase.

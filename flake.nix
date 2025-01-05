@@ -5,7 +5,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
 
-    doom2df-res = {
+    DF-res = {
       url = "github:Doom2D/DF-Res";
       flake = false;
     };
@@ -27,7 +27,7 @@
     nixpkgs,
     flake-utils,
     nix-github-actions,
-    doom2df-res,
+    DF-res,
     d2df-sdl,
     d2df-editor,
     d2df-distro-content,
@@ -63,7 +63,7 @@
       pins = import ./npins;
     in {
       dfInputs = {
-        inherit d2df-sdl d2df-editor doom2df-res d2df-distro-content;
+        inherit d2df-sdl d2df-editor DF-res d2df-distro-content;
       };
 
       checks = let
@@ -82,7 +82,7 @@
       assets = import ./packages/assets.nix {
         inherit lib;
         inherit (pkgs) callPackage stdenv writeText;
-        inherit doom2df-res d2df-editor;
+        inherit DF-res d2df-editor;
         inherit (d2dfPkgs) buildWad;
         inherit (assetsLib) mkAssetsPath;
       };

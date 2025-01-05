@@ -14,5 +14,5 @@ jobs:
       - name: Run Nix checks
         id: set-matrix
         run: |
-          nix flake update d2df-sdl d2df-editor doom2df-res
+          nix flake update d2df-sdl d2df-editor DF-res
           nix flake check

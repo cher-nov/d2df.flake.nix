@@ -3,7 +3,7 @@
   callPackage,
   stdenv,
   writeText,
-  doom2df-res,
+  DF-res,
   d2df-editor,
   buildWad,
   mkAssetsPath,
@@ -14,7 +14,7 @@
       outName = wad;
       lstPath = "${wad}.lst";
       dfwadCompression = "best";
-      inherit doom2df-res;
+      inherit DF-res;
     };
   }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
   defaultAssetsPath = mkAssetsPath {
