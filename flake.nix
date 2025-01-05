@@ -42,6 +42,9 @@
         };
         overlays = [
           (final: prev: {
+            wadcvt = final.callPackage d2dfPkgs.wadcvt {
+              inherit d2df-sdl;
+            };
             dfwad = final.callPackage d2dfPkgs.dfwad {};
           })
         ];
@@ -89,15 +92,19 @@
 
       inherit pins;
 
-      legacyPackages = import ./packages {
-        inherit lib;
-        inherit pins;
-        inherit (pkgs) callPackage;
-        inherit (assetsLib) androidRoot androidIcons;
-        defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
-        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
-        executablesAttrs = self.executables.${system};
-      };
+      legacyPackages =
+        (import ./packages {
+          inherit lib;
+          inherit pins;
+          inherit (pkgs) callPackage;
+          inherit (assetsLib) androidRoot androidIcons;
+          defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
+          inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
+          executablesAttrs = self.executables.${system};
+        })
+        // {
+          inherit (pkgs) wadcvt dfwad;
+        };
 
       forPrebuild = let
         thisPkgs = self.legacyPackages.${system};

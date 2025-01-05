@@ -22,6 +22,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   installPhase = ''
-    cp src/tools/wadcvt $out
+    mkdir -p $out/bin
+    cp src/tools/wadcvt $out/bin
   '';
 })
