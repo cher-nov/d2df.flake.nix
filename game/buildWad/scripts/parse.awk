@@ -49,7 +49,7 @@ BEGIN {
 		next
 	} else {
 		if (!currentDir) destPath = prefix "/" targetFile
-		else destPath = currentDir "/" targetFile targetFileExtension
+		else destPath = currentDir "/" targetFile
 		system("cp -r -p " sourceFile " " destPath)
 	}
 }
