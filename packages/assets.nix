@@ -6,6 +6,7 @@
   DF-res,
   d2df-editor,
   buildWad,
+  dfwad,
   mkAssetsPath,
 }: rec {
   wads = lib.listToAttrs (lib.map (wad: {
@@ -15,6 +16,7 @@
       lstPath = "${wad}.lst";
       dfwadCompression = "best";
       inherit DF-res;
+      inherit dfwad;
     };
   }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
   defaultAssetsPath = mkAssetsPath {

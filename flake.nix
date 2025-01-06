@@ -45,12 +45,9 @@
             wadcvt = final.callPackage d2dfPkgs.wadcvt {
               inherit d2df-sdl;
             };
-            dfwad =
-              (final.callPackage d2dfPkgs.dfwad {
-                })
-              .overrideAttrs (final: prev: {
-                src = pins.dfwad.src;
-              });
+            dfwad = final.callPackage d2dfPkgs.dfwad {
+              src = pins.dfwad.src;
+            };
           })
         ];
       };
@@ -91,7 +88,7 @@
 
       assets = import ./packages/assets.nix {
         inherit lib;
-        inherit (pkgs) callPackage stdenv writeText;
+        inherit (pkgs) callPackage stdenv writeText dfwad;
         inherit DF-res d2df-editor;
         inherit (d2dfPkgs) buildWad;
         inherit (assetsLib) mkAssetsPath;

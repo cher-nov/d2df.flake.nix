@@ -2,13 +2,14 @@
   lib,
   fetchFromGitHub,
   rustPlatform,
+  src,
 }:
 rustPlatform.buildRustPackage rec {
   pname = "dfwad";
   version = "v0.1.0";
   buildType = "debug";
 
-  src = null;
+  inherit src;
 
   cargoHash = "sha256-SDiDQ7XoWc0aS+6JlpMwBwMVQUCWMqUt8Xs8gbcW26s=";
 
