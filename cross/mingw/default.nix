@@ -207,6 +207,7 @@
         supportsHeadless = true;
         loadedAsLibrary = false;
       };
+      caseSensitive = false;
       bundleFormats = ["zip"];
       isWindows = true;
       isAndroid = false;

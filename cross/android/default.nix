@@ -46,6 +46,7 @@
       isAndroid = true;
       isWindows = false;
       bundleFormats = ["apk"];
+      caseSensitive = true;
       pretty = "Android ${androidAbi}, platform level ${androidPlatform}, NDK ${ndkVersion}";
       d2dforeverFeaturesSuport = {
         openglDesktop = false;
@@ -83,6 +84,7 @@
       isAndroid = true;
       isWindows = false;
       bundleFormats = ["apk"];
+      caseSensitive = true;
       pretty = "Android ${androidAbi}, platform level ${androidPlatform}, NDK ${ndkVersion}";
       d2dforeverFeaturesSuport = {
         openglDesktop = false;

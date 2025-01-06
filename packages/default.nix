@@ -150,7 +150,7 @@
             };
           };
         };
-        gameAssetsPath = defaultAssetsPath;
+        gameAssetsPath = defaultAssetsPath.override {toLower = archAttrs.infoAttrs.caseSensitive;};
       };
     });
   in {
@@ -209,7 +209,7 @@ in
         default = mkAndroidApk {
           androidSdk = sdk;
           SDL2ForJava = sdl;
-          gameAssetsPath = defaultAssetsPath;
+          gameAssetsPath = defaultAssetsPath.override {toLower = true;};
           inherit androidRoot androidIcons gameExecutablePath;
         };
       };
