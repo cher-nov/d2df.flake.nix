@@ -40,6 +40,7 @@
             -DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake \
             -DCMAKE_POLICY_DEFAULT_CMP0057=NEW \
             -DBUILD_SHARED_LIBS=ON -DANDROID_ABI=${androidAbi} -DANDROID_PLATFORM=${androidPlatform} \
+            -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=$out -DANDROID_STL=c++_static \
             ${cmakeExtraArgs}
         make -j$(nproc)

@@ -155,6 +155,7 @@
       };
       game-music-emu = customNdkPkgs.game-music-emu {
         inherit androidSdk androidNdk androidAbi androidPlatform;
+        cmakeExtraArgs = "-DENABLE_UBSAN=off";
       };
       libmpg123 = customNdkPkgs.libmpg123 {
         inherit androidSdk androidNdk androidAbi androidPlatform;
