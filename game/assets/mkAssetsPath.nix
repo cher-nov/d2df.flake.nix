@@ -24,7 +24,7 @@ stdenvNoCC.mkDerivation {
   buildPhase = ''
     mkdir -p data/models wads maps/megawads/ data/lang
     cp ${doom2dWad} maps/megawads/Doom2D.WAD
-    cp ${doomerWad} data/models/Doomer.WAD
+    cp ${doomerWad} data/models/Doomer.wad
     cp ${shrshadeWad} wads/shrshade.WAD
     cp ${standartWad} wads/standart.WAD
     cp ${editorWad} data/editor.WAD
