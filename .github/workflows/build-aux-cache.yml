@@ -1,4 +1,4 @@
-name: Build toolchains
+name: Build auxiliary cache
 
 on:
   workflow_dispatch:
@@ -26,19 +26,23 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Build fpc-3_2_2
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-3_2_2
-      - name: Build lazarus-3_6
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus-3_6
+      - name: Restore toolchain cache
+        uses: nix-community/cache-nix-action/restore@v5.1.0
+        with:
+          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          fail-on: primary-key.miss          
       - name: Build assets
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath
+          OUT_PATH=$(nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath)
+          ln -s "${OUT_PATH}" /nix/var/nix/gcroots/assets
       - name: Build libraries for all platforms
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux
+          OUT_PATH=$(nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux)
+          ln -s "${OUT_PATH}" /nix/var/nix/gcroots/prebuild
+      - name: Run GC
+        run: |
+          nix-collect-garbage -d
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
-          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          primary-key: build-aux-${{ runner.os }}-${{ env.NIXPKGS_REV }}
