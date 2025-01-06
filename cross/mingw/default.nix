@@ -63,13 +63,26 @@
               (lib.enableFeature false "music-mod-xmp-shared")
             ];
         });
-      libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug;
-      libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis;
-      opusfile = pkgs.pkgsCross.${crossTarget}.opusfile;
+      libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug.overrideAttrs (final: prev: {
+        nativeBuildInputs = [pkgs.autoreconfHook];
+      });
+      libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis.overrideAttrs (final: prev: {
+        patches = [];
+        nativeBuildInputs = [pkgs.autoreconfHook];
+        outputs = ["out"];
+      });
+      opusfile = pkgs.pkgsCross.${crossTarget}.opusfile.overrideAttrs (final: prev: {
+        patches = lib.filter (patch: lib.hasSuffix "multistream.patch" patch) prev.patches;
+        nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
+        outputs = ["out"];
+        configureFlags = ["--disable-examples" "--disable-http"];
+      });
       libopus = pkgs.pkgsCross.${crossTarget}.libopus.overrideAttrs (final: prev: {
         nativeBuildInputs = [pkgs.autoreconfHook];
       });
-      libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123;
+      libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123.overrideAttrs (final: prev: {
+        nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
+      });
       game-music-emu = pkgs.pkgsCross.${crossTarget}.game-music-emu;
       wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
       miniupnpc = (pkgs.pkgsCross.${crossTarget}.miniupnpc.override {stdenv = stdenvWin32Threads;}).overrideAttrs (final: {
@@ -85,7 +98,9 @@
           '';
       });
       libxmp = pkgs.pkgsCross.${crossTarget}.libxmp.overrideAttrs (final: prev: {
-        nativeBuildInputs = [pkgs.autoreconfHook];
+        patches = [];
+        nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
+        outputs = ["out"];
       });
       libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
       fmodex = let

@@ -99,23 +99,24 @@
 
       inherit pins;
 
-      legacyPackages =
-        (import ./packages {
-          inherit lib;
-          inherit pins;
-          inherit (pkgs) callPackage;
-          inherit (assetsLib) androidRoot androidIcons;
-          defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
-          inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
-          executablesAttrs = self.executables.${system};
-        })
-        // {
-          inherit (pkgs) wadcvt dfwad;
-        };
+      legacyPackages = import ./packages {
+        inherit lib;
+        inherit pins;
+        inherit (pkgs) callPackage;
+        inherit (assetsLib) androidRoot androidIcons;
+        defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
+        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
+        executablesAttrs = self.executables.${system};
+      };
+
+      packages = {
+        inherit (pkgs) wadcvt dfwad;
+      };
 
       forPrebuild = let
         thisPkgs = self.legacyPackages.${system};
-        allArches = lib.filter (x: x != "universal" && x != "android") (lib.attrNames thisPkgs);
+        nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
+        allArches = lib.attrNames nativeArches;
         allDrvs = lib.flatten (lib.map (arch: thisPkgs.${arch}.__forPrebuild) allArches);
       in
         pkgs.linkFarmFromDrvs "cache" allDrvs;
