@@ -176,8 +176,8 @@
       if pins ? "${name}"
       then
         (value.overrideAttrs (final: prev: {
-          version = pins.${name}.revision;
-          src = pins.${name};
+          version = pins.${name}.version;
+          src = pins.${name}.src;
         }))
       else value)
     set;

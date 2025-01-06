@@ -1,0 +1,62 @@
+[SDL2]
+src.github = "libsdl-org/SDL"
+fetch.github = "libsdl-org/SDL"
+src.include_regex = "release-2.*"
+
+[SDL2_mixer]
+src.github = "libsdl-org/SDL_mixer"
+fetch.github = "libsdl-org/SDL_mixer"
+src.include_regex = "release-2.*"
+
+[enet]
+src.git = "https://github.com/lsalzman/enet"
+fetch.git = "https://github.com/lsalzman/enet"
+
+[wavpack]
+src.github = "dbry/WavPack"
+fetch.github = "dbry/WavPack"
+
+[libvorbis]
+src.github = "xiph/vorbis"
+fetch.github = "xiph/vorbis"
+
+[opusfile]
+src.git = "https://github.com/xiph/opusfile"
+fetch.git = "https://github.com/xiph/opusfile"
+
+[openal]
+src.github = "kcat/openal-soft"
+fetch.github = "kcat/openal-soft"
+
+[libmpg123]
+src.git = "https://github.com/madebr/mpg123"
+fetch.git = "https://github.com/madebr/mpg123"
+
+[libmodplug]
+src.git = "https://github.com/Konstanty/libmodplug"
+fetch.git = "https://github.com/Konstanty/libmodplug"
+
+[libxmp]
+src.github = "libxmp/libxmp"
+fetch.github = "libxmp/libxmp"
+
+[libopus]
+src.github = "xiph/opus"
+fetch.github = "xiph/opus"
+
+[libogg]
+src.github = "xiph/ogg"
+fetch.github = "xiph/ogg"
+
+[game-music-emu]
+src.github = "libgme/game-music-emu"
+fetch.github = "libgme/game-music-emu"
+
+[fluidsynth]
+src.git = "https://github.com/DominusExult/fluidsynth-sans-glib.git"
+fetch.git = "https://github.com/DominusExult/fluidsynth-sans-glib.git"
+src.branch = "sans_glib"
+
+[dfwad]
+src.git = "https://github.com/Doom2D/dfwad"
+fetch.git = "https://github.com/Doom2D/dfwad"

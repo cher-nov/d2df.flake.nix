@@ -45,7 +45,12 @@
             wadcvt = final.callPackage d2dfPkgs.wadcvt {
               inherit d2df-sdl;
             };
-            dfwad = final.callPackage d2dfPkgs.dfwad {};
+            dfwad =
+              (final.callPackage d2dfPkgs.dfwad {
+                })
+              .overrideAttrs (final: prev: {
+                src = pins.dfwad.src;
+              });
           })
         ];
       };
@@ -63,7 +68,9 @@
         inherit (pkgs) callPackage;
       };
 
-      pins = import ./npins;
+      pins = import ./pins/generated.nix {
+        inherit (pkgs) fetchgit fetchurl fetchFromGitHub dockerTools;
+      };
     in {
       dfInputs = {
         inherit d2df-sdl d2df-editor DF-res d2df-distro-content;

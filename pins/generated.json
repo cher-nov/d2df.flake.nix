@@ -1,0 +1,311 @@
+{
+    "SDL2": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "SDL2",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "libsdl-org",
+            "repo": "SDL",
+            "rev": "release-2.30.11",
+            "sha256": "sha256-2NVZNqYhnAsljuF0BhBSJ5HmE9cS41gJep4Q3VxUGkY=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "release-2.30.11"
+    },
+    "SDL2_mixer": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "SDL2_mixer",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "libsdl-org",
+            "repo": "SDL_mixer",
+            "rev": "release-2.8.0",
+            "sha256": "sha256-jLKawxnwP5dJglUhgHfWgmKh27i32Rr4LcJQdpXasco=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "release-2.8.0"
+    },
+    "dfwad": {
+        "cargoLocks": null,
+        "date": "2025-01-06",
+        "extract": null,
+        "name": "dfwad",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "697d7d65441ee05841c2ea0fd6cb7c6bb544cfe9",
+            "sha256": "sha256-2/Lhbg1HQVdVwxto8KjDYeGOoY9uVoIGWr+ubYexZ+Y=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Doom2D/dfwad"
+        },
+        "version": "697d7d65441ee05841c2ea0fd6cb7c6bb544cfe9"
+    },
+    "enet": {
+        "cargoLocks": null,
+        "date": "2024-11-14",
+        "extract": null,
+        "name": "enet",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "657eaf97d9d335917c58484a4a4b5e03838ebd8e",
+            "sha256": "sha256-JIvasudVSQjWttg9fockmyJbGPrQe1hzsQRChpDzW8c=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/lsalzman/enet"
+        },
+        "version": "657eaf97d9d335917c58484a4a4b5e03838ebd8e"
+    },
+    "fluidsynth": {
+        "cargoLocks": null,
+        "date": "2025-01-01",
+        "extract": null,
+        "name": "fluidsynth",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "c313f04b26b701b6766bcc42340e33c120a1b7cb",
+            "sha256": "sha256-6b3aNBuT2B1bDSlTklJyjAhTjGZjcAQKTdtjvnFQKS0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/DominusExult/fluidsynth-sans-glib.git"
+        },
+        "version": "c313f04b26b701b6766bcc42340e33c120a1b7cb"
+    },
+    "game-music-emu": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "game-music-emu",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "libgme",
+            "repo": "game-music-emu",
+            "rev": "0.6.3",
+            "sha256": "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "0.6.3"
+    },
+    "libmodplug": {
+        "cargoLocks": null,
+        "date": "2022-01-31",
+        "extract": null,
+        "name": "libmodplug",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "d1b97ed0020bc620a059d3675d1854b40bd2608d",
+            "sha256": "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Konstanty/libmodplug"
+        },
+        "version": "d1b97ed0020bc620a059d3675d1854b40bd2608d"
+    },
+    "libmpg123": {
+        "cargoLocks": null,
+        "date": "2025-01-05",
+        "extract": null,
+        "name": "libmpg123",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "6e06824f9bc16f4fc247a00c331b69c1f8148c4e",
+            "sha256": "sha256-JezLmOf+qsqrv5qtYDYe0Ta7ykyfYVq8cZ0iHL7jvgk=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/madebr/mpg123"
+        },
+        "version": "6e06824f9bc16f4fc247a00c331b69c1f8148c4e"
+    },
+    "libogg": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "libogg",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "xiph",
+            "repo": "ogg",
+            "rev": "v1.3.5",
+            "sha256": "sha256-ync2np86Nje1R/g41VLhPhsld+yLZ40Pxv1wNzWCtss=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v1.3.5"
+    },
+    "libopus": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "libopus",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "xiph",
+            "repo": "opus",
+            "rev": "v1.5.2",
+            "sha256": "sha256-M1G7ypcfs7nJmXgkyoG96jT/CkgN5BOzy+DGO4LVCvA=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v1.5.2"
+    },
+    "libvorbis": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "libvorbis",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "xiph",
+            "repo": "vorbis",
+            "rev": "v1.3.7",
+            "sha256": "sha256-yCnbAxkbZN674F5HVd+DTmotvdtYnkJiO01B6foOiVY=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v1.3.7"
+    },
+    "libxmp": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "libxmp",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "libxmp",
+            "repo": "libxmp",
+            "rev": "libxmp-4.6.1",
+            "sha256": "sha256-jied4Rt1/Jh4OGFbQr4w1ALiXgsL3UYQEdJ2G/WRjqk=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "libxmp-4.6.1"
+    },
+    "openal": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "openal",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "kcat",
+            "repo": "openal-soft",
+            "rev": "1.24.1",
+            "sha256": "sha256-WDnvdU4eSQ0BVBeAB0LXCbZtbjo7/3hqi1g2HJieHIo=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "1.24.1"
+    },
+    "opusfile": {
+        "cargoLocks": null,
+        "date": "2022-11-22",
+        "extract": null,
+        "name": "opusfile",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166",
+            "sha256": "sha256-7LvZMtYEkOR89QaQu2S+4xAz7d76CNMrc1ptYG7vUlM=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/xiph/opusfile"
+        },
+        "version": "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166"
+    },
+    "wavpack": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "wavpack",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "dbry",
+            "repo": "WavPack",
+            "rev": "5.7.0",
+            "sha256": "sha256-vFZxg1mVqE7Kp38vEGA5V8m2tjqhssFsUZURixhlfk0=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "5.7.0"
+    }
+}

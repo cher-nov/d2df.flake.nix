@@ -56,86 +56,86 @@
 in rec {
   SDL2 = androidCmakeDrv rec {
     pname = "SDL2";
-    version = pins.SDL2.revision;
-    src = pins.SDL2;
+    version = pins.SDL2.version;
+    src = pins.SDL2.src;
   };
 
   enet = androidCmakeDrv {
     pname = "enet";
-    version = pins.enet.revision;
-    src = pins.enet;
+    version = pins.enet.version;
+    src = pins.enet.src;
   };
 
   SDL2_mixer = androidCmakeDrv {
     pname = "SDL2_mixer";
-    version = pins.SDL2_mixer.revision;
-    src = pins.SDL2_mixer;
+    version = pins.SDL2_mixer.version;
+    src = pins.SDL2_mixer.src;
   };
 
   # Upstream packaging is horrendous.
   opusfile = androidCmakeDrv {
     pname = "opusfile";
-    version = pins.opusfile_git.revision;
-    src = pins.opusfile_git;
+    version = pins.opusfile.version;
+    src = pins.opusfile.src;
   };
 
   libogg = androidCmakeDrv {
     pname = "libogg";
-    version = pins.libogg.revision;
-    src = pins.libogg;
+    version = pins.libogg.version;
+    src = pins.libogg.src;
   };
 
   libopus = androidCmakeDrv {
     pname = "opus";
-    version = pins.libopus.revision;
-    src = pins.libopus;
+    version = pins.libopus.version;
+    src = pins.libopus.src;
   };
 
   libxmp = androidCmakeDrv {
     pname = "libxmp";
-    version = pins.libxmp.revision;
-    src = pins.libxmp;
+    version = pins.libxmp.version;
+    src = pins.libxmp.src;
   };
 
   fluidsynth = androidCmakeDrv {
     pname = "fluidsynth";
-    version = pins.fluidsynth.revision;
-    src = pins.fluidsynth;
+    version = pins.fluidsynth.version;
+    src = pins.fluidsynth.src;
   };
 
   wavpack = androidCmakeDrv {
     pname = "wavpack";
-    version = pins.wavpack.revision;
-    src = pins.wavpack;
+    version = pins.wavpack.version;
+    src = pins.wavpack.src;
   };
 
   libmpg123 = androidCmakeDrv {
     pname = "mpg123";
-    version = pins.mpg123.revision;
-    src = pins.mpg123;
+    version = pins.libmpg123.version;
+    src = pins.libmpg123.src;
   };
 
   libvorbis = androidCmakeDrv {
     pname = "vorbis";
-    version = pins.vorbis.revision;
-    src = pins.vorbis;
+    version = pins.libvorbis.version;
+    src = pins.libvorbis.src;
   };
 
   game-music-emu = androidCmakeDrv {
     pname = "game-music-emu";
-    version = pins.game-music-emu.revision;
-    src = pins.game-music-emu;
+    version = pins.game-music-emu.version;
+    src = pins.game-music-emu.src;
   };
 
   libmodplug = androidCmakeDrv {
     pname = "libmodplug";
-    version = pins.modplug.revision;
-    src = pins.modplug;
+    version = pins.libmodplug.version;
+    src = pins.libmodplug.src;
   };
 
   openal = androidCmakeDrv {
     pname = "openal-soft";
-    version = pins.openal.revision;
-    src = pins.openal;
+    version = pins.openal.version;
+    src = pins.openal.src;
   };
 }
