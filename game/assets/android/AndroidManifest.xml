@@ -66,7 +66,7 @@
 
          An example Java class can be found in README-android.md
     -->
-    <application android:label="Doom 2D Forever"
+    <application android:label="Doom2D Forever"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -78,7 +78,7 @@
          -->
 
         <activity android:name="Doom2DF"
-            android:label="Doom 2D Forever"
+            android:label="Doom2D Forever"
             android:alwaysRetainTaskState="true"
             android:launchMode="singleInstance"
             android:configChanges="layoutDirection|locale|orientation|uiMode|screenLayout|screenSize|smallestScreenSize|keyboard|keyboardHidden|navigation"
