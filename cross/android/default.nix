@@ -171,16 +171,23 @@
           inherit androidSdk androidNdk androidAbi androidPlatform;
           cmakeExtraArgs = lib.concatStringsSep " " [
             "-DBUILD_SHARED_LIBS=on"
-            "-Denable-sdl2=on"
             "-Denable-threads=off"
             "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+            "-Denable-sdl2=on"
+            "-Denable-oboe=on"
+            "-Denable-opensles=on"
             "-DCMAKE_PREFIX_PATH=${SDL2}"
             "-DANDROID_NDK=${androidNdk}"
             "-DANDROID_COMPILER_FLAGS=\"-shared\""
           ];
         })
-        .overrideAttrs (prev: {
+        .overrideAttrs (final: prev: {
           nativeBuildInputs = [pkgs.buildPackages.stdenv.cc pkgs.pkg-config];
+          installPhase =
+            prev.installPhase
+            + ''
+              [[ -f "$out/lib64/libfluidsynth.so" ]] && cp -r $out/lib64/* $out/lib/ || echo "good"
+            '';
         });
       wavpack = customNdkPkgs.wavpack {
         inherit androidSdk androidNdk androidAbi androidPlatform;
@@ -259,7 +266,7 @@
               "-DSDL2MIXER_GME_SHARED=off"
 
               "-DSDL2MIXER_MIDI=on"
-              "-DSDL2MIXER_MIDI_TIMIDITY=off"
+              "-DSDL2MIXER_MIDI_TIMIDITY=on"
               "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
               "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
 
