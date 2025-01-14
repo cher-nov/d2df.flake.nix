@@ -7,6 +7,28 @@ if [ ! -d "android" ]; then
     rar x -tsp df_distro_content.rar android/assets
 fi
 
+# MIDI playback with fluidsynth won't work if timidity is not available and timidity.cfg can't be found.
+# This happens because CWD is set in other location, not relative to instruments/ folder.
+# There exists a hack in the game to switch CWD to a folder with timidity.cfg, and we use that.
+# So create timidity.cfg in either case.
+if [[ -n "${ASSETS_GUS:-}" || -n "${ASSETS_SOUNDFONT:-}" ]]; then
+    mkdir -p android/assets/instruments/
+    printf '%s\n%s\n%s' \
+        '# DO NOT REMOVE!!!' \
+        '# This file is a placeholder and is necessary even though fluidsynth is used.' \
+        '# It is essential because of a quirk with how the game handles MIDI playback.' \
+        > android/assets/timidity.cfg
+fi
+
+if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
+    cp "${ASSETS_SOUNDFONT}" android/assets/instruments/default.sf2
+fi
+
+if [[ -n "${ASSETS_GUS:-}" && -n "${TIMIDITY_CFG:-}" ]]; then
+    cp -r "${ASSETS_GUS}/*" android/assets/instruments/
+    cp "${TIMIDITY_CFG}" android/assets/timidity.cfg
+fi
+
 nix build --print-build-logs .#android.bundles.default
 cp result doom2df-android.apk
 chmod 777 doom2df-android.apk
