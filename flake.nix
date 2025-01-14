@@ -100,7 +100,7 @@
         inherit lib;
         inherit pins;
         inherit (pkgs) callPackage;
-        inherit (assetsLib) androidRoot androidIcons;
+        inherit (assetsLib) androidRoot androidIcons mkAndroidManifest;
         defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
         inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
         executablesAttrs = self.executables.${system};
