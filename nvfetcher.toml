@@ -53,9 +53,9 @@ src.github = "libgme/game-music-emu"
 fetch.github = "libgme/game-music-emu"
 
 [fluidsynth]
-src.git = "https://github.com/DominusExult/fluidsynth-sans-glib.git"
-fetch.git = "https://github.com/DominusExult/fluidsynth-sans-glib.git"
-src.branch = "sans_glib"
+src.git = "https://github.com/chirs241097/fluidsynth-sans-glib"
+fetch.git = "https://github.com/chirs241097/fluidsynth-sans-glib"
+src.branch = "patched"
 
 [dfwad]
 src.git = "https://github.com/Doom2D/dfwad"

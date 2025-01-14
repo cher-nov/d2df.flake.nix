@@ -43,7 +43,7 @@
     },
     "dfwad": {
         "cargoLocks": null,
-        "date": "2025-01-06",
+        "date": "2025-01-14",
         "extract": null,
         "name": "dfwad",
         "passthru": null,
@@ -53,13 +53,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "697d7d65441ee05841c2ea0fd6cb7c6bb544cfe9",
-            "sha256": "sha256-2/Lhbg1HQVdVwxto8KjDYeGOoY9uVoIGWr+ubYexZ+Y=",
+            "rev": "6f1f5578319833eed6c2d14a4edb3acadef72bd6",
+            "sha256": "sha256-ywsHzIW78U/C+jAsdSQ3WyGraA6t3E9BeDn14aUgCjk=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Doom2D/dfwad"
         },
-        "version": "697d7d65441ee05841c2ea0fd6cb7c6bb544cfe9"
+        "version": "6f1f5578319833eed6c2d14a4edb3acadef72bd6"
     },
     "enet": {
         "cargoLocks": null,
@@ -83,7 +83,7 @@
     },
     "fluidsynth": {
         "cargoLocks": null,
-        "date": "2025-01-01",
+        "date": "2021-11-07",
         "extract": null,
         "name": "fluidsynth",
         "passthru": null,
@@ -93,13 +93,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "c313f04b26b701b6766bcc42340e33c120a1b7cb",
-            "sha256": "sha256-6b3aNBuT2B1bDSlTklJyjAhTjGZjcAQKTdtjvnFQKS0=",
+            "rev": "209f46745a4cca9bf6367fae11920c7bce3b9681",
+            "sha256": "sha256-NZ6Fe5Tj3BTQw6yEggJL4IfhX/MOuGtQLJfltJuUDMo=",
             "sparseCheckout": [],
             "type": "git",
-            "url": "https://github.com/DominusExult/fluidsynth-sans-glib.git"
+            "url": "https://github.com/chirs241097/fluidsynth-sans-glib"
         },
-        "version": "c313f04b26b701b6766bcc42340e33c120a1b7cb"
+        "version": "209f46745a4cca9bf6367fae11920c7bce3b9681"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -260,12 +260,12 @@
             "name": null,
             "owner": "kcat",
             "repo": "openal-soft",
-            "rev": "1.24.1",
-            "sha256": "sha256-WDnvdU4eSQ0BVBeAB0LXCbZtbjo7/3hqi1g2HJieHIo=",
+            "rev": "1.24.2",
+            "sha256": "sha256-ECrIkxMACPsWehtJWwTmoYj6hGcsdxwVuTiQywG36Y8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "1.24.1"
+        "version": "1.24.2"
     },
     "opusfile": {
         "cargoLocks": null,
