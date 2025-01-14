@@ -24,8 +24,8 @@ stdenv.mkDerivation (finalAttrs: let
   androidManifest = mkAndroidManifest {
     packageName = "org.d2df.app";
     versionName = "0.667-git";
-    minSdkVersion = "14";
-    targetSdkVersion = "14";
+    minSdkVersion = "21";
+    targetSdkVersion = "23";
     glEsVersion = "0x00010001";
   };
 in {
