@@ -50,6 +50,10 @@ public class CopyAssets {
 	public static void copyAssets(Context context, String prefix) {
 		AssetManager assetManager = context.getAssets();
 		String[] files = null;
+		if (prefix != "") {
+			prefix = prefix + "/";
+		}
+
 		try {
 			files = assetManager.list(prefix);
 		} catch (IOException e) {
@@ -66,9 +70,9 @@ public class CopyAssets {
 						if (!f.exists()) {
 							f.mkdirs();
 						}
-						File outFile = new File(context.getExternalFilesDir(null).getAbsolutePath(), prefix + "/" + filename);
+						File outFile = new File(context.getExternalFilesDir(null).getAbsolutePath(), prefix + filename);
 						if (!outFile.exists()) {
-							in = assetManager.open(prefix + "/" + filename);
+							in = assetManager.open(prefix + filename);
 							out = new FileOutputStream(outFile);
 							CopyFile(in, out);
 						}
@@ -78,9 +82,9 @@ public class CopyAssets {
 						if (!f.exists()) {
 							f.mkdirs();
 						}
-						File outFile = new File(context.getFilesDir().getAbsolutePath(), prefix + "/" + filename);
+						File outFile = new File(context.getFilesDir().getAbsolutePath(), prefix + filename);
 						if (!outFile.exists()) {
-							in = assetManager.open(prefix + "/" + filename);
+							in = assetManager.open(prefix + filename);
 							out = new FileOutputStream(outFile);
 							CopyFile(in, out);
 						}

@@ -28,8 +28,6 @@ public class Doom2DF extends SDLActivity {
   protected String[] getLibraries () {
     return new String[] {
       "SDL2",
-      "SDL2_mixer",
-      "enet",
       "Doom2DF"
     };
   }
@@ -54,6 +52,9 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "maps");
     CopyAssets.copyAssets(SDL.getContext(), "maps/megawads");
     CopyAssets.copyAssets(SDL.getContext(), "wads");
+    CopyAssets.copyAssets(SDL.getContext(), "instruments");
+    CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
+    CopyAssets.copyAssets(SDL.getContext(), "Get MORE game content HERE.txt");
   }
 
   @Override
