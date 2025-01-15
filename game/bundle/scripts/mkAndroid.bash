@@ -12,7 +12,7 @@ fi
 # There exists a hack in the game to switch CWD to a folder with timidity.cfg, and we use that.
 # So create timidity.cfg in either case.
 if [[ -n "${ASSETS_GUS:-}" || -n "${ASSETS_SOUNDFONT:-}" ]]; then
-    mkdir -p android/assets/instruments/
+    mkdir -p android/assets/data/banks
     printf '%s\n%s\n%s' \
         '# DO NOT REMOVE!!!' \
         '# This file is a placeholder and is necessary even though fluidsynth is used.' \
@@ -21,11 +21,11 @@ if [[ -n "${ASSETS_GUS:-}" || -n "${ASSETS_SOUNDFONT:-}" ]]; then
 fi
 
 if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
-    cp "${ASSETS_SOUNDFONT}" android/assets/instruments/default.sf2
+    cp "${ASSETS_SOUNDFONT}" android/assets/data/banks/default.sf2
 fi
 
 if [[ -n "${ASSETS_GUS:-}" && -n "${TIMIDITY_CFG:-}" ]]; then
-    cp -r "${ASSETS_GUS}/*" android/assets/instruments/
+    cp -r "${ASSETS_GUS}/*" android/assets/data/banks/
     cp "${TIMIDITY_CFG}" android/assets/timidity.cfg
 fi
 
