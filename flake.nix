@@ -4,17 +4,18 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
+    osxcross.url = "github:roblabla/osxcross";
 
     DF-res = {
       url = "github:Doom2D/DF-Res";
       flake = false;
     };
     d2df-sdl = {
-      url = "git://repo.or.cz/d2df-sdl.git?submodules=1";
+      url = "git+https://github.com/Doom2D/Doom2D-Forever?submodules=1";
       flake = false;
     };
     d2df-editor = {
-      url = "git://repo.or.cz/d2df-editor.git?submodules=1";
+      url = "github:Doom2D/Doom2D-Forever/d2df-editor.git";
       flake = false;
     };
     d2df-distro-content = {
@@ -27,6 +28,7 @@
     nixpkgs,
     flake-utils,
     nix-github-actions,
+    osxcross,
     DF-res,
     d2df-sdl,
     d2df-editor,
@@ -73,6 +75,8 @@
         inherit d2df-sdl d2df-editor DF-res d2df-distro-content;
       };
 
+      osxcross = osxcross;
+
       checks = let
         nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
       in
@@ -83,7 +87,7 @@
       executables = import ./packages/executables.nix {
         inherit pkgs lib fpcPkgs d2dfPkgs;
         inherit d2df-sdl d2df-editor;
-        inherit pins;
+        inherit pins osxcross;
       };
 
       assets = import ./packages/assets.nix {

@@ -33,35 +33,34 @@
       "locked": {
         "lastModified": 1708948652,
         "narHash": "sha256-yMW+jArIZxNWDbdcaKV2QrgUUV09ClaqCEBYZItg2cI=",
-        "ref": "refs/heads/master",
+        "owner": "Doom2D",
+        "repo": "Doom2D-Forever",
         "rev": "7fe67265f79c80b0263dff8645faf299962efbb2",
-        "revCount": 198,
-        "submodules": true,
-        "type": "git",
-        "url": "git://repo.or.cz/d2df-editor.git"
+        "type": "github"
       },
       "original": {
-        "submodules": true,
-        "type": "git",
-        "url": "git://repo.or.cz/d2df-editor.git"
+        "owner": "Doom2D",
+        "ref": "d2df-editor.git",
+        "repo": "Doom2D-Forever",
+        "type": "github"
       }
     },
     "d2df-sdl": {
       "flake": false,
       "locked": {
-        "lastModified": 1735802346,
-        "narHash": "sha256-gh5jwUWn+c4ByGQHTSB2jgZu2/1usgTDWZlgPvveXT8=",
+        "lastModified": 1736963847,
+        "narHash": "sha256-3wtuyAlW7bLMuN3MhiqAwOYfzrr8n7PBseI2g+46LX8=",
         "ref": "refs/heads/master",
-        "rev": "e37f0c0b9dbeb757656079ae7f804fc39abf8838",
-        "revCount": 1546,
+        "rev": "9a1689b0ba460cc38d2e62ab63919c43588ff9d2",
+        "revCount": 1550,
         "submodules": true,
         "type": "git",
-        "url": "git://repo.or.cz/d2df-sdl.git"
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
       },
       "original": {
         "submodules": true,
         "type": "git",
-        "url": "git://repo.or.cz/d2df-sdl.git"
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
       }
     },
     "flake-utils": {
@@ -74,6 +73,21 @@
         "owner": "numtide",
         "repo": "flake-utils",
         "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "flake-utils_2": {
+      "locked": {
+        "lastModified": 1648297722,
+        "narHash": "sha256-W+qlPsiZd8F3XkzXOzAoR+mpFqzm3ekQkJNa+PIh1BQ=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "0f8662f1319ad6abf89b3380dd2722369fc51ade",
         "type": "github"
       },
       "original": {
@@ -130,6 +144,41 @@
         "type": "github"
       }
     },
+    "nixpkgs_3": {
+      "locked": {
+        "lastModified": 1648069223,
+        "narHash": "sha256-BXzQV8p/RR440EB9qY0ULYfTH0zSW1stjUCYeP4SF+E=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "1d08ea2bd83abef174fb43cbfb8a856b8ef2ce26",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "osxcross": {
+      "inputs": {
+        "flake-utils": "flake-utils_2",
+        "nixpkgs": "nixpkgs_3"
+      },
+      "locked": {
+        "lastModified": 1687528096,
+        "narHash": "sha256-0msNdtPULB3BjpuwQB2PpNHvrrGfX+AxxG7At7AG+iA=",
+        "owner": "roblabla",
+        "repo": "osxcross",
+        "rev": "5ad3fd0ef68df97d43ecc516649d85abe2fe860c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "roblabla",
+        "repo": "osxcross",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "DF-res": "DF-res",
@@ -138,7 +187,8 @@
         "d2df-sdl": "d2df-sdl",
         "flake-utils": "flake-utils",
         "nix-github-actions": "nix-github-actions",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "osxcross": "osxcross"
       }
     },
     "systems": {

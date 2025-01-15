@@ -2,6 +2,7 @@
   pkgs,
   lib,
   pins,
+  osxcross,
   fpcPkgs,
   d2dfPkgs,
   d2df-sdl,
@@ -12,6 +13,9 @@
   };
   mingw = (import ../cross/mingw) {
     inherit pkgs lib pins;
+  };
+  mac = (import ../cross/mac) {
+    inherit pkgs lib pins osxcross;
   };
   f = crossPkgs: let
     archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;
@@ -102,3 +106,5 @@
     (lib.mapAttrs fromCrossPkgsAttrs crossPkgs) // {universal = universal;};
 in
   f (android // mingw)
+#f mac
+
