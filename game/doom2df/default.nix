@@ -80,7 +80,7 @@
       else if withSoundStub
       then "-dUSE_SOUNDSTUB"
       else if withOpenAL
-      then "-dUSE_OPENAL"
+      then "-dUSE_OPENAL -dOPENAL_SINGLETHREADED"
       else if withFmod
       then "-dUSE_FMOD"
       else sdlMixerFlag
