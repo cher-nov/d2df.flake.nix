@@ -4,7 +4,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
-    osxcross.url = "github:roblabla/osxcross";
+    osxcross.url = "github:polybluez/osxcross/e83aa3e4f5bdbf5f4dfbd865270bbb290856fcf2";
 
     DF-res = {
       url = "github:Doom2D/DF-Res";
@@ -22,6 +22,10 @@
       url = "https://doom2d.org/doom2d_forever/latest/df_distro_content.rar";
       flake = false;
     };
+    d2df-distro-soundfont = {
+      url = "https://doom2d.org/doom2d_forever/latest/df_midi_bank.rar";
+      flake = false;
+    };
   };
   outputs = inputs @ {
     self,
@@ -33,6 +37,7 @@
     d2df-sdl,
     d2df-editor,
     d2df-distro-content,
+    d2df-distro-soundfont,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
@@ -72,7 +77,7 @@
       };
     in {
       dfInputs = {
-        inherit d2df-sdl d2df-editor DF-res d2df-distro-content;
+        inherit d2df-sdl d2df-editor DF-res d2df-distro-content d2df-distro-soundfont;
       };
 
       osxcross = osxcross;

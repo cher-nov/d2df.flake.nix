@@ -28,6 +28,18 @@
         "url": "https://doom2d.org/doom2d_forever/latest/df_distro_content.rar"
       }
     },
+    "d2df-distro-soundfont": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-MvIiid4nQdVYj9NfKB69ifUQEtQf5dh2YcUzV+obrCg=",
+        "type": "file",
+        "url": "https://doom2d.org/doom2d_forever/latest/df_midi_bank.rar"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://doom2d.org/doom2d_forever/latest/df_midi_bank.rar"
+      }
+    },
     "d2df-editor": {
       "flake": false,
       "locked": {
@@ -48,11 +60,11 @@
     "d2df-sdl": {
       "flake": false,
       "locked": {
-        "lastModified": 1736963847,
-        "narHash": "sha256-3wtuyAlW7bLMuN3MhiqAwOYfzrr8n7PBseI2g+46LX8=",
+        "lastModified": 1737006491,
+        "narHash": "sha256-R++8VmRL1fXA8b4HDDKlHaEuEGNvacv77gskes73wqg=",
         "ref": "refs/heads/master",
-        "rev": "9a1689b0ba460cc38d2e62ab63919c43588ff9d2",
-        "revCount": 1550,
+        "rev": "90da95ad10dc9348e1438aa89374886ade0819f5",
+        "revCount": 1553,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/Doom2D/Doom2D-Forever"
@@ -166,16 +178,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1687528096,
-        "narHash": "sha256-0msNdtPULB3BjpuwQB2PpNHvrrGfX+AxxG7At7AG+iA=",
-        "owner": "roblabla",
+        "lastModified": 1736970135,
+        "narHash": "sha256-ptHjRWVZhRzZlXaHN4ez2PNtY7TkGqw9duHQ+guMbXA=",
+        "owner": "polybluez",
         "repo": "osxcross",
-        "rev": "5ad3fd0ef68df97d43ecc516649d85abe2fe860c",
+        "rev": "e83aa3e4f5bdbf5f4dfbd865270bbb290856fcf2",
         "type": "github"
       },
       "original": {
-        "owner": "roblabla",
+        "owner": "polybluez",
         "repo": "osxcross",
+        "rev": "e83aa3e4f5bdbf5f4dfbd865270bbb290856fcf2",
         "type": "github"
       }
     },
@@ -183,6 +196,7 @@
       "inputs": {
         "DF-res": "DF-res",
         "d2df-distro-content": "d2df-distro-content",
+        "d2df-distro-soundfont": "d2df-distro-soundfont",
         "d2df-editor": "d2df-editor",
         "d2df-sdl": "d2df-sdl",
         "flake-utils": "flake-utils",
