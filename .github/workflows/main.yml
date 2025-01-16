@@ -37,6 +37,7 @@ jobs:
           fail-on: primary-key.miss
       - name: Update Doom2D related inputs and populate environment variables
         run: |
+          sudo timedatectl set-timezone Europe/Moscow
           bash ./game/bundle/scripts/mkEnv.bash
       - name: Build debug APK
         env:

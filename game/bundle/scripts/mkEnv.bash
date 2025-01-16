@@ -6,10 +6,6 @@ export TZ=$TZ
 export LC_ALL=ru_RU.UTF-8
 export LC_MESSAGES=en_US.UTF-8
 
-if [[ ${GITHUB_ACTIONS:-} ]]; then
-    sudo timedatectl set-timezone Europe/Moscow
-fi
-
 nix flake update Doom2D-Forever d2df-editor DF-res
 
 NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
