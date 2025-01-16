@@ -30,13 +30,18 @@ stdenvNoCC.mkDerivation {
         ''
           [ -d "${library}/lib" ] && find -L ${library}/lib -iname '*.so' -type f -exec cp {} ${archAttrs.prefix} \;
         ''
+        + ''
+          [ -d "${library}/lib" ] && find -L ${library}/lib -iname '*.dylib' -type f -exec cp {} ${archAttrs.prefix} \;
+        ''
         + lib.optionalString archAttrs.isWindows ''
           [ -d "${library}/bin" ] && find -L ${library}/bin -iname '*.dll' -type f -exec cp {} ${archAttrs.prefix} \;
         '')
       archAttrs.sharedLibraries;
     in
       lib.concatStringsSep "\n" i;
-    copyGameAndEditor = archAttrs:
+    copyGameAndEditor = archAttrs: let
+      suffix = lib.optionalString (archAttrs.isWindows) ".exe";
+    in
       (
         lib.optionalString (!builtins.isNull archAttrs.doom2df)
         (
@@ -45,14 +50,14 @@ stdenvNoCC.mkDerivation {
             [ -d "${archAttrs.doom2df}/lib" ] && find -L ${archAttrs.doom2df}/lib -type f -exec cp {} ${archAttrs.prefix} \;
           ''
           else ''
-            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}.exe' {} \;
+            [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}${suffix}' {} \;
           ''
         )
       )
       + (
         lib.optionalString (!builtins.isNull archAttrs.editor)
         ''
-          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}.exe' {} \;
+          [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f -exec sh -c 'cp $0 ${archAttrs.prefix}/''${0##*/}${suffix}' {} \;
         ''
       );
     copyEachArch = arch: archAttrs: ''
