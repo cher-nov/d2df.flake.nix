@@ -4,7 +4,7 @@
   autoPatchelfHook,
   fpc,
   enet,
-  d2df-sdl,
+  Doom2D-Forever,
   buildAsLibrary ? false,
   headless ? false,
   withHolmes ? false,
@@ -49,9 +49,9 @@
 }: let
   optional = lib.optional;
   optionals = lib.optionals;
-  version = "0.667-${d2df-sdl.shortRev}";
+  version = "0.667-${Doom2D-Forever.shortRev}";
   basename = "Doom2DF";
-  src = d2df-sdl;
+  src = Doom2D-Forever;
 
   sdlMixerFlag =
     if ((withSDL2_mixer && withSDL1) || (withSDL1_mixer && withSDL2))
@@ -140,7 +140,7 @@ in
 
     env = {
       D2DF_BUILD_USER = "nixbld";
-      D2DF_BUILD_HASH = d2df-sdl.rev;
+      D2DF_BUILD_HASH = Doom2D-Forever.rev;
     };
 
     nativeBuildInputs =

@@ -16,6 +16,24 @@
         "type": "github"
       }
     },
+    "Doom2D-Forever": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1737006491,
+        "narHash": "sha256-R++8VmRL1fXA8b4HDDKlHaEuEGNvacv77gskes73wqg=",
+        "ref": "refs/heads/master",
+        "rev": "90da95ad10dc9348e1438aa89374886ade0819f5",
+        "revCount": 1553,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
+      },
+      "original": {
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
+      }
+    },
     "d2df-distro-content": {
       "flake": false,
       "locked": {
@@ -55,24 +73,6 @@
         "ref": "d2df-editor.git",
         "repo": "Doom2D-Forever",
         "type": "github"
-      }
-    },
-    "d2df-sdl": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1737006491,
-        "narHash": "sha256-R++8VmRL1fXA8b4HDDKlHaEuEGNvacv77gskes73wqg=",
-        "ref": "refs/heads/master",
-        "rev": "90da95ad10dc9348e1438aa89374886ade0819f5",
-        "revCount": 1553,
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/Doom2D/Doom2D-Forever"
-      },
-      "original": {
-        "submodules": true,
-        "type": "git",
-        "url": "https://github.com/Doom2D/Doom2D-Forever"
       }
     },
     "flake-utils": {
@@ -195,10 +195,10 @@
     "root": {
       "inputs": {
         "DF-res": "DF-res",
+        "Doom2D-Forever": "Doom2D-Forever",
         "d2df-distro-content": "d2df-distro-content",
         "d2df-distro-soundfont": "d2df-distro-soundfont",
         "d2df-editor": "d2df-editor",
-        "d2df-sdl": "d2df-sdl",
         "flake-utils": "flake-utils",
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": "nixpkgs_2",

@@ -10,7 +10,7 @@
       url = "github:Doom2D/DF-Res";
       flake = false;
     };
-    d2df-sdl = {
+    Doom2D-Forever = {
       url = "git+https://github.com/Doom2D/Doom2D-Forever?submodules=1";
       flake = false;
     };
@@ -34,7 +34,7 @@
     nix-github-actions,
     osxcross,
     DF-res,
-    d2df-sdl,
+    Doom2D-Forever,
     d2df-editor,
     d2df-distro-content,
     d2df-distro-soundfont,
@@ -50,7 +50,7 @@
         overlays = [
           (final: prev: {
             wadcvt = final.callPackage d2dfPkgs.wadcvt {
-              inherit d2df-sdl;
+              inherit Doom2D-Forever;
             };
             dfwad = final.callPackage d2dfPkgs.dfwad {
               src = pins.dfwad.src;
@@ -77,7 +77,7 @@
       };
     in {
       dfInputs = {
-        inherit d2df-sdl d2df-editor DF-res d2df-distro-content d2df-distro-soundfont;
+        inherit Doom2D-Forever d2df-editor DF-res d2df-distro-content d2df-distro-soundfont;
       };
 
       osxcross = osxcross;
@@ -91,7 +91,7 @@
 
       executables = import ./packages/executables.nix {
         inherit pkgs lib fpcPkgs d2dfPkgs;
-        inherit d2df-sdl d2df-editor;
+        inherit Doom2D-Forever d2df-editor;
         inherit pins osxcross;
       };
 

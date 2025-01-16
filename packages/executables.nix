@@ -5,7 +5,7 @@
   osxcross,
   fpcPkgs,
   d2dfPkgs,
-  d2df-sdl,
+  Doom2D-Forever,
   d2df-editor,
 }: let
   android = (import ../cross/android) {
@@ -76,7 +76,7 @@
             })
           else null;
         doom2d = pkgs.callPackage d2dfPkgs.doom2df-base {
-          inherit d2df-sdl;
+          inherit Doom2D-Forever;
           inherit fpc;
           inherit
             (archAttrs)
@@ -106,5 +106,3 @@
     (lib.mapAttrs fromCrossPkgsAttrs crossPkgs) // {universal = universal;};
 in
   f (android // mingw)
-#f mac
-

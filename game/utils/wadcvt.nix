@@ -1,6 +1,6 @@
 {
   stdenv,
-  d2df-sdl,
+  Doom2D-Forever,
   fpc,
 }:
 stdenv.mkDerivation (finalAttrs: {
@@ -8,7 +8,7 @@ stdenv.mkDerivation (finalAttrs: {
   version = "0.667-git";
   name = "${finalAttrs.pname}-${finalAttrs.version}";
 
-  src = d2df-sdl;
+  src = Doom2D-Forever;
   dontStrip = true;
   dontPatchELF = true;
   dontFixup = true;
