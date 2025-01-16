@@ -39,6 +39,8 @@ jobs:
         run: |
           bash ./game/bundle/scripts/mkEnv.bash
       - name: Build debug APK
+        env:
+          ASSETS_SOUNDFONT: 1     
         run: |
           bash ./game/bundle/scripts/mkAndroid.bash
       - uses: actions/upload-artifact@v4
