@@ -114,7 +114,6 @@
         defines = {
           inherit graphics headless sound holmes io;
         };
-        pretty = "Doom2D Forever for ${archAttrs.infoAttrs.pretty}: ${io}, ${sound}, ${graphics}${lib.optionalString (holmes == "Enable") ", with Holmes"}${lib.optionalString (headless == "Enable") ", headless"}";
       };
       name = let
         soundStr =
@@ -128,7 +127,7 @@
         graphicsStr = "-${graphics}";
         headlessStr = lib.optionalString (headless == "Enable") "-headless";
         holmesStr = lib.optionalString (holmes == "Enable") "-holmes";
-      in "doom2df-${archAttrs.infoAttrs.name}${ioStr}${soundStr}${graphicsStr}${headlessStr}${holmesStr}";
+      in "doom2df-${arch}${ioStr}${soundStr}${graphicsStr}${headlessStr}${holmesStr}";
     };
     matrix = featuresMatrix features archAttrs;
     allCombos = lib.listToAttrs (lib.map (x: mkExecutable archAttrs.doom2d x) matrix);
