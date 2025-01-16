@@ -83,4 +83,10 @@
     version = pins.openal.version;
     src = pins.openal.src;
   };
+
+  miniupnpc = cmakeDrv {
+    pname = "miniupnpc";
+    version = pins.miniupnpc.version;
+    src = pins.miniupnpc.src + "/miniupnpc";
+  };
 }

@@ -60,3 +60,7 @@ src.branch = "patched"
 [dfwad]
 src.git = "https://github.com/Doom2D/dfwad"
 fetch.git = "https://github.com/Doom2D/dfwad"
+
+[miniupnpc]
+src.github = "miniupnp/miniupnp"
+fetch.github = "miniupnp/miniupnp"

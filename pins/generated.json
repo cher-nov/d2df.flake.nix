@@ -246,6 +246,27 @@
         },
         "version": "libxmp-4.6.1"
     },
+    "miniupnpc": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "miniupnpc",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "miniupnp",
+            "repo": "miniupnp",
+            "rev": "miniupnpc_2_3_0",
+            "sha256": "sha256-m26LlgvPm1uLi47r1W7x35yKFGX4gucZJHAaJlnrrQk=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "miniupnpc_2_3_0"
+    },
     "openal": {
         "cargoLocks": null,
         "date": null,

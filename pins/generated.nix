@@ -148,6 +148,17 @@
       sha256 = "sha256-jied4Rt1/Jh4OGFbQr4w1ALiXgsL3UYQEdJ2G/WRjqk=";
     };
   };
+  miniupnpc = {
+    pname = "miniupnpc";
+    version = "miniupnpc_2_3_0";
+    src = fetchFromGitHub {
+      owner = "miniupnp";
+      repo = "miniupnp";
+      rev = "miniupnpc_2_3_0";
+      fetchSubmodules = false;
+      sha256 = "sha256-m26LlgvPm1uLi47r1W7x35yKFGX4gucZJHAaJlnrrQk=";
+    };
+  };
   openal = {
     pname = "openal";
     version = "1.24.2";
