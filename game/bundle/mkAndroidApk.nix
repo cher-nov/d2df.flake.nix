@@ -25,7 +25,7 @@ stdenv.mkDerivation (finalAttrs: let
     packageName = "org.d2df.app";
     versionName = "0.667-git";
     minSdkVersion = "21";
-    targetSdkVersion = "23";
+    targetSdkVersion = "29";
     glEsVersion = "0x00010001";
   };
 in {
