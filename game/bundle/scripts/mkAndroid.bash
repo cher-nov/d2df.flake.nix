@@ -2,31 +2,26 @@
 set -euo pipefail
 
 [ ! -f "df_distro_content.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.rar
+
 if [ ! -d "android" ]; then
     mkdir -p android/assets
     rar x -tsp df_distro_content.rar android/assets
 fi
 
-# MIDI playback with fluidsynth won't work if timidity is not available and timidity.cfg can't be found.
-# This happens because CWD is set in other location, not relative to instruments/ folder.
-# There exists a hack in the game to switch CWD to a folder with timidity.cfg, and we use that.
-# So create timidity.cfg in either case.
 if [[ -n "${ASSETS_GUS:-}" || -n "${ASSETS_SOUNDFONT:-}" ]]; then
     mkdir -p android/assets/data/banks
-    printf '%s\n%s\n%s' \
-        '# DO NOT REMOVE!!!' \
-        '# This file is a placeholder and is necessary even though fluidsynth is used.' \
-        '# It is essential because of a quirk with how the game handles MIDI playback.' \
-        > android/assets/timidity.cfg
 fi
 
 if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
-    cp "${ASSETS_SOUNDFONT}" android/assets/data/banks/default.sf2
+    [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
+    rar x -tsp df_distro_soundfont.rar android/assets
 fi
 
 if [[ -n "${ASSETS_GUS:-}" && -n "${TIMIDITY_CFG:-}" ]]; then
-    cp -r "${ASSETS_GUS}/*" android/assets/data/banks/
-    cp "${TIMIDITY_CFG}" android/assets/timidity.cfg
+    # TODO
+    # Copy GUS files
+    # Copy Timidity cfg
+    :
 fi
 
 nix build --print-build-logs .#android.bundles.default
