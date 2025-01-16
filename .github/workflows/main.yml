@@ -37,8 +37,13 @@ jobs:
           fail-on: primary-key.miss
       - name: Update Doom2D related inputs and populate environment variables
         run: |
+          sudo apt-get update && sudo apt-get install tzdata locales -y
           sudo timedatectl set-timezone Europe/Moscow
-          sudo echo 'ru_RU.UTF-8 UTF-8' | sudo tee -a /etc/locale.gen > /dev/null  
+          sudo localedef -f UTF-8 -i /usr/share/i18n/locales/ru_RU /usr/lib/locale/ru_RU.UTF-8
+          sudo echo 'ru_RU.UTF-8 UTF-8' | sudo tee -a /etc/locale.gen > /dev/null
+          sudo mkdir -p /usr/local/share/i18n
+          sudo touch /usr/local/share/i18n/SUPPORTED
+          sudo echo 'ru_RU.UTF-8 UTF-8' | sudo tee -a /usr/local/share/i18n/SUPPORTED > /dev/null
           sudo locale-gen ru_RU.UTF-8
           sudo locale-gen ru_RU
           sudo locale-gen
@@ -48,7 +53,7 @@ jobs:
           bash ./game/bundle/scripts/mkEnv.bash
       - name: Build debug APK
         env:
-          ASSETS_SOUNDFONT: 1     
+          ASSETS_SOUNDFONT: 1
         run: |
           bash ./game/bundle/scripts/mkAndroid.bash
       - uses: actions/upload-artifact@v4
