@@ -38,6 +38,8 @@ jobs:
       - name: Update Doom2D related inputs and populate environment variables
         run: |
           sudo timedatectl set-timezone Europe/Moscow
+          sudo locale-gen ru_RU.UTF-8
+          sudo update-locale LANG=ru_RU.UTF-8
           bash ./game/bundle/scripts/mkEnv.bash
       - name: Build debug APK
         env:
