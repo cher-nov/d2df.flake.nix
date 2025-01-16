@@ -178,11 +178,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1737030985,
-        "narHash": "sha256-+pkj35WmHK3pfp061L+gdJ5keQszVDcpXR4+ZsxUElo=",
+        "lastModified": 1737035883,
+        "narHash": "sha256-cBDkURg5x/wRN0czcEf+F5snaQMJpRXDiYFBIyxcBH0=",
         "owner": "polybluez",
         "repo": "osxcross",
-        "rev": "88bf3d6a3fcedb0828f52081fe5bcc4945a17fad",
+        "rev": "6158c01b77bee8bd7f717bd727067672d7b208cc",
         "type": "github"
       },
       "original": {
