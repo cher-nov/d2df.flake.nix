@@ -4,8 +4,9 @@
   pins,
   osxcross,
 }: let
-  toolchain = osxcross.packages.${pkgs.system}.toolchain_13_0;
-  sdk = "${toolchain}/SDK/MacOSX13.0.sdk/usr";
+  toolchain = osxcross.packages.${pkgs.system}.toolchain_15_2;
+  sdk = "${toolchain}/SDK/MacOSX15.2.sdk";
+  target = "apple-darwin22.1";
   macCmakeDrv = {
     pname,
     version,
@@ -20,29 +21,59 @@
   in
     pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
       inherit version src;
-      pname = "${pname}-arm64-apple-darwin21.4";
+      pname = "${pname}-aarch64-${target}";
 
       dontStrip = true;
       dontPatchELF = true;
 
       phases = ["unpackPhase" "buildPhase" "installPhase"];
 
-      buildPhase = ''
+      # https://github.com/tpoechtrager/osxcross/issues/345
+      # https://github.com/sbmpost/AutoRaise/issues/69
+      buildPhase = let
+        CFLAGS = lib.concatStringsSep " " [
+          "-target aarch64-apple-darwin22.1"
+          "-I${pkgs.llvmPackages.clang-unwrapped.lib}/lib/clang/18/include"
+          #"-L${sdk}/usr/lib/system"
+          "-I${sdk}/usr/include"
+          "-isystem ${sdk}/usr/include"
+          "-iframework ${sdk}/System/Library/Frameworks"
+          /*
+          "-framework Foundation"
+          "-framework AudioUnit"
+          "-framework Cocoa"
+          "-framework CoreAudio"
+          "-framework CoreServices"
+          "-framework ForceFeedback"
+          "-framework OpenGL"
+          */
+        ];
+        LDFLAGS = lib.concatStringsSep " " [
+          "-target aarch64-apple-darwin22.1"
+          "-I${pkgs.llvmPackages.clang-unwrapped.lib}/lib/clang/18/include"
+          "-I${sdk}/usr/include"
+          "-isystem ${sdk}/usr/include"
+          "-iframework ${sdk}/System/Library/Frameworks"
+        ];
+      in ''
         runHook preBuild
         ${lib.optionalString (!builtins.isNull cmakeListsPath) "cd ${cmakeListsPath}"}
         mkdir build
         cd build
         export OSXCROSS_SDK="${sdk}"
-        export OSXCROSS_HOST="arm64-apple-darwin22.1"
+        export OSXCROSS_HOST="aarch64-${target}"
         export OSXCROSS_TARGET="${toolchain}"
         export OSXCROSS_TARGET_DIR="${toolchain}"
+        export OSXCROSS_CLANG_INTRINSIC_PATH="${pkgs.llvmPackages.clang-unwrapped.lib}/lib/clang/"
+        export CFLAGS="$CFLAGS ${CFLAGS}"
+        export LDFLAGS="$LDFLAGS ${LDFLAGS}"
         ${cmakePrefix} \
           ${cmake} .. \
             -DCMAKE_TOOLCHAIN_FILE=${osxcross}/tools/toolchain.cmake \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DBUILD_STATIC_LIBS=OFF \
             -DCMAKE_INSTALL_PREFIX=$out \
             ${cmakeExtraArgs}
-        make -j$(nproc)
+        make -j12 VERBOSE=1
         runHook postBuild
       '';
 
@@ -56,7 +87,7 @@
   architectures = {
     arm64-apple-darwin = {
       fpcAttrs = let
-        name = "arm64-apple-darwin22.1";
+        name = "aarch64-apple-darwin22.1";
       in rec {
         cpuArgs = ["-XP${toolchain}/bin/${name}-"];
         targetArg = "-Tdarwin";

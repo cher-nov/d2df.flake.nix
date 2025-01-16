@@ -158,11 +158,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1648069223,
-        "narHash": "sha256-BXzQV8p/RR440EB9qY0ULYfTH0zSW1stjUCYeP4SF+E=",
+        "lastModified": 1736883708,
+        "narHash": "sha256-uQ+NQ0/xYU0N1CnXsa2zghgNaOPxWpMJXSUJJ9W7140=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "1d08ea2bd83abef174fb43cbfb8a856b8ef2ce26",
+        "rev": "eb62e6aa39ea67e0b8018ba8ea077efe65807dc8",
         "type": "github"
       },
       "original": {
@@ -178,17 +178,17 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1736970135,
-        "narHash": "sha256-ptHjRWVZhRzZlXaHN4ez2PNtY7TkGqw9duHQ+guMbXA=",
+        "lastModified": 1737030985,
+        "narHash": "sha256-+pkj35WmHK3pfp061L+gdJ5keQszVDcpXR4+ZsxUElo=",
         "owner": "polybluez",
         "repo": "osxcross",
-        "rev": "e83aa3e4f5bdbf5f4dfbd865270bbb290856fcf2",
+        "rev": "88bf3d6a3fcedb0828f52081fe5bcc4945a17fad",
         "type": "github"
       },
       "original": {
         "owner": "polybluez",
+        "ref": "framework",
         "repo": "osxcross",
-        "rev": "e83aa3e4f5bdbf5f4dfbd865270bbb290856fcf2",
         "type": "github"
       }
     },
