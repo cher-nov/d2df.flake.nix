@@ -245,7 +245,5 @@
   };
 in {
   mingw32 = mkMingwCrossPkg "i686" "w64" "mingw32" "mingw32" "win32" "i386" "cross386";
-  # FIXME
-  # win64 builds with FMOD don't work
-  mingw64 = lib.recursiveUpdate (mkMingwCrossPkg "x86_64" "w64" "mingw32" "mingwW64" "win64" "x86_64" "cx64") {infoAttrs.bundle.sound = "OpenAL";};
+  mingw64 = mkMingwCrossPkg "x86_64" "w64" "mingw32" "mingwW64" "win64" "x86_64" "cx64";
 }
