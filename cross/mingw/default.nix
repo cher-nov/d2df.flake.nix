@@ -101,11 +101,13 @@
         outputs = ["out"];
       });
       libogg = crossPkgs.libogg.override {stdenv = stdenvWin32Threads;};
+      /*
       fluidsynth = crossPkgs.fluidsynth.override {
         glib = null;
         libsndfile = null;
         libjack2 = null;
       };
+      */
       fmodex = let
         drv = {
           stdenv,
