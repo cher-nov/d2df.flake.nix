@@ -124,14 +124,21 @@
     cross = (import ../_common {inherit pins;}) {cmakeDrv = mkMacCmakeDrv target;};
   in rec {
     infoAttrs = mkMacArch target fpcCpu fpcBinary;
-    libxmp = cross.libxmp {};
+    libxmp = cross.libxmp {
+      cmakeExtraArgs = lib.concatStringsSep " " [
+        "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+        "-DCMAKE_PREFIX_PATH=${libogg}"
+      ];
+    };
     libogg = cross.libogg {};
     openal = (cross.openal {}).overrideAttrs (prev: {
       preBuild = ''
         rm -r build
       '';
     });
-    game-music-emu = cross.game-music-emu {};
+    game-music-emu = cross.game-music-emu {
+      cmakeExtraArgs = "-DENABLE_UBSAN=off";
+    };
     miniupnpc = cross.miniupnpc {};
     libmpg123 = cross.libmpg123 {
       cmakeListsPath = "ports/cmake";
@@ -139,14 +146,94 @@
     libmodplug = cross.libmodplug {};
     wavpack = cross.wavpack {};
     libopus = cross.libopus {};
+    fluidsynth =
+      (cross.fluidsynth {
+        cmakeExtraArgs = lib.concatStringsSep " " [
+          "-DBUILD_SHARED_LIBS=on"
+          "-Denable-threads=off"
+          "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+          "-Denable-sdl2=on"
+          "-Denable-framework=off"
+          "-DCMAKE_PREFIX_PATH=${SDL2}"
+        ];
+      })
+      .overrideAttrs (final: prev: {
+        nativeBuildInputs = [pkgs.buildPackages.stdenv.cc pkgs.pkg-config];
+        installPhase =
+          prev.installPhase
+          + ''
+            [[ -f "$out/lib64/libfluidsynth.dylib" ]] && cp -r $out/lib64/* $out/lib/ || :
+          '';
+      });
     libvorbis = cross.libvorbis {
       cmakeExtraArgs = lib.concatStringsSep " " [
         "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
         "-DCMAKE_PREFIX_PATH=${libogg}"
         "-DCMAKE_FIND_ROOT_PATH=${libogg}"
+        "-DOGG_LIBRARY=${libogg}/lib/libogg.dylib"
+        "-DOGG_INCLUDE_DIR=${libogg}/include"
       ];
     };
-    SDL2_mixer = cross.SDL2_mixer {};
+    SDL2_mixer =
+      (cross.SDL2_mixer {
+        cmakeExtraArgs = let
+          libs = pkgs.symlinkJoin {
+            name = "cmake-packages";
+            paths =
+              [libxmp fluidsynth wavpack SDL2 libopus libogg libmodplug libmpg123]
+              # These are projects which can't be found by pkgconfig for some reason.
+              # Specify their path manually.
+              ++ [
+                # vorbis
+                # opusfile
+                # libgme
+              ];
+          };
+        in
+          lib.concatStringsSep " " [
+            "-DBUILD_SHARED_LIBS=on"
+            "-DSDL2MIXER_VENDORED=off"
+
+            "-DSDL2MIXER_VORBIS=VORBISFILE"
+            "-DSDL2MIXER_VORBIS_VORBISFILE_SHARED=off"
+            "-DVorbis_vorbisfile_INCLUDE_PATH=${libvorbis}/include"
+            "-DVorbis_vorbisfile_LIBRARY=${libvorbis}/lib/libvorbisfile.dylib"
+
+            "-DSDL2MIXER_MP3=on"
+            "-DSDL2MIXER_MP3_MPG123=on"
+            "-DSDL2MIXER_MP3_MPG123_SHARED=off"
+
+            "-DSDL2MIXER_OPUS=on"
+            "-DSDL2MIXER_OPUS_SHARED=off"
+            "-DOpusFile_LIBRARY=${opusfile}/lib/libopusfile.dylib"
+            "-DOpusFile_INCLUDE_PATH=${opusfile}/include"
+
+            "-DSDL2MIXER_GME=on"
+            "-DSDL2MIXER_GME_SHARED=off"
+            "-Dgme_LIBRARY=${game-music-emu}/lib/libgme.dylib"
+            "-Dgme_INCLUDE_PATH=${game-music-emu}/include"
+
+            "-DSDL2MIXER_MIDI=on"
+            "-DSDL2MIXER_MIDI_TIMIDITY=on"
+            "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
+            "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
+            "-DFluidSynth_LIBRARY=${fluidsynth}/lib/libfluidsynth.dylib"
+            "-DFluidSynth_INCLUDE_PATH=${fluidsynth}/include"
+
+            "-DSDL2MIXER_MOD=on"
+            "-DSDL2MIXER_MOD_MODPLUG=off"
+            "-DSDL2MIXER_MOD_XMP=on"
+            "-DSDL2MIXER_MOD_XMP_SHARED=off"
+
+            "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
+            "-DCMAKE_PREFIX_PATH=${libs}"
+            "-DCMAKE_FIND_ROOT_PATH=${libs}"
+            "-DSDL2MIXER_MOD_XMP_SHARED=off"
+          ];
+      })
+      .overrideAttrs (prev: {
+        nativeBuildInputs = [pkgs.pkg-config];
+      });
     opusfile = let
       paths = pkgs.symlinkJoin {
         name = "cmake-packages";
