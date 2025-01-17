@@ -98,8 +98,8 @@
             withOpenAL = true;
             withVorbis = true;
             # FIXME
-            # mingw64 doesn't have working fluidsynth
-            # withFluidsynth = true;
+            # mingw doesn't have working fluidsynth
+            withFluidsynth = true;
             withLibXmp = true;
             withMpg123 = true;
             withOpus = true;

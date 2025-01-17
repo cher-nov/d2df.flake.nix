@@ -24,10 +24,18 @@
       fpc-3_0_4 = fpcPkgs.fpc-3_0_4.override {inherit archsAttrs;};
       fpc-3_2_2 = fpcPkgs.fpc-3_2_2.override {inherit archsAttrs;};
       fpc = fpc-3_2_2;
+      lazarus = lazarus-3_6;
+      lazarus-trunk =
+        if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
+        then
+          (pkgs.callPackage fpcPkgs.lazarus-trunk {
+            fpc = fpc;
+          })
+        else null;
       lazarus-3_6 =
         if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
         then
-          (pkgs.callPackage fpcPkgs.lazarus {
+          (pkgs.callPackage fpcPkgs.lazarus-3_6 {
             fpc = fpc;
           })
         else null;
@@ -55,7 +63,29 @@
         fpc-3_0_4 = fpcWrapper universal.fpc-3_0_4;
         fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2;
         fpc-trunk = fpcWrapper universal.fpc-trunk;
-        fpc = fpcWrapper universal.fpc-3_2_2;
+        fpc = fpcWrapper universal.fpc-trunk;
+        lazarus-trunk =
+          if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
+          then
+            (pkgs.callPackage fpcPkgs.lazarusWrapper {
+              # FIXME
+              # lazarus doesn't compile editor with trunk fpc
+              fpc = universal.fpc;
+              fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
+              lazarus = universal.lazarus-trunk;
+            })
+          else null;
+        lazarus =
+          if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
+          then
+            (pkgs.callPackage fpcPkgs.lazarusWrapper {
+              # FIXME
+              # lazarus doesn't compile editor with trunk fpc
+              fpc = universal.fpc;
+              fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
+              lazarus = universal.lazarus;
+            })
+          else null;
         lazarus-3_6 =
           if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
           then
