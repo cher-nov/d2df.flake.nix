@@ -14,14 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v29
-      - name: Remove unnecessary packages
-        run: | # stolen from https://github.com/easimon/maximize-build-space
-          echo "=== Before pruning ==="
-          df -h
-          sudo rm -rf /opt || true
-          echo
-          echo "=== After pruning ==="
-          df -h
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
         with:
