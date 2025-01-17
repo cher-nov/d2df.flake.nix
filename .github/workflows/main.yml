@@ -61,7 +61,7 @@ jobs:
           name: doom2df-android
           path: result
           if-no-files-found: error
-      - name: Build Windows 32-bit ZIP bundle
+      - name: Build Windows x86 ZIP bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
@@ -73,11 +73,72 @@ jobs:
           export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
           export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
 
+          export BUILD_ARCH=mingw32
+          export IS_WINDOWS=1
+
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-win32
-          path: doom2df-win32.zip
+          name: doom2df-mingw32
+          path: doom2df-mingw32.zip
+      - name: Build Windows x86_64 ZIP bundle
+        env:
+          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
+          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
+          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+        run: |
+          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
+          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
+          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
+          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
+
+          export BUILD_ARCH=mingw64
+          export IS_WINDOWS=1
+
+          bash ./game/bundle/scripts/mkZip.bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom2df-mingw64
+          path: doom2df-mingw64.zip
+      - name: Build MacOS x86_64 ZIP bundle
+        env:
+          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
+          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
+          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+        run: |
+          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
+          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
+          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
+          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
+
+          export BUILD_ARCH=x86_64-apple-darwin
+
+          bash ./game/bundle/scripts/mkZip.bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom2df-x86_64-apple-darwin
+          path: doom2df-x86_64-apple-darwin.zip
+      - name: Build MacOS aarch64 ZIP bundle
+        env:
+          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
+          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
+          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+        run: |
+          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
+          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
+          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
+          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
+
+          export BUILD_ARCH=arm64-apple-darwin
+
+          bash ./game/bundle/scripts/mkZip.bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: doom2df-arm64-apple-darwin
+          path: doom2df-arm64-apple-darwin.zip
           if-no-files-found: error
       - name: Calculate new build number
         run: |
@@ -95,7 +156,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
-          artifacts: doom2df-win32.zip, doom2df-android.apk
+          artifacts: doom2df-mingw32.zip, doom2df-android.apk, doom2df-mingw64.zip, doom2df-x86_64-apple-darwin.zip, doom2df-arm64-apple-darwin.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.RELEASE_NAME }}
           bodyFile: release_body
