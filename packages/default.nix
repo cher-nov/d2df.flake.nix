@@ -55,9 +55,14 @@
           !(
             (combo.holmes == "Enable" && combo.graphics != "OpenGL2")
             || (combo.holmes == "Enable" && combo.io != "SDL2")
+            || (combo.graphics == "OpenGLES" && combo.io != "SDL2")
+            # FIXME
+            # SDL1 is not packaged yet
+            || (combo.io == "SDL1")
+            #|| (combo.sound == "FMOD")
             #|| (combo.io == "sysStub" && combo.headless == "disable")
-            #|| (combo.sound == "SDL2_mixer" && combo.io != "SDL2")
-            #|| (combo.sound == "SDL" && combo.io != "SDL2")
+            || (combo.sound == "SDL2_mixer" && combo.io != "SDL2")
+            || (combo.sound == "SDL_mixer" && combo.io != "SDL1")
           )
       )
       featureCombinations;
