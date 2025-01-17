@@ -17,7 +17,7 @@
   }: let
     default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
   in
-    stdenv.mkDerivation rec {
+    stdenv.mkDerivation (finalAttrs: rec {
       version = "3.3.1";
       pname = "fpc";
       src = fetchgit {
@@ -53,21 +53,28 @@
       # compile a crosscompiling FPC without compiling an FPC native to the host system.
       # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
 
-      buildPhase = (
-        (lib.concatStringsSep "\n" (
-          lib.map (x: let
-            abi = x.name;
-            fpcAttrs = x.value;
-          in ''
-            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-              make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
-          '') (lib.attrsToList archsAttrs)
-        ))
-        + ''
+      buildPhase =
+        ''
           make all ${lib.concatStringsSep " " default}
         ''
-      );
+        + (
+          (lib.concatStringsSep "\n" (
+            lib.map (x: let
+              abi = x.name;
+              fpcAttrs = x.value;
+            in ''
+              PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
+                make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
+            '') (lib.attrsToList archsAttrs)
+          ))
+          + ''
+            make all ${lib.concatStringsSep " " default}
+          ''
+        );
 
+      # HACK: if you crosscompile for mingw64 or x86_64-apple-darwin, Makefile would expect a crosscompiler at ppcrossx64 (if your host is x86_64, ofc)
+      # But if you install the native compiler first, the lazarus won't build...
+      # So we have to install the cross compiler and the units, then clean and build the compiler AGAIN.
       installPhase =
         (lib.concatStringsSep "\n" (
           lib.map (x: let
@@ -79,6 +86,8 @@
           '') (lib.attrsToList archsAttrs)
         ))
         + ''
+          make clean all
+          make all ${lib.concatStringsSep " " default}
           make install ${lib.concatStringsSep " " default}
         ''
         + ''
@@ -102,7 +111,7 @@
         license = with licenses; [gpl2 lgpl2];
         platforms = platforms.unix;
       };
-    };
+    });
 in rec {
   fpcWrapper = {
     fpc,
@@ -177,22 +186,20 @@ in rec {
         cp ${overrides} ide/${overrides.name}
       '';
 
-      buildInputs =
-        [
-          # we need gtk2 unconditionally as that is the default target when building applications with lazarus
-          fpc
-          gtk2
-          glib
-          libXi
-          xorgproto
-          libX11
-          libXext
-          pango
-          atk
-          stdenv.cc
-          gdk-pixbuf
-        ]
-        ++ lib.optionals withQt5 [libqt5pas-git qtbase];
+      buildInputs = [
+        # we need gtk2 unconditionally as that is the default target when building applications with lazarus
+        fpc
+        gtk2
+        glib
+        libXi
+        xorgproto
+        libX11
+        libXext
+        pango
+        atk
+        stdenv.cc
+        gdk-pixbuf
+      ];
 
       # Disable parallel build, errors:
       #  Fatal: (1018) Compilation aborted

@@ -3,19 +3,17 @@
   lib,
   pins,
 }: let
-  createCrossPkgSet = arch: archInfoAttrs: let
-    crossTarget = arch;
-    gcc = pkgs.pkgsCross.${crossTarget}.buildPackages.wrapCC (pkgs.pkgsCross.${crossTarget}.buildPackages.gcc-unwrapped.override {
+  mkMingwCrossPkg = arch: vendor: sys: nixpkgsArch: fpcTarget: fpcCpu: fpcBasename: let
+    crossPkgs = pkgs.pkgsCross.${nixpkgsArch};
+    gcc = crossPkgs.buildPackages.wrapCC (crossPkgs.buildPackages.gcc-unwrapped.override {
       threadsCross = {
         model = "win32";
         package = null;
       };
     });
-    stdenvWin32Threads = pkgs.pkgsCross.${crossTarget}.buildPackages.overrideCC pkgs.pkgsCross.${crossTarget}.stdenv gcc;
-
+    stdenvWin32Threads = crossPkgs.buildPackages.overrideCC crossPkgs.stdenv gcc;
     set = rec {
-      infoAttrs = archInfoAttrs;
-      enet = (pkgs.pkgsCross.${crossTarget}.enet.override {stdenv = stdenvWin32Threads;}).overrideAttrs (prev: let
+      enet = (crossPkgs.enet.override {stdenv = stdenvWin32Threads;}).overrideAttrs (prev: let
         mingwPatchNoUndefined = pkgs.fetchurl {
           url = "https://raw.githubusercontent.com/msys2/MINGW-packages/a4bc312869703bda3703fc1cb327fdd7659f0c4b/mingw-w64-enet/001-no-undefined.patch";
           hash = "sha256-t3fXrYG0h2OkZHx13KPKaJL4hGGJKZcN8vdsWza51Hk=";
@@ -25,18 +23,18 @@
           hash = "sha256-vD3sKSU4OVs+zHKuMTNpcZC+LnCyiV/SJqf9G9Vj/cQ=";
         };
       in {
-        nativeBuildInputs = [pkgs.pkgsCross.${crossTarget}.buildPackages.autoreconfHook];
+        nativeBuildInputs = [crossPkgs.buildPackages.autoreconfHook];
         patches = [mingwPatchNoUndefined mingwPatchWinlibs];
         postFixup = ''
           mv $out/bin/libenet-7.dll $out/bin/enet.dll
         '';
       });
-      SDL2 = (pkgs.pkgsCross.${crossTarget}.SDL2.override {stdenv = stdenvWin32Threads;}).overrideAttrs (finalAttrs: {});
+      SDL2 = (crossPkgs.SDL2.override {stdenv = stdenvWin32Threads;}).overrideAttrs (finalAttrs: {});
       SDL2_mixer =
-        (pkgs.pkgsCross.${crossTarget}.SDL2_mixer.override {
+        (crossPkgs.SDL2_mixer.override {
           enableSdltest = false;
           enableSmpegtest = false;
-          SDL2 = pkgs.pkgsCross.${crossTarget}.SDL2;
+          SDL2 = crossPkgs.SDL2;
           fluidsynth = null;
           smpeg2 = null;
           flac = null;
@@ -44,7 +42,7 @@
           stdenv = stdenvWin32Threads;
         })
         .overrideAttrs (prev: {
-          buildInputs = prev.buildInputs ++ [pkgs.pkgsCross.${crossTarget}.game-music-emu];
+          buildInputs = prev.buildInputs ++ [crossPkgs.game-music-emu];
           NIX_CFLAGS_LINK = "-D_WIN32_WINNT=0x0501 -static-libgcc";
           NIX_CFLAGS_COMPILE = "-D_WIN32_WINNT=0x0501 -static-libgcc";
           configureFlags =
@@ -63,29 +61,29 @@
               (lib.enableFeature false "music-mod-xmp-shared")
             ];
         });
-      libmodplug = pkgs.pkgsCross.${crossTarget}.libmodplug.overrideAttrs (final: prev: {
+      libmodplug = crossPkgs.libmodplug.overrideAttrs (final: prev: {
         nativeBuildInputs = [pkgs.autoreconfHook];
       });
-      libvorbis = pkgs.pkgsCross.${crossTarget}.libvorbis.overrideAttrs (final: prev: {
+      libvorbis = crossPkgs.libvorbis.overrideAttrs (final: prev: {
         patches = [];
         nativeBuildInputs = [pkgs.autoreconfHook];
         outputs = ["out"];
       });
-      opusfile = pkgs.pkgsCross.${crossTarget}.opusfile.overrideAttrs (final: prev: {
+      opusfile = crossPkgs.opusfile.overrideAttrs (final: prev: {
         patches = lib.filter (patch: lib.hasSuffix "multistream.patch" patch) prev.patches;
         nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
         outputs = ["out"];
         configureFlags = ["--disable-examples" "--disable-http"];
       });
-      libopus = pkgs.pkgsCross.${crossTarget}.libopus.overrideAttrs (final: prev: {
+      libopus = crossPkgs.libopus.overrideAttrs (final: prev: {
         nativeBuildInputs = [pkgs.autoreconfHook];
       });
-      libmpg123 = pkgs.pkgsCross.${crossTarget}.libmpg123.overrideAttrs (final: prev: {
+      libmpg123 = crossPkgs.libmpg123.overrideAttrs (final: prev: {
         nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
       });
-      game-music-emu = pkgs.pkgsCross.${crossTarget}.game-music-emu;
-      wavpack = pkgs.pkgsCross.${crossTarget}.wavpack;
-      miniupnpc = (pkgs.pkgsCross.${crossTarget}.miniupnpc.override {stdenv = stdenvWin32Threads;}).overrideAttrs (final: {
+      game-music-emu = crossPkgs.game-music-emu;
+      wavpack = crossPkgs.wavpack;
+      miniupnpc = (crossPkgs.miniupnpc.override {stdenv = stdenvWin32Threads;}).overrideAttrs (final: {
         env.NIX_CFLAGS_COMPILE = "-static-libgcc";
         postFixup =
           (
@@ -97,19 +95,19 @@
             mv $out/bin/libminiupnpc.dll $out/bin/miniupnpc.dll
           '';
       });
-      libxmp = pkgs.pkgsCross.${crossTarget}.libxmp.overrideAttrs (final: prev: {
+      libxmp = crossPkgs.libxmp.overrideAttrs (final: prev: {
         patches = [];
         nativeBuildInputs = [pkgs.autoreconfHook pkgs.pkg-config];
         outputs = ["out"];
       });
-      libogg = pkgs.pkgsCross.${crossTarget}.libogg.override {stdenv = stdenvWin32Threads;};
+      libogg = crossPkgs.libogg.override {stdenv = stdenvWin32Threads;};
       fmodex = let
         drv = {
           stdenv,
           lib,
           fetchurl,
           p7zip,
-          is64Bit ? false,
+          is64Bit ? arch == "x86_64",
           installerHasSuffix ? true,
         }: let
           installerSuffix = lib.optionalString installerHasSuffix (
@@ -121,7 +119,10 @@
           shortVersion = builtins.replaceStrings ["."] [""] version;
           src = fetchurl {
             url = "https://zdoom.org/files/fmod/fmodapi${shortVersion}win${installerSuffix}-installer.exe";
-            sha256 = "sha256-aPK+/b1dwo1MsegzXTaxBozF56Rko0jxBJYuVi1f0LQ=";
+            sha256 =
+              if is64Bit
+              then "sha256-F6kFWvkpbUawIMSZBLoHytlth/T3QUSS+Ke7cU1O12c="
+              else "sha256-aPK+/b1dwo1MsegzXTaxBozF56Rko0jxBJYuVi1f0LQ=";
           };
         in
           stdenv.mkDerivation rec {
@@ -137,7 +138,7 @@
             dontBuild = true;
 
             installPhase = let
-              dllSuffix = lib.optionalString (!installerHasSuffix) (lib.optionalString is64Bit "64");
+              dllSuffix = lib.optionalString installerHasSuffix (lib.optionalString is64Bit "64");
             in
               lib.optionalString stdenv.hostPlatform.isLinux ''
                 mkdir -p $out/bin
@@ -158,7 +159,7 @@
       in
         pkgs.callPackage drv {};
       openal =
-        (pkgs.pkgsCross.${crossTarget}.openal.override {
+        (crossPkgs.openal.override {
           pipewire = null;
           dbus = null;
           alsa-lib = null;
@@ -166,13 +167,6 @@
           stdenv = stdenvWin32Threads;
         })
         .overrideAttrs (prev: {
-          /*
-          buildInputs =
-            prev.buildInputs
-            ++ [
-              (pkgs.pkgsCross.mingwW64.windows.mcfgthreads)
-            ];
-          */
           preConfigure = ''
             cmakeFlagsArray+=(
               -DCMAKE_REQUIRED_COMPILER_FLAGS="-D_WIN32_WINNT=0x0501 -static-libgcc -static-libstdc++"
@@ -182,93 +176,71 @@
 
           postInstall = "";
         });
-      #libogg,
-      #libvorbis,
-      #mpg123,
     };
+    finalSet = lib.pipe set [
+      (lib.mapAttrs (name: value:
+        if pins ? "${name}"
+        then
+          (value.overrideAttrs (final: prev: {
+            version = pins.${name}.version;
+            src = pins.${name}.src;
+          }))
+        else value))
+      (let
+        dontStripIfDrv = drv:
+          if drv ? overrideAttrs
+          then
+            drv.overrideAttrs (final: {
+              dontStrip = true;
+            })
+          else drv;
+      in
+        lib.mapAttrs (name: value: dontStripIfDrv value))
+    ];
+  in let
+    ld = "${crossPkgs.buildPackages.gcc}/bin/${arch}-${vendor}-${sys}-ld";
+    as = "${crossPkgs.buildPackages.gcc}/bin/${arch}-${vendor}-${sys}-as";
   in
-    lib.mapAttrs (name: value:
-      if pins ? "${name}"
-      then
-        (value.overrideAttrs (final: prev: {
-          version = pins.${name}.version;
-          src = pins.${name}.src;
-        }))
-      else value)
-    set;
-  crossPkgs = lib.mapAttrs createCrossPkgSet architectures;
-  architectures = {
-    mingw32 = rec {
-      toolchainPrefix = "i686-w64-mingw32";
-      name = "mingw64-32";
-      d2dforeverFeaturesSuport = {
-        openglDesktop = true;
-        openglEs = false;
-        supportsHeadless = true;
-        loadedAsLibrary = false;
-      };
-      caseSensitive = false;
-      bundleFormats = ["zip"];
-      isWindows = true;
-      isAndroid = false;
-      pretty = "Windows ${toolchainPrefix}";
-      bundle = {
-        io = "SDL2";
-        sound = "FMOD";
-        graphics = "OpenGL2";
-        headless = "Disable";
-        holmes = "Enable";
-      };
-      fpcAttrs = rec {
-        lazarusExists = true;
-        cpuArgs = [""];
-        targetArg = "-Twin32";
-        basename = "cross386";
-        makeArgs = {
-          OS_TARGET = "win32";
-          CPU_TARGET = "i386";
-          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
-        };
-        toolchainPaths = [
-          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
-          "${pkgs.writeShellScriptBin "i386-win32-as" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
-          "${pkgs.writeShellScriptBin "i386-win32-ld" "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
-        ];
-      };
+    lib.recursiveUpdate
+    {
+      infoAttrs = mkMingwArch arch vendor sys fpcTarget fpcCpu fpcBasename as ld;
+    }
+    finalSet;
+  mkMingwArch = arch: vendor: sys: fpcTarget: fpcCpu: fpcBasename: as: ld: {
+    caseSensitive = false;
+    d2dforeverFeaturesSuport = {
+      openglDesktop = true;
+      openglEs = true;
+      supportsHeadless = true;
+      loadedAsLibrary = false;
     };
-
-    # FIXME
-    # Doesn't pass install phase with FPC
-
-    /*
-    mingwW64 = rec {
-      toolchainPrefix = "x86_64-w64-mingw32";
-      fpcAttrs = rec {
-        cpuArgs = [""];
-        targetArg = "-Twin64";
-        basename = "cx64";
-        makeArgs = {
-          OS_TARGET = "win64";
-          CPU_TARGET = "x86_64";
-          CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
-        };
-        toolchainPaths = [
-          "${pkgs.pkgsCross.mingw32.buildPackages.gcc}/bin"
-          "${pkgs.writeShellScriptBin "x86_64-win64-as" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-as $@"}/bin"
-          "${pkgs.writeShellScriptBin "x86_64-win64-ld" "${pkgs.pkgsCross.mingwW64.buildPackages.gcc}/bin/${toolchainPrefix}-ld $@"}/bin"
-        ];
-      };
+    isWindows = true;
+    bundle = {
+      io = "SDL2";
+      sound = "FMOD";
+      graphics = "OpenGL2";
+      headless = "Disable";
+      holmes = "Enable";
     };
-    */
+    fpcAttrs = rec {
+      lazarusExists = true;
+      cpuArgs = [""];
+      targetArg = "-T${fpcTarget}";
+      basename = fpcBasename;
+      makeArgs = {
+        OS_TARGET = fpcTarget;
+        CPU_TARGET = fpcCpu;
+        CROSSOPT = "\"" + (lib.concatStringsSep " " cpuArgs) + "\"";
+      };
+      toolchainPaths = [
+        "${pkgs.writeShellScriptBin "${fpcCpu}-${fpcTarget}-as" "${as} $@"}/bin"
+        "${pkgs.writeShellScriptBin "${fpcCpu}-${fpcTarget}-ld" "${ld} $@"}/bin"
+      ];
+    };
   };
-in let
-  dontStripIfDrv = drv:
-    if drv ? overrideAttrs
-    then
-      drv.overrideAttrs (final: {
-        dontStrip = true;
-      })
-    else drv;
-in
-  lib.mapAttrs (_: archAttrs: lib.mapAttrs (_: dontStripIfDrv) archAttrs)
-  crossPkgs
+in {
+  mingw32 = mkMingwCrossPkg "i686" "w64" "mingw32" "mingw32" "win32" "i386" "cross386";
+  # FIXME
+  # win64 builds with FMOD don't work
+  mingw64 = lib.recursiveUpdate (mkMingwCrossPkg "x86_64" "w64" "mingw32" "mingwW64" "win64" "x86_64" "cx64") {infoAttrs.bundle.sound = "OpenAL";};
+}

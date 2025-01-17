@@ -105,4 +105,4 @@
   in
     (lib.mapAttrs fromCrossPkgsAttrs crossPkgs) // {universal = universal;};
 in
-  f (android // mingw)
+  f (android // mingw // mac)
