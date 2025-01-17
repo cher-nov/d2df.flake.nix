@@ -3,6 +3,7 @@
   fetchgit,
   stdenv,
   lib,
+  pins,
   pkgs,
 }: let
   fpcDrv = {
@@ -20,11 +21,7 @@
     stdenv.mkDerivation (finalAttrs: rec {
       version = "3.3.1";
       pname = "fpc";
-      src = fetchgit {
-        url = "https://gitlab.com/freepascal.org/fpc/source.git";
-        rev = "a7dab71da1074b50ffd81e593537072869031242";
-        sha256 = "sha256-JEH/TWNTxpbIBZ0JelqDb7FHZGm0j4O/No/8iFlxxAg=";
-      };
+      src = pins.fpc.src;
 
       nativeBuildInputs = [binutils gawk fpc];
       glibc = stdenv.cc.libc.out;
@@ -173,7 +170,7 @@ in rec {
       }));
   in
     stdenv.mkDerivation rec {
-      pname = "lazarus-git-8801ff3";
+      pname = "lazarus-git-${pins.lazarus.src.rev}";
       inherit version;
 
       src = fetchgit {
@@ -189,16 +186,6 @@ in rec {
       buildInputs = [
         # we need gtk2 unconditionally as that is the default target when building applications with lazarus
         fpc
-        gtk2
-        glib
-        libXi
-        xorgproto
-        libX11
-        libXext
-        pango
-        atk
-        stdenv.cc
-        gdk-pixbuf
       ];
 
       # Disable parallel build, errors:
@@ -207,13 +194,29 @@ in rec {
 
       nativeBuildInputs = [makeWrapper] ++ lib.optional withQt5 wrapQtAppsHook;
 
-      makeFlags = [
-        "FPC=fpc"
-        "PP=fpc"
-        #"LAZARUS_INSTALL_DIR=${placeholder "out"}/share/lazarus/"
-        "INSTALL_PREFIX=${placeholder "out"}/"
-        "bigide"
-      ];
+      buildPhase = let
+        makeFlags = [
+          "FPC=fpc"
+          "PP=fpc"
+          "LAZARUS_INSTALL_DIR=$out/share/lazarus/"
+          "INSTALL_PREFIX=$out/"
+        ];
+      in ''
+        mkdir -p $out
+        make lazbuild ${lib.concatStringsSep " " makeFlags}
+      '';
+
+      installPhase = let
+        installFlags = [
+          "FPC=fpc"
+          "PP=fpc"
+          "LAZARUS_INSTALL_DIR=${placeholder "out"}/share/lazarus/"
+          "INSTALL_PREFIX=${placeholder "out"}/"
+        ];
+      in ''
+        touch lazarus startlazarus
+        make -k install ${lib.concatStringsSep " " installFlags}
+      '';
 
       preBuild = ''
         mkdir -p $out/share/fpcsrc "$out/lazarus"
@@ -230,6 +233,10 @@ in rec {
         platforms = platforms.linux;
       };
     };
+  lazarus-3_6 = lazarus;
+  lazarus-trunk = callPackage lazarus {
+    src = pins.lazarus.src;
+  };
 
   fpc-trunk = callPackage fpcDrv {archsAttrs = {};};
   fpc = fpc-trunk;

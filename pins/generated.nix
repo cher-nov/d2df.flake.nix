@@ -32,7 +32,6 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-ywsHzIW78U/C+jAsdSQ3WyGraA6t3E9BeDn14aUgCjk=";
     };
     date = "2025-01-14";
@@ -46,7 +45,6 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-JIvasudVSQjWttg9fockmyJbGPrQe1hzsQRChpDzW8c=";
     };
     date = "2024-11-14";
@@ -60,10 +58,22 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-NZ6Fe5Tj3BTQw6yEggJL4IfhX/MOuGtQLJfltJuUDMo=";
     };
     date = "2021-11-07";
+  };
+  fpc = {
+    pname = "fpc";
+    version = "dcc95b14e8bfc964513a616c774051c9ab895428";
+    src = fetchgit {
+      url = "https://gitlab.com/freepascal.org/fpc/source";
+      rev = "dcc95b14e8bfc964513a616c774051c9ab895428";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sha256 = "sha256-AWt9YXH6jlAjwzE+ZJyy/4QQL+YFJ9HUMbU57TxKS74=";
+    };
+    date = "2025-01-17";
   };
   game-music-emu = {
     pname = "game-music-emu";
@@ -76,6 +86,19 @@
       sha256 = "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=";
     };
   };
+  lazarus = {
+    pname = "lazarus";
+    version = "1a0fb4c487de5860a6651df89b3b22bd36968efd";
+    src = fetchgit {
+      url = "https://gitlab.com/freepascal.org/lazarus/lazarus";
+      rev = "1a0fb4c487de5860a6651df89b3b22bd36968efd";
+      fetchSubmodules = false;
+      deepClone = false;
+      leaveDotGit = false;
+      sha256 = "sha256-fT9pxOPnKDr7j9CX/0xEsm+dYYAkRQ79MqsD9rysnzY=";
+    };
+    date = "2025-01-16";
+  };
   libmodplug = {
     pname = "libmodplug";
     version = "d1b97ed0020bc620a059d3675d1854b40bd2608d";
@@ -85,7 +108,6 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=";
     };
     date = "2022-01-31";
@@ -99,7 +121,6 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-JezLmOf+qsqrv5qtYDYe0Ta7ykyfYVq8cZ0iHL7jvgk=";
     };
     date = "2025-01-05";
@@ -179,7 +200,6 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
       sha256 = "sha256-7LvZMtYEkOR89QaQu2S+4xAz7d76CNMrc1ptYG7vUlM=";
     };
     date = "2022-11-22";

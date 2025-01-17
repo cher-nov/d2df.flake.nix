@@ -15,7 +15,6 @@
             "repo": "SDL",
             "rev": "release-2.30.11",
             "sha256": "sha256-2NVZNqYhnAsljuF0BhBSJ5HmE9cS41gJep4Q3VxUGkY=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "release-2.30.11"
@@ -36,7 +35,6 @@
             "repo": "SDL_mixer",
             "rev": "release-2.8.0",
             "sha256": "sha256-jLKawxnwP5dJglUhgHfWgmKh27i32Rr4LcJQdpXasco=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "release-2.8.0"
@@ -55,7 +53,6 @@
             "name": null,
             "rev": "6f1f5578319833eed6c2d14a4edb3acadef72bd6",
             "sha256": "sha256-ywsHzIW78U/C+jAsdSQ3WyGraA6t3E9BeDn14aUgCjk=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Doom2D/dfwad"
         },
@@ -75,7 +72,6 @@
             "name": null,
             "rev": "657eaf97d9d335917c58484a4a4b5e03838ebd8e",
             "sha256": "sha256-JIvasudVSQjWttg9fockmyJbGPrQe1hzsQRChpDzW8c=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/lsalzman/enet"
         },
@@ -95,11 +91,29 @@
             "name": null,
             "rev": "209f46745a4cca9bf6367fae11920c7bce3b9681",
             "sha256": "sha256-NZ6Fe5Tj3BTQw6yEggJL4IfhX/MOuGtQLJfltJuUDMo=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/chirs241097/fluidsynth-sans-glib"
         },
         "version": "209f46745a4cca9bf6367fae11920c7bce3b9681"
+    },
+    "fpc": {
+        "cargoLocks": null,
+        "date": "2025-01-17",
+        "extract": null,
+        "name": "fpc",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "dcc95b14e8bfc964513a616c774051c9ab895428",
+            "sha256": "sha256-AWt9YXH6jlAjwzE+ZJyy/4QQL+YFJ9HUMbU57TxKS74=",
+            "type": "git",
+            "url": "https://gitlab.com/freepascal.org/fpc/source"
+        },
+        "version": "dcc95b14e8bfc964513a616c774051c9ab895428"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -117,10 +131,28 @@
             "repo": "game-music-emu",
             "rev": "0.6.3",
             "sha256": "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "0.6.3"
+    },
+    "lazarus": {
+        "cargoLocks": null,
+        "date": "2025-01-16",
+        "extract": null,
+        "name": "lazarus",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "1a0fb4c487de5860a6651df89b3b22bd36968efd",
+            "sha256": "sha256-fT9pxOPnKDr7j9CX/0xEsm+dYYAkRQ79MqsD9rysnzY=",
+            "type": "git",
+            "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
+        },
+        "version": "1a0fb4c487de5860a6651df89b3b22bd36968efd"
     },
     "libmodplug": {
         "cargoLocks": null,
@@ -136,7 +168,6 @@
             "name": null,
             "rev": "d1b97ed0020bc620a059d3675d1854b40bd2608d",
             "sha256": "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/Konstanty/libmodplug"
         },
@@ -156,7 +187,6 @@
             "name": null,
             "rev": "6e06824f9bc16f4fc247a00c331b69c1f8148c4e",
             "sha256": "sha256-JezLmOf+qsqrv5qtYDYe0Ta7ykyfYVq8cZ0iHL7jvgk=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/madebr/mpg123"
         },
@@ -178,7 +208,6 @@
             "repo": "ogg",
             "rev": "v1.3.5",
             "sha256": "sha256-ync2np86Nje1R/g41VLhPhsld+yLZ40Pxv1wNzWCtss=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "v1.3.5"
@@ -199,7 +228,6 @@
             "repo": "opus",
             "rev": "v1.5.2",
             "sha256": "sha256-M1G7ypcfs7nJmXgkyoG96jT/CkgN5BOzy+DGO4LVCvA=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "v1.5.2"
@@ -220,7 +248,6 @@
             "repo": "vorbis",
             "rev": "v1.3.7",
             "sha256": "sha256-yCnbAxkbZN674F5HVd+DTmotvdtYnkJiO01B6foOiVY=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "v1.3.7"
@@ -241,7 +268,6 @@
             "repo": "libxmp",
             "rev": "libxmp-4.6.1",
             "sha256": "sha256-jied4Rt1/Jh4OGFbQr4w1ALiXgsL3UYQEdJ2G/WRjqk=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "libxmp-4.6.1"
@@ -262,7 +288,6 @@
             "repo": "miniupnp",
             "rev": "miniupnpc_2_3_0",
             "sha256": "sha256-m26LlgvPm1uLi47r1W7x35yKFGX4gucZJHAaJlnrrQk=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "miniupnpc_2_3_0"
@@ -283,7 +308,6 @@
             "repo": "openal-soft",
             "rev": "1.24.2",
             "sha256": "sha256-ECrIkxMACPsWehtJWwTmoYj6hGcsdxwVuTiQywG36Y8=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "1.24.2"
@@ -302,7 +326,6 @@
             "name": null,
             "rev": "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166",
             "sha256": "sha256-7LvZMtYEkOR89QaQu2S+4xAz7d76CNMrc1ptYG7vUlM=",
-            "sparseCheckout": [],
             "type": "git",
             "url": "https://github.com/xiph/opusfile"
         },
@@ -324,7 +347,6 @@
             "repo": "WavPack",
             "rev": "5.7.0",
             "sha256": "sha256-vFZxg1mVqE7Kp38vEGA5V8m2tjqhssFsUZURixhlfk0=",
-            "sparseCheckout": [],
             "type": "github"
         },
         "version": "5.7.0"

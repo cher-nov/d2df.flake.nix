@@ -62,7 +62,7 @@
       fpcPkgs = import ./fpc {
         inherit (pkgs) callPackage fetchgit stdenv;
         inherit pkgs;
-        inherit lib;
+        inherit lib pins;
       };
       d2dfPkgs = import ./game;
       bundles = import ./game/bundle {

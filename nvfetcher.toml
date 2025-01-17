@@ -64,3 +64,11 @@ fetch.git = "https://github.com/Doom2D/dfwad"
 [miniupnpc]
 src.github = "miniupnp/miniupnp"
 fetch.github = "miniupnp/miniupnp"
+
+[fpc]
+src.git = "https://gitlab.com/freepascal.org/fpc/source"
+fetch.git = "https://gitlab.com/freepascal.org/fpc/source"
+
+[lazarus]
+src.git = "https://gitlab.com/freepascal.org/lazarus/lazarus"
+fetch.git = "https://gitlab.com/freepascal.org/lazarus/lazarus"
