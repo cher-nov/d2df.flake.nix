@@ -94,7 +94,17 @@
           "FMOD" = {withFmod = true;};
           "SDL_mixer" = {withSDL1_mixer = true;};
           "SDL2_mixer" = {withSDL2_mixer = true;};
-          "OpenAL" = {withOpenAL = true;};
+          "OpenAL" = {
+            withOpenAL = true;
+            withVorbis = true;
+            # FIXME
+            # mingw64 doesn't have working fluidsynth
+            # withFluidsynth = true;
+            withLibXmp = true;
+            withMpg123 = true;
+            withOpus = true;
+            withGme = true;
+          };
           "NoSound" = {disableSound = true;};
         };
       in
