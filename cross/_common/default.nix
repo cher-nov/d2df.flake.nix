@@ -118,6 +118,7 @@ in rec {
         "-Denable-oboe=of"
         "-Denable-opensles=of"
         "-Denable-framework=off"
+        "-Denable-openmp=off"
         #"-DCMAKE_PREFIX_PATH=${SDL2}"
       ];
     })

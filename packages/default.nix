@@ -186,10 +186,11 @@ in
   (createBundlesAndExecutables executablesAttrs)
   // {
     android = let
+      elem = lib.head (lib.attrValues (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs));
       # FIXME
       # Just find something with "android" as prefix instead of hardcoding it
-      sdk = executablesAttrs.android-arm64-v8a.androidSdk;
-      sdl = executablesAttrs.android-arm64-v8a.SDL2;
+      sdk = elem.androidSdk;
+      sdl = elem.SDL2;
       gameExecutablePath = callPackage mkExecutablePath {
         byArchPkgsAttrs =
           lib.mapAttrs (arch: archAttrs: let
@@ -213,9 +214,9 @@ in
             isWindows = false;
             asLibrary = true;
             editor = null;
-            prefix = "${archAttrs.infoAttrs.androidAbi}";
+            prefix = "${archAttrs.infoAttrs.androidNativeBundleAbi}";
           })
-          (lib.filterAttrs (n: v: lib.hasPrefix "android" n) executablesAttrs);
+          (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs);
       };
     in {
       bundles = {
