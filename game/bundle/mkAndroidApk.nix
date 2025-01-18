@@ -2,6 +2,7 @@ args @ {
   stdenv,
   jdk17,
   jdk8,
+  openssl,
   findutils,
   coreutils-full,
   file,
@@ -21,6 +22,8 @@ stdenv.mkDerivation (finalAttrs: let
   jdk = jdk17;
   jdkSign = jdk8;
   d8 = "${ANDROID_HOME}/build-tools/35.0.0/d8";
+  apksigner = "${ANDROID_HOME}/build-tools/35.0.0/apksigner";
+  zipalign = "${ANDROID_HOME}/build-tools/35.0.0/zipalign";
   androidManifest = mkAndroidManifest {
     packageName = "org.d2df.app";
     versionName = "0.667-git";
@@ -33,7 +36,7 @@ in {
   pname = "d2df-apk";
   name = "${finalAttrs.pname}-${finalAttrs.version}";
 
-  nativeBuildInputs = [findutils jdk coreutils-full file];
+  nativeBuildInputs = [findutils jdk coreutils-full file openssl];
 
   src = androidRoot;
 
@@ -60,11 +63,13 @@ in {
       ${d8} $(find obj -name '*.class') --lib ${ANDROID_JAR} --output bin/classes.jar
       ${d8} ${ANDROID_JAR} bin/classes.jar --output bin
       ${aapt} package -f -M ./AndroidManifest.xml -S res -I ${ANDROID_JAR} -F bin/d2df.unsigned.apk -A resources bin aux
-      ${jdkSign}/bin/keytool -genkey -validity 10000 -dname "CN=AndroidDebug, O=Android, C=US" -keystore d2df.keystore -storepass android -keypass android -alias androiddebugkey -sigalg MD5withRSA -keyalg RSA -keysize 1024 -v
-      ${jdkSign}/bin/jarsigner -sigalg MD5withRSA -digestalg SHA1 -keystore d2df.keystore -storepass android -keypass android -signedjar bin/d2df.signed.apk bin/d2df.unsigned.apk androiddebugkey
+      ${zipalign} -v -f -p 4 "bin/d2df.unsigned.apk" "bin/d2df.unsigned.aligned.apk"
+      openssl req -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -nodes -days 10000 -newkey rsa:2048 -keyout keyfile.pem -out certificate.pem
+      openssl pkcs12 -export -in certificate.pem -inkey keyfile.pem -out my_keystore.p12 -passout "pass:" -name my_key
+      ${apksigner} sign --min-sdk-version 9 --ks my_keystore.p12 --ks-pass "pass:" --out bin/d2df.signed.aligned.apk bin/d2df.unsigned.aligned.apk
     '';
 
   installPhase = ''
-    cp bin/d2df.signed.apk $out
+    cp bin/d2df.signed.aligned.apk $out
   '';
 })
