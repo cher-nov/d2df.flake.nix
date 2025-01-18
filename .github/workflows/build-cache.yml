@@ -26,12 +26,12 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Build fpc-3_2_2
+      - name: Build fpc
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-3_2_2
-      - name: Build lazarus-3_6
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc
+      - name: Build lazarus
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus-3_6
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus
       - name: Build assets
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath

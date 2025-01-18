@@ -184,7 +184,6 @@ in rec {
       '';
 
       buildInputs = [
-        # we need gtk2 unconditionally as that is the default target when building applications with lazarus
         fpc
       ];
 

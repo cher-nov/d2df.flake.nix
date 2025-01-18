@@ -63,7 +63,7 @@
         fpc-3_0_4 = fpcWrapper universal.fpc-3_0_4;
         fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2;
         fpc-trunk = fpcWrapper universal.fpc-trunk;
-        fpc = fpcWrapper universal.fpc-trunk;
+        fpc = fpcWrapper universal.fpc;
         lazarus-trunk =
           if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
           then
