@@ -16,6 +16,7 @@
     cmakeListsPath ? null,
     cmakePrefix ? "",
     cmakeExtraArgs ? "",
+    extraCmds ? "",
   }:
     pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
       inherit version src;
@@ -29,6 +30,7 @@
       buildPhase = ''
         runHook preBuild
         ${lib.optionalString (!builtins.isNull cmakeListsPath) "cd ${cmakeListsPath}"}
+        ${extraCmds}
         mkdir build
         cd build
         ${cmakePrefix} \
@@ -59,9 +61,13 @@ in rec {
   enet =
     source.enet {
     };
-  SDL2 =
-    source.SDL2 {
-    };
+  SDL2 = source.SDL2 {
+    cmakeExtraArgs = "-DSDL_WERROR=OFF";
+    extraCmds = ''
+      substituteInPlace src/sensor/android/SDL_androidsensor.c \
+          --replace 'ALooper_pollAll' 'ALooper_pollOnce' \
+    '';
+  };
   libogg =
     source.libogg {
     };

@@ -3,6 +3,11 @@ src.github = "libsdl-org/SDL"
 fetch.github = "libsdl-org/SDL"
 src.include_regex = "release-2.*"
 
+[SDL2_android]
+src.github_tag = "libsdl-org/SDL"
+fetch.github = "libsdl-org/SDL"
+src.include_regex = "release-2.0.18"
+
 [SDL2_mixer]
 src.github = "libsdl-org/SDL_mixer"
 fetch.github = "libsdl-org/SDL_mixer"

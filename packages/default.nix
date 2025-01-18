@@ -186,11 +186,12 @@ in
   (createBundlesAndExecutables executablesAttrs)
   // {
     android = let
-      elem = lib.head (lib.attrValues (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs));
+      elem = lib.last (lib.attrValues (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs));
       # FIXME
       # Just find something with "android" as prefix instead of hardcoding it
       sdk = elem.androidSdk;
       sdl = elem.SDL2;
+      androidPlatform = elem.androidPlatform;
       gameExecutablePath = callPackage mkExecutablePath {
         byArchPkgsAttrs =
           lib.mapAttrs (arch: archAttrs: let
@@ -225,7 +226,7 @@ in
           androidSdk = sdk;
           SDL2ForJava = sdl;
           gameAssetsPath = defaultAssetsPath.override {toLower = true;};
-          inherit androidRoot androidIcons mkAndroidManifest gameExecutablePath;
+          inherit androidRoot androidIcons androidPlatform mkAndroidManifest gameExecutablePath;
         };
       };
       executables = {};

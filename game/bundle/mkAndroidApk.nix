@@ -11,6 +11,7 @@ args @ {
   SDL2ForJava,
   androidRoot,
   mkAndroidManifest,
+  androidPlatform,
   androidIcons,
   gameAssetsPath,
   gameExecutablePath,
@@ -27,8 +28,8 @@ stdenv.mkDerivation (finalAttrs: let
   androidManifest = mkAndroidManifest {
     packageName = "org.d2df.app";
     versionName = "0.667-git";
-    minSdkVersion = "9";
-    targetSdkVersion = "29";
+    minSdkVersion = androidPlatform;
+    targetSdkVersion = "34";
     glEsVersion = "0x00010001";
   };
 in {
@@ -59,14 +60,14 @@ in {
     # Build the APK.
     + ''
       ${aapt} package -f -m -S res -J gen -M AndroidManifest.xml -I ${ANDROID_JAR}
-      ${jdkSign}/bin/javac -encoding UTF-8 -source 1.8 -target 1.8 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')
+      ${jdkSign}/bin/javac -encoding UTF-8 -source 1.6 -target 1.6 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')
       ${d8} $(find obj -name '*.class') --lib ${ANDROID_JAR} --output bin/classes.jar
       ${d8} ${ANDROID_JAR} bin/classes.jar --output bin
       ${aapt} package -f -M ./AndroidManifest.xml -S res -I ${ANDROID_JAR} -F bin/d2df.unsigned.apk -A resources bin aux
       ${zipalign} -v -f -p 4 "bin/d2df.unsigned.apk" "bin/d2df.unsigned.aligned.apk"
       openssl req -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -nodes -days 10000 -newkey rsa:2048 -keyout keyfile.pem -out certificate.pem
       openssl pkcs12 -export -in certificate.pem -inkey keyfile.pem -out my_keystore.p12 -passout "pass:" -name my_key
-      ${apksigner} sign --min-sdk-version 9 --ks my_keystore.p12 --ks-pass "pass:" --out bin/d2df.signed.aligned.apk bin/d2df.unsigned.aligned.apk
+      ${apksigner} sign --ks my_keystore.p12 --ks-pass "pass:" --out bin/d2df.signed.aligned.apk bin/d2df.unsigned.aligned.apk
     '';
 
   installPhase = ''
