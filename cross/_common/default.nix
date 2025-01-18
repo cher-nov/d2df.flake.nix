@@ -36,6 +36,7 @@
             -DBUILD_SHARED_LIBS=ON \
             -DCMAKE_INSTALL_PREFIX=$out \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CROSSCOMPILING=ON \
             ${cmakeExtraArgs} \
             ..
         make -j$(nproc)

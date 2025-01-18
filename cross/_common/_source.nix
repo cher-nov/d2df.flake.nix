@@ -87,6 +87,6 @@
   miniupnpc = cmakeDrv {
     pname = "miniupnpc";
     version = pins.miniupnpc.version;
-    src = pins.miniupnpc.src + "/miniupnpc";
+    src = "${pins.miniupnpc.src}/miniupnpc";
   };
 }

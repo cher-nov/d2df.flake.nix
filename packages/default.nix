@@ -148,7 +148,6 @@
     allCombos = lib.listToAttrs (lib.map (x: mkExecutable archAttrs.doom2d x) matrix);
     defaultExecutable = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
       withMiniupnpc = true;
-      inherit (archAttrs) miniupnpc;
     };
     executables = allCombos;
     bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) {
