@@ -121,7 +121,7 @@
 
       forPrebuild = let
         thisPkgs = self.legacyPackages.${system};
-        nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
+        nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal" "mingw32" "mingw64"];
         allArches = lib.attrNames nativeArches;
         allDrvs = lib.flatten (lib.map (arch: thisPkgs.${arch}.__forPrebuild) allArches);
       in

@@ -176,7 +176,8 @@
           || (lib.hasPrefix "infoAttrs" n)
           || (lib.hasPrefix "doom2d" n)
           || (lib.hasPrefix "editor" n)
-          || (lib.hasPrefix "androidSdk" n)))
+          || (lib.hasPrefix "androidSdk" n)
+          || (lib.hasPrefix "androidPlatform" n)))
       archAttrs;
     in
       lib.attrValues essentials;
