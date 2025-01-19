@@ -56,7 +56,7 @@
   source = (import ./_source.nix {inherit pins;}) {
     cmakeDrv = buildCmakeProject;
   };
-  findLib = path: name: "$(${pkgs.findutils}/bin/find ${path}/lib -iname '*${name}*' | head -n1)";
+  findLib = path: name: "$(${pkgs.findutils}/bin/find ${path}/lib -maxdepth 1 -type f -iname '*${name}*' | head -n1)";
 in rec {
   enet =
     source.enet {
