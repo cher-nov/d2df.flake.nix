@@ -23,22 +23,24 @@
       fpc-trunk = fpcPkgs.fpc-trunk.override {inherit archsAttrs;};
       fpc-3_0_4 = fpcPkgs.fpc-3_0_4.override {inherit archsAttrs;};
       fpc-3_2_2 = fpcPkgs.fpc-3_2_2.override {inherit archsAttrs;};
-      fpc = fpc-3_2_2;
-      lazarus = lazarus-3_6;
+      fpc-release = fpc-3_2_2;
       lazarus-trunk =
         if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
         then
           (pkgs.callPackage fpcPkgs.lazarus-trunk {
-            fpc = fpc;
+            fpc = fpc-release;
           })
         else null;
       lazarus-3_6 =
         if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
         then
           (pkgs.callPackage fpcPkgs.lazarus-3_6 {
-            fpc = fpc;
+            fpc = fpc-release;
           })
         else null;
+
+      fpc = fpc-trunk;
+      lazarus = lazarus-trunk;
     };
     fromCrossPkgsAttrs = arch: archAttrs: let
       fpcWrapper = fpc:
@@ -49,7 +51,7 @@
           in
             prevFpcAttrs
             // {
-              cpuArgs = prevFpcAttrs.cpuArgs ++ ["-O1" "-g" "-gl"];
+              cpuArgs = prevFpcAttrs.cpuArgs ++ ["-O3" "-g" "gl"];
               toolchainPaths =
                 prevFpcAttrs.toolchainPaths
                 ++ [
@@ -62,6 +64,7 @@
       gamePkgs = rec {
         fpc-3_0_4 = fpcWrapper universal.fpc-3_0_4;
         fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2;
+        fpc-release = fpcWrapper universal.fpc-release;
         fpc-trunk = fpcWrapper universal.fpc-trunk;
         fpc = fpcWrapper universal.fpc;
         lazarus-trunk =
@@ -70,7 +73,7 @@
             (pkgs.callPackage fpcPkgs.lazarusWrapper {
               # FIXME
               # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc;
+              fpc = universal.fpc-release;
               fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
               lazarus = universal.lazarus-trunk;
             })
@@ -81,7 +84,7 @@
             (pkgs.callPackage fpcPkgs.lazarusWrapper {
               # FIXME
               # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc;
+              fpc = universal.fpc-release;
               fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
               lazarus = universal.lazarus;
             })
@@ -92,7 +95,7 @@
             (pkgs.callPackage fpcPkgs.lazarusWrapper {
               # FIXME
               # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc;
+              fpc = universal.fpc-release;
               fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
               lazarus = universal.lazarus-3_6;
             })

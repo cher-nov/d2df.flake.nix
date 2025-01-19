@@ -118,7 +118,7 @@
     },
     "fpc": {
         "cargoLocks": null,
-        "date": "2025-01-18",
+        "date": "2025-01-19",
         "extract": null,
         "name": "fpc",
         "passthru": null,
@@ -128,12 +128,12 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "a4ca9f53572f88115aae5a7e6d84e0811e939c9e",
-            "sha256": "sha256-IDur8Qj90Hz37avAZRWK105kKxidOvhTwDu3SA939+w=",
+            "rev": "b1c2023af1f7b395a9b204f3fd63a14ff48825bf",
+            "sha256": "sha256-PQQlqDhsHNVlKFIbl9X5GnIrPGWPETeYVn/y1xrTjtQ=",
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/fpc/source"
         },
-        "version": "a4ca9f53572f88115aae5a7e6d84e0811e939c9e"
+        "version": "b1c2023af1f7b395a9b204f3fd63a14ff48825bf"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -167,12 +167,12 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9",
-            "sha256": "sha256-I7TCc6RGXJOVF8/STzwn6D2IHzvdmCxsfiNczlhRGbE=",
+            "rev": "14cab142ef87aba3bad4b48f784dc4ee75541886",
+            "sha256": "sha256-2gh1bMcjmH0nVCqzk7moseVa0oxLkPcjxkhNT7xwhCQ=",
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
         },
-        "version": "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9"
+        "version": "14cab142ef87aba3bad4b48f784dc4ee75541886"
     },
     "libmodplug": {
         "cargoLocks": null,
@@ -370,6 +370,25 @@
             "url": "https://github.com/xiph/opusfile"
         },
         "version": "9d718345ce03b2fad5d7d28e0bcd1cc69ab2b166"
+    },
+    "pthread-win32": {
+        "cargoLocks": null,
+        "date": "2024-07-09",
+        "extract": null,
+        "name": "pthread-win32",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "3309f4d6e7538f349ae450347b02132ecb0606a7",
+            "sha256": "sha256-2fjaUvsH/KQg0/ZoEsm/a+nscm+ie2uPqMEj1BhhMaM=",
+            "type": "git",
+            "url": "https://github.com/GerHobbelt/pthread-win32"
+        },
+        "version": "3309f4d6e7538f349ae450347b02132ecb0606a7"
     },
     "wavpack": {
         "cargoLocks": null,
