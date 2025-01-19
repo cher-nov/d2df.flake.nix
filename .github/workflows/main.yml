@@ -14,8 +14,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v29
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
+      - name: Remove unnecessary packages
+        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
+          echo "=== Before pruning ==="
+          df -h
+          sudo rm -rf /opt || :
+          sudo rm -rf /usr/share/dotnet || :
+          sudo rm -rf "/usr/local/share/boost" || :
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
+          echo
+          echo "=== After pruning ==="
+          df -h
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
         with:
