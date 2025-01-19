@@ -12,12 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v29
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@main
-        with:
-          # this might remove tools that are actually needed,
-          # if set to "true" but frees about 6 GB
-          tool-cache: true
+      - name: Remove unnecessary packages
+        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
+          echo "=== Before pruning ==="
+          df -h
+          sudo rm -rf /opt || :
+          sudo rm -rf /usr/share/dotnet || :
+          sudo rm -rf "/usr/local/share/boost" || :
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
+          echo
+          echo "=== After pruning ==="
+          df -h
       # To make the environment in the flake's devShell available to future steps:
       - uses: rrbutani/use-nix-shell-action@v1
         with:
@@ -26,18 +31,18 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
+      - name: Build libraries for all platforms
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux          
+      - name: Build assets
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath          
       - name: Build fpc
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc
       - name: Build lazarus
         run: |
           nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus
-      - name: Build assets
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath
-      - name: Build libraries for all platforms
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
