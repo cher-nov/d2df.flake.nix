@@ -128,12 +128,12 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "38e2cea5336a5a17f741000a1eefab36dd0efafa",
-            "sha256": "sha256-Ahih8Fux0FAQpddjVm9fRgFcqUnvqL3XyeanK4nYBEQ=",
+            "rev": "a4ca9f53572f88115aae5a7e6d84e0811e939c9e",
+            "sha256": "sha256-IDur8Qj90Hz37avAZRWK105kKxidOvhTwDu3SA939+w=",
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/fpc/source"
         },
-        "version": "38e2cea5336a5a17f741000a1eefab36dd0efafa"
+        "version": "a4ca9f53572f88115aae5a7e6d84e0811e939c9e"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -157,7 +157,7 @@
     },
     "lazarus": {
         "cargoLocks": null,
-        "date": "2025-01-17",
+        "date": "2025-01-19",
         "extract": null,
         "name": "lazarus",
         "passthru": null,
@@ -167,12 +167,12 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "b230dabbd334ee584e82b2bc9302151dd74ae98a",
-            "sha256": "sha256-oUQQ7SDMUP2CzyOJ1WWppaZ4j7OAJc2oUBOwmVJk+lc=",
+            "rev": "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9",
+            "sha256": "sha256-I7TCc6RGXJOVF8/STzwn6D2IHzvdmCxsfiNczlhRGbE=",
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
         },
-        "version": "b230dabbd334ee584e82b2bc9302151dd74ae98a"
+        "version": "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9"
     },
     "libmodplug": {
         "cargoLocks": null,
@@ -331,6 +331,26 @@
             "type": "github"
         },
         "version": "1.24.2"
+    },
+    "openal_android": {
+        "cargoLocks": null,
+        "date": null,
+        "extract": null,
+        "name": "openal_android",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "kcat",
+            "repo": "openal-soft",
+            "rev": "1.22.2",
+            "sha256": "sha256-MVM0qCZDWcO7/Hnco+0dBqzBLcWD279xjx0slxxlc4w=",
+            "type": "github"
+        },
+        "version": "1.22.2"
     },
     "opusfile": {
         "cargoLocks": null,

@@ -65,7 +65,7 @@ in rec {
     cmakeExtraArgs = "-DSDL_WERROR=OFF";
     extraCmds = ''
       substituteInPlace src/sensor/android/SDL_androidsensor.c \
-          --replace 'ALooper_pollAll' 'ALooper_pollOnce' \
+          --replace 'ALooper_pollAll' 'ALooper_pollOnce' || :
     '';
   };
   libogg =

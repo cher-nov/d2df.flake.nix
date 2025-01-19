@@ -38,7 +38,7 @@ public class CopyAssets {
 	}
 
 	private static void CopyFile(InputStream in, OutputStream out)
-		throws IOException
+		throws Exception
 	{
 		byte[] buffer = new byte[1024];
 		int read;
@@ -50,13 +50,9 @@ public class CopyAssets {
 	public static void copyAssets(Context context, String prefix) {
 		AssetManager assetManager = context.getAssets();
 		String[] files = null;
-		if (prefix != "") {
-			prefix = prefix + "/";
-		}
-
 		try {
 			files = assetManager.list(prefix);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Log.e("tag", "Failed to get asset file list.", e);
 		}
 		if (files != null) {
@@ -70,9 +66,9 @@ public class CopyAssets {
 						if (!f.exists()) {
 							f.mkdirs();
 						}
-						File outFile = new File(context.getExternalFilesDir(null).getAbsolutePath(), prefix + filename);
+						File outFile = new File(context.getExternalFilesDir(null).getAbsolutePath(), prefix + "/" + filename);
 						if (!outFile.exists()) {
-							in = assetManager.open(prefix + filename);
+							in = assetManager.open(prefix + "/" + filename);
 							out = new FileOutputStream(outFile);
 							CopyFile(in, out);
 						}
@@ -82,28 +78,28 @@ public class CopyAssets {
 						if (!f.exists()) {
 							f.mkdirs();
 						}
-						File outFile = new File(context.getFilesDir().getAbsolutePath(), prefix + filename);
+						File outFile = new File(context.getFilesDir().getAbsolutePath(), prefix + "/" + filename);
 						if (!outFile.exists()) {
-							in = assetManager.open(prefix + filename);
+							in = assetManager.open(prefix + "/" + filename);
 							out = new FileOutputStream(outFile);
 							CopyFile(in, out);
 						}
 					}
-				} catch(IOException e) {
+				} catch(Exception e) {
 					Log.e("tag", "Failed to copy asset file: " + filename, e);
 				} finally {
 					if (in != null) {
 						try {
 							in.close();
 							in = null;
-						} catch (IOException e) {}
+						} catch (Exception e) {}
 					}
 					if (out != null) {
 						try {
 							out.flush();
 							out.close();
 							out = null;
-						} catch (IOException e) {}
+						} catch (Exception e) {}
 					}
 				}
 			}

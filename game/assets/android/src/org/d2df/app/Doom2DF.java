@@ -18,6 +18,7 @@ package org.d2df.app;
 import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.libsdl.app.SDL;
 import org.libsdl.app.SDLActivity;
@@ -27,7 +28,21 @@ public class Doom2DF extends SDLActivity {
   @Override
   protected String[] getLibraries () {
     return new String[] {
+      // FIXME
+      // This is hardcoded for an OpenAL build!
       "SDL2",
+      "enet",
+      "openal",
+      "mpg123",
+      "gme",
+      "ogg",      
+      "opus",
+      "opusfile",
+      "vorbis",
+      "vorbisfile",
+      "fluidsynth",
+      "xmp",
+      "openal",
       "Doom2DF"
     };
   }
@@ -46,6 +61,8 @@ public class Doom2DF extends SDLActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+    Log.d("MyTagGoesHere", "This is my log message at the debug level here");
+
     CopyAssets.copyAssets(SDL.getContext(), "");
     CopyAssets.copyAssets(SDL.getContext(), "data");
     CopyAssets.copyAssets(SDL.getContext(), "data/models");
@@ -55,6 +72,8 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "data/banks");
     CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
     CopyAssets.copyAssets(SDL.getContext(), "Get MORE game content HERE.txt");
+
+   Log.d("MyTagGoesHere", "This is my log message at the debug level here 2");
   }
 
   @Override

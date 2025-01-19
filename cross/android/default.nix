@@ -5,7 +5,7 @@
 }: let
   buildToolsVersion = "35.0.0";
   cmakeVersion = "3.22.1";
-  ndkVersion = "23.2.8568313";
+  ndkVersion = "17.2.4988734";
   ndkBinutilsVersion = "22.1.7171670";
   platformToolsVersion = "35.0.2";
   androidComposition = pkgs.androidenv.composeAndroidPackages {
@@ -26,7 +26,7 @@
   androidSdk = androidComposition.androidsdk;
   androidNdk = "${androidSdk}/libexec/android-sdk/ndk-bundle";
   androidNdkBinutils = "${androidSdk}/libexec/android-sdk/ndk/${ndkBinutilsVersion}";
-  androidPlatform = "16";
+  androidPlatform = "14";
 
   #mkArch = androidAbi: clangTriplet: name: fpcCpu: fpcFloat: basename: androidPlatform: let
   mkArch = args @ {
@@ -40,6 +40,7 @@
     basename,
     isOldNdk ? false,
     ndkOldArch ? null,
+    targetArg ? [],
     androidPlatform,
   }: let
     sysroot = "${androidNdk}/toolchains/llvm/prebuilt/linux-x86_64/sysroot";
@@ -55,7 +56,7 @@
     binutilsPrefix =
       if !isOldNdk
       then "${androidNdkBinutils}/toolchains/llvm/prebuilt/linux-x86_64/${clangTriplet}/bin/"
-      else "-XP${ndkToolchain}/${clangTriplet}-";
+      else "${ndkToolchain}/${clangTriplet}-";
     pretty = "Android ${androidNativeBundleAbi}, platform level ${androidPlatform}, NDK ${ndkVersion}";
   in rec {
     inherit androidNativeBundleAbi;
@@ -74,7 +75,7 @@
     in {
       lazarusExists = false;
       inherit cpuArgs;
-      targetArg = "-Tandroid";
+      targetArg = "-Tandroid" + " " + (lib.concatStringsSep " " targetArg);
       basename = basename;
       makeArgs = {
         OS_TARGET = "android";
@@ -98,6 +99,7 @@
     fpcCpu,
     fpcFloat,
     basename,
+    targetArg,
     isOldNdk ? false,
     ndkOldArch ? false,
     androidPlatform,
@@ -121,14 +123,17 @@
       inherit lib pkgs pins;
       arch = androidNativeBundleAbi;
       cmake = let
-        cmakeFlags = lib.concatStringsSep " " [
-          (lib.optionalString (!isOldNdk) "-DCMAKE_POLICY_DEFAULT_CMP0057=NEW")
-          "-DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake"
-          "-DANDROID_ABI=${androidNativeBundleAbi}"
-          "-DANDROID_PLATFORM=android-${androidPlatform}"
-          "-DANDROID_NDK=${androidNdk}"
-          #"-DANDROID_STL=c++_static"
-        ];
+        cmakeFlags = lib.concatStringsSep " " (
+          [
+            (lib.optionalString (!isOldNdk) "-DCMAKE_POLICY_DEFAULT_CMP0057=NEW")
+            "-DCMAKE_TOOLCHAIN_FILE=${androidNdk}/build/cmake/android.toolchain.cmake"
+            "-DANDROID_ABI=${androidNativeBundleAbi}"
+            "-DANDROID_PLATFORM=android-${androidPlatform}"
+            "-DANDROID_NDK=${androidNdk}"
+            "-DANDROID_STL=c++_static"
+          ]
+          #++ lib.optionals (CPU_TARGET == "arm") ["-DANDROID_ARM_NEON=FALSE"]
+        );
       in "${lib.optionalString isOldNdk "export LD_LIBRARY_PATH=\"${ncursesFixed}/lib\";"} ${pkgs.cmake}/bin/cmake ${cmakeFlags}";
     };
   in
@@ -139,6 +144,10 @@
       SDL2 = common.SDL2.overrideAttrs (finalAttrs: prevAttrs: {
         version = pins.SDL2_android.version;
         src = pins.SDL2_android.src;
+      });
+      openal = common.openal.overrideAttrs (finalAttrs: prevAttrs: {
+        version = pins.openal_android.version;
+        src = pins.openal_android.src;
       });
     };
 in {
@@ -151,8 +160,9 @@ in {
     basename = "crossa64";
     fpcCpu = "ARMV8";
     fpcFloat = "VFP";
-    isOldNdk = false;
+    isOldNdk = true;
     ndkOldArch = "arm64";
+    targetArg = [];
     androidPlatform = let
       int = lib.strings.toInt androidPlatform;
     in
@@ -170,8 +180,9 @@ in {
     basename = "crossarm";
     fpcCpu = "ARMV7A";
     fpcFloat = "VFPV3";
-    isOldNdk = false;
+    isOldNdk = true;
     ndkOldArch = "arm";
+    targetArg = ["-CfVFPV3_D16" "-CaEABI"];
     androidPlatform = let
       int = lib.strings.toInt androidPlatform;
     in

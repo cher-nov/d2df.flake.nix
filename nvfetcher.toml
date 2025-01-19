@@ -33,6 +33,11 @@ fetch.git = "https://github.com/xiph/opusfile"
 src.github = "kcat/openal-soft"
 fetch.github = "kcat/openal-soft"
 
+[openal_android]
+src.github_tag = "kcat/openal-soft"
+fetch.github = "kcat/openal-soft"
+src.include_regex = "1.22.2"
+
 [libmpg123]
 src.git = "https://github.com/madebr/mpg123"
 fetch.git = "https://github.com/madebr/mpg123"

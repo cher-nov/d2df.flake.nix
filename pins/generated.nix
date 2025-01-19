@@ -75,14 +75,14 @@
   };
   fpc = {
     pname = "fpc";
-    version = "38e2cea5336a5a17f741000a1eefab36dd0efafa";
+    version = "a4ca9f53572f88115aae5a7e6d84e0811e939c9e";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source";
-      rev = "38e2cea5336a5a17f741000a1eefab36dd0efafa";
+      rev = "a4ca9f53572f88115aae5a7e6d84e0811e939c9e";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-Ahih8Fux0FAQpddjVm9fRgFcqUnvqL3XyeanK4nYBEQ=";
+      sha256 = "sha256-IDur8Qj90Hz37avAZRWK105kKxidOvhTwDu3SA939+w=";
     };
     date = "2025-01-18";
   };
@@ -99,16 +99,16 @@
   };
   lazarus = {
     pname = "lazarus";
-    version = "b230dabbd334ee584e82b2bc9302151dd74ae98a";
+    version = "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/lazarus/lazarus";
-      rev = "b230dabbd334ee584e82b2bc9302151dd74ae98a";
+      rev = "8e3b710abbc45e7acce6a9e415fdcc87fb5fa0e9";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-oUQQ7SDMUP2CzyOJ1WWppaZ4j7OAJc2oUBOwmVJk+lc=";
+      sha256 = "sha256-I7TCc6RGXJOVF8/STzwn6D2IHzvdmCxsfiNczlhRGbE=";
     };
-    date = "2025-01-17";
+    date = "2025-01-19";
   };
   libmodplug = {
     pname = "libmodplug";
@@ -200,6 +200,17 @@
       rev = "1.24.2";
       fetchSubmodules = false;
       sha256 = "sha256-ECrIkxMACPsWehtJWwTmoYj6hGcsdxwVuTiQywG36Y8=";
+    };
+  };
+  openal_android = {
+    pname = "openal_android";
+    version = "1.22.2";
+    src = fetchFromGitHub {
+      owner = "kcat";
+      repo = "openal-soft";
+      rev = "1.22.2";
+      fetchSubmodules = false;
+      sha256 = "sha256-MVM0qCZDWcO7/Hnco+0dBqzBLcWD279xjx0slxxlc4w=";
     };
   };
   opusfile = {
