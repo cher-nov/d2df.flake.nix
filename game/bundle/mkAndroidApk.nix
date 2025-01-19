@@ -61,7 +61,7 @@ in {
     # Build the APK.
     + ''
       ${aapt} package -f -m -S res -J gen -M AndroidManifest.xml -I ${ANDROID_JAR}
-      ${jdkSign}/bin/javac -encoding UTF-8 -source 1.6 -target 1.6 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')
+      ${jdkSign}/bin/javac -encoding UTF-8 -source 1.8 -target 1.8 -classpath "${ANDROID_JAR}" -d obj gen/org/d2df/app/R.java $(find src -name '*.java')
       ${d8} $(find obj -name '*.class') --lib ${ANDROID_JAR} --release --min-api ${androidPlatform} --android-platform-build --output bin/classes.jar
       ${d8} ${ANDROID_JAR} bin/classes.jar --release --min-api ${androidPlatform} --android-platform-build --output bin
       ${aapt} package -f -M ./AndroidManifest.xml -S res -I ${ANDROID_JAR} -F bin/d2df.unsigned.apk -A resources bin aux

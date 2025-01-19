@@ -141,10 +141,6 @@
     common {
       infoAttrs = mkArch args;
       inherit androidSdk androidPlatform;
-      SDL2 = common.SDL2.overrideAttrs (finalAttrs: prevAttrs: {
-        version = pins.SDL2_android.version;
-        src = pins.SDL2_android.src;
-      });
       openal = common.openal.overrideAttrs (finalAttrs: prevAttrs: {
         version = pins.openal_android.version;
         src = pins.openal_android.src;
