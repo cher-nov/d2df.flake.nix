@@ -150,20 +150,21 @@
       withMiniupnpc = true;
     };
     executables = allCombos;
-    bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) {
-      default = callPackage mkGamePath {
-        gameExecutablePath = callPackage mkExecutablePath rec {
-          byArchPkgsAttrs = {
-            "${arch}" = {
-              sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
-              doom2df = defaultExecutable;
-              editor = archAttrs.editor;
-              isWindows = archAttrs.infoAttrs.isWindows;
-              asLibrary = info.loadedAsLibrary;
-              prefix = ".";
-            };
+    bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) rec {
+      gameExecutablePath = callPackage mkExecutablePath rec {
+        byArchPkgsAttrs = {
+          "${arch}" = {
+            sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
+            doom2df = defaultExecutable;
+            editor = archAttrs.editor;
+            isWindows = archAttrs.infoAttrs.isWindows;
+            asLibrary = info.loadedAsLibrary;
+            prefix = ".";
           };
         };
+      };
+      default = callPackage mkGamePath {
+        inherit gameExecutablePath;
         gameAssetsPath = defaultAssetsPath.override {toLower = archAttrs.infoAttrs.caseSensitive;};
       };
     });

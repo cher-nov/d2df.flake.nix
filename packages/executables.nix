@@ -51,7 +51,7 @@
           in
             prevFpcAttrs
             // {
-              cpuArgs = prevFpcAttrs.cpuArgs ++ ["-O3" "-g" "gl"];
+              cpuArgs = prevFpcAttrs.cpuArgs ++ ["-O3" "-g" "-gl"];
               toolchainPaths =
                 prevFpcAttrs.toolchainPaths
                 ++ [

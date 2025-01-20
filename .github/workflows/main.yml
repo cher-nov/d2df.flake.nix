@@ -147,6 +147,23 @@ jobs:
         with:
           name: doom2df-arm64-apple-darwin
           path: doom2df-arm64-apple-darwin.zip
+      - name: Build MacOS x86_64 app bundle
+        env:
+          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
+          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
+          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+        run: |
+          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
+          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
+          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
+          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
+
+          bash ./game/bundle/scripts/mkApple.bash
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Doom2DF.dmg
+          path: Doom2DF.dmg
           if-no-files-found: error
       - name: Calculate new build number
         run: |
@@ -164,7 +181,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
-          artifacts: doom2df-mingw32.zip, doom2df-android.apk, doom2df-mingw64.zip, doom2df-x86_64-apple-darwin.zip, doom2df-arm64-apple-darwin.zip
+          artifacts: doom2df-mingw32.zip, doom2df-android.apk, doom2df-mingw64.zip, doom2df-x86_64-apple-darwin.zip, doom2df-arm64-apple-darwin.zip, Doom2DF.dmg
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.RELEASE_NAME }}
           bodyFile: release_body
