@@ -33,16 +33,23 @@ jobs:
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - name: Build libraries for all platforms
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux          
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux
       - name: Build assets
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath          
-      - name: Build fpc
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#assets.x86_64-linux.defaultAssetsPath
+      - name: Build trunk FPC
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc
-      - name: Build lazarus
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-trunk
+      - name: Build release FPC
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.lazarus
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#universal.__archPkgs.fpc-release
+      - name: Build main bundles
+        run: |
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#mingw32.bundles.default
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#mingw64.bundles.default
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#android.bundles.default
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#x86_64-apple-darwin.bundles.default
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#arm64-apple-darwin.bundles.default 
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
