@@ -10,12 +10,12 @@ fi
 
 if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
     [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
-    rar x "-xtimidity.cfg" "-xinstruments/*" "-xinstruments" -tsp df_distro_soundfont.rar android/assets
+    rar x -tsp df_distro_soundfont.rar "data/banks/*" android/assets
 fi
 
 if [[ -n "${ASSETS_GUS:-}" ]]; then
     [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
-    rar x "-xdata/*" "-xdata" -tsp df_distro_soundfont.rar android/assets
+    rar x -tsp df_distro_soundfont.rar "instruments/*" "timidity.cfg" android/assets
 fi
 
 nix build --print-build-logs .#android.bundles.default
