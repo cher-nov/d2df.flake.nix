@@ -111,13 +111,14 @@
           CFLAGS = lib.concatStringsSep " " [
             "-DWINVER=0x0400"
             "-D_WIN32_WINNT=0x0400"
+            "-static-libgcc"
             #"-I${lib.trace "${crossPkgs.windows.mingw_w64_pthreads}" crossPkgs.windows.mingw_w64_pthreads}/include"
             #"-L${crossPkgs.windows.mingw_w64}/lib"
             #"-L${crossPkgs.windows.mingw_w64}/lib64"
             #"-L${pthread}/lib"
             #"-L${pthread}/lib64"
           ];
-          CXXFLAGS = CFLAGS;
+          CXXFLAGS = CFLAGS + " -static-libstdc++";
           LDFLAGS = lib.concatStringsSep " " [
             "-DWINVER=0x0400"
             "-D_WIN32_WINNT=0x0400"
