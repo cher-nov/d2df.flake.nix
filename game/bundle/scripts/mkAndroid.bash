@@ -3,25 +3,21 @@ set -euo pipefail
 
 [ ! -f "df_distro_content.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.rar
 
-if [ ! -d "android" ]; then
+if [ ! -d "android/assets" ]; then
     mkdir -p android/assets
     rar x -tsp df_distro_content.rar android/assets
 fi
 
-if [[ -n "${ASSETS_GUS:-}" || -n "${ASSETS_SOUNDFONT:-}" ]]; then
-    mkdir -p android/assets/data/banks
-fi
-
 if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
     [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
+    mkdir -p android/assets/data/banks
     rar x -tsp df_distro_soundfont.rar android/assets
 fi
 
 if [[ -n "${ASSETS_GUS:-}" && -n "${TIMIDITY_CFG:-}" ]]; then
-    # TODO
-    # Copy GUS files
-    # Copy Timidity cfg
-    :
+    mkdir -p android/assets/instruments
+    cp "${ASSETS_GUS}"/* android/assets/instruments/
+    cp "${TIMIDITY_CFG}" android/assets/
 fi
 
 nix build --print-build-logs .#android.bundles.default

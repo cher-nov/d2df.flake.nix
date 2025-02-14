@@ -118,14 +118,7 @@ in rec {
   fluidsynth =
     (source.fluidsynth {
       cmakeExtraArgs = lib.concatStringsSep " " [
-        "-Denable-threads=off"
-        "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
-        #"-Denable-sdl2=on"
-        "-Denable-oboe=of"
-        "-Denable-opensles=of"
         "-Denable-framework=off"
-        "-Denable-openmp=off"
-        #"-DCMAKE_PREFIX_PATH=${SDL2}"
       ];
     })
     .overrideAttrs (final: prev: {
@@ -214,10 +207,10 @@ in rec {
 
           "-DSDL2MIXER_MIDI=on"
           "-DSDL2MIXER_MIDI_TIMIDITY=on"
-          "-DSDL2MIXER_MIDI_FLUIDSYNTH=on"
-          "-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
-          "-DFluidSynth_LIBRARY=${findLib fluidsynth "libfluidsynth"}"
-          "-DFluidSynth_INCLUDE_PATH=${fluidsynth}/include"
+          "-DSDL2MIXER_MIDI_FLUIDSYNTH=off"
+          #"-DSDL2MIXER_MIDI_FLUIDSYNTH_SHARED=off"
+          #"-DFluidSynth_LIBRARY=${findLib fluidsynth "libfluidsynth"}"
+          #"-DFluidSynth_INCLUDE_PATH=${fluidsynth}/include"
 
           "-DSDL2MIXER_MOD=on"
           "-DSDL2MIXER_MOD_MODPLUG=off"

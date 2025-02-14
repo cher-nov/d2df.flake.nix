@@ -199,9 +199,8 @@ in
           lib.mapAttrs (arch: archAttrs: let
             doom2d = archAttrs.doom2d.override {
               withSDL2 = true;
-              withOpenAL = true;
+              withSDL2_mixer = true;
               withVorbis = true;
-              withFluidsynth = true;
               withLibXmp = true;
               withMpg123 = true;
               withOpus = true;

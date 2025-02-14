@@ -4,7 +4,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     nix-github-actions.url = "github:nix-community/nix-github-actions";
-    osxcross.url = "github:polybluez/osxcross/framework";
+    osxcross = {
+      url = "github:polybluez/osxcross/framework";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     DF-res = {
       url = "github:Doom2D/DF-Res";

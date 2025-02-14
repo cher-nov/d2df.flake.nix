@@ -29,10 +29,10 @@ public class Doom2DF extends SDLActivity {
   protected String[] getLibraries () {
     return new String[] {
       // FIXME
-      // This is hardcoded for an OpenAL build!
+      // This is hardcoded for an SDL2_mixer build!
       "SDL2",
       "enet",
-      "openal",
+      "SDL2_mixer",
       "mpg123",
       "gme",
       "ogg",      
@@ -40,9 +40,7 @@ public class Doom2DF extends SDLActivity {
       "opusfile",
       "vorbis",
       "vorbisfile",
-      "fluidsynth",
       "xmp",
-      "openal",
       "Doom2DF"
     };
   }
@@ -71,6 +69,7 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "wads");
     CopyAssets.copyAssets(SDL.getContext(), "data/banks");
     CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
+    CopyAssets.copyAssets(SDL.getContext(), "instruments");    
     CopyAssets.copyAssets(SDL.getContext(), "Get MORE game content HERE.txt");
 
    Log.d("MyTagGoesHere", "This is my log message at the debug level here 2");
