@@ -57,7 +57,7 @@
           in ''
             mkdir -p $out/bin
             7z e -aoa ${src}
-            cp fmodex${dllSuffix}.dll $out/bin/
+            cp fmodex${dllSuffix}.dll $out/bin/fmodex.dll
           '';
 
           meta = with lib; {
