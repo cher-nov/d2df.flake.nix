@@ -32,15 +32,15 @@ public class Doom2DF extends SDLActivity {
       // This is hardcoded for an SDL2_mixer build!
       "SDL2",
       "enet",
-      "SDL2_mixer",
       "mpg123",
       "gme",
-      "ogg",      
+      "ogg",
       "opus",
       "opusfile",
       "vorbis",
       "vorbisfile",
       "xmp",
+      "SDL2_mixer",
       "Doom2DF"
     };
   }
@@ -69,7 +69,7 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "wads");
     CopyAssets.copyAssets(SDL.getContext(), "data/banks");
     CopyAssets.copyAssets(SDL.getContext(), "timidity.cfg");
-    CopyAssets.copyAssets(SDL.getContext(), "instruments");    
+    CopyAssets.copyAssets(SDL.getContext(), "instruments");
     CopyAssets.copyAssets(SDL.getContext(), "Get MORE game content HERE.txt");
 
    Log.d("MyTagGoesHere", "This is my log message at the debug level here 2");
