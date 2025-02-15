@@ -58,16 +58,17 @@
   };
   findLib = path: name: "$(${pkgs.findutils}/bin/find ${path}/lib -maxdepth 1 -type f -iname '*${name}*' | head -n1)";
 in rec {
-  enet = (source.enet {
-    })
-  .overrideAttrs (final: prev: {
-    installPhase =
-      prev.installPhase
-      or ""
-      + ''
-        mv $out/bin/libenet.dll $out/bin/enet.dll || :
-      '';
-  });
+  enet =
+    (source.enet {
+      })
+    .overrideAttrs (final: prev: {
+      installPhase =
+        prev.installPhase
+        or ""
+        + ''
+          mv $out/bin/libenet.dll $out/bin/enet.dll || :
+        '';
+    });
   SDL2 = source.SDL2 {
     cmakeExtraArgs = "-DSDL_WERROR=OFF";
     extraCmds = ''
@@ -119,16 +120,17 @@ in rec {
   libmodplug =
     source.libmodplug {
     };
-  miniupnpc = (source.miniupnpc {
-    })
-  .overrideAttrs (final: prev: {
-    installPhase =
-      prev.installPhase
-      or ""
-      + ''
-        mv $out/bin/libminiupnpc.dll $out/bin/miniupnpc.dll || :
-      '';
-  });
+  miniupnpc =
+    (source.miniupnpc {
+      })
+    .overrideAttrs (final: prev: {
+      installPhase =
+        prev.installPhase
+        or ""
+        + ''
+          mv $out/bin/libminiupnpc.dll $out/bin/miniupnpc.dll || :
+        '';
+    });
   fluidsynth =
     (source.fluidsynth {
       cmakeExtraArgs = lib.concatStringsSep " " [

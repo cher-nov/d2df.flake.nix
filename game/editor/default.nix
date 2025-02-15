@@ -16,23 +16,17 @@ stdenv.mkDerivation (finalAttrs: {
   nativeBuildInputs = with pkgs; [
     autoPatchelfHook
     lazarus
-    gtk2
     glibc
-    libGL
-    libX11
-    pango
-    cairo
-    gdk-pixbuf
     gcc
   ];
-
-  buildInputs = with pkgs; [gtk2 glibc libGL libX11 pango cairo gdk-pixbuf];
 
   dontStrip = true;
   dontPatchELF = true;
   dontFixup = true;
 
-  patches = [./temp-fix-error.patch];
+  patches = [
+    ./temp-fix-error.patch
+  ];
 
   env = {
     D2DF_BUILD_USER = "nixbld";
@@ -44,7 +38,7 @@ stdenv.mkDerivation (finalAttrs: {
     pushd src/editor
     gcc -shared ${./nosched.c} -ldl -o nosched.so
     chmod +x nosched.so
-    HOME=. INSTANTFPCCACHE=./lazarus LD_PRELOAD=$PWD/nosched.so lazbuild --bm=Debug Editor.lpi
+    LD_PRELOAD=$PWD/nosched.so lazbuild --bm=Debug Editor.lpi
     popd
     runHook postInstall
   '';

@@ -9,10 +9,8 @@
   fpcDrv = {
     lib,
     stdenv,
-    fetchgit,
     gawk,
     fpc,
-    archsAttrs,
     glibc,
     binutils,
   }: let
@@ -24,7 +22,7 @@
       src = pins.fpc.src;
 
       nativeBuildInputs = [binutils gawk fpc];
-      glibc = stdenv.cc.libc.out;
+      inherit glibc;
 
       patches = [
         ./mark-paths-trunk.patch
@@ -46,45 +44,15 @@
           --replace "-no_uuid" ""
       '';
 
-      # At the moment of writing this comment, author couldn't find a way to
-      # compile a crosscompiling FPC without compiling an FPC native to the host system.
-      # So what we do, is first we compile the "native" FPC compiler, and then the compilers for architectures passed through.
-
-      buildPhase =
-        ''
-          make all ${lib.concatStringsSep " " default}
-        ''
-        + (
-          (lib.concatStringsSep "\n" (
-            lib.map (x: let
-              abi = x.name;
-              fpcAttrs = x.value;
-            in ''
-              PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-                make crossall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
-            '') (lib.attrsToList archsAttrs)
-          ))
-          + ''
-            make all ${lib.concatStringsSep " " default}
-          ''
-        );
+      buildPhase = ''
+        make all ${lib.concatStringsSep " " default}
+      '';
 
       # HACK: if you crosscompile for mingw64 or x86_64-apple-darwin, Makefile would expect a crosscompiler at ppcrossx64 (if your host is x86_64, ofc)
       # But if you install the native compiler first, the lazarus won't build...
       # So we have to install the cross compiler and the units, then clean and build the compiler AGAIN.
       installPhase =
-        (lib.concatStringsSep "\n" (
-          lib.map (x: let
-            abi = x.name;
-            fpcAttrs = x.value;
-          in ''
-            PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" \
-              make crossinstall ${lib.concatStringsSep " " default} ${lib.concatStringsSep " " (lib.mapAttrsToList (name: value: "${name}=${value}") fpcAttrs.makeArgs)}
-          '') (lib.attrsToList archsAttrs)
-        ))
-        + ''
-          make clean all
-          make all ${lib.concatStringsSep " " default}
+        ''
           make install ${lib.concatStringsSep " " default}
         ''
         + ''
@@ -109,47 +77,155 @@
         platforms = platforms.unix;
       };
     });
-in rec {
-  fpcWrapper = {
-    fpc,
-    fpcAttrs,
-    writeShellScriptBin,
-    lib,
-    ...
-  }:
-    writeShellScriptBin "fpc" "PATH=\"$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}\" ${fpc}/bin/pp${fpcAttrs.basename} ${lib.concatStringsSep " " fpcAttrs.cpuArgs} ${fpcAttrs.targetArg} $@";
 
+  fpcCrossDrv = {
+    lib,
+    stdenv,
+    gawk,
+    fpc,
+    fpcArchAttrs ? {},
+    archName ? "",
+    binutils,
+    findutils,
+  }: let
+    default = ["NOGDB=1" "FPC=\"${fpc}/bin/fpc\"" "PP=\"${fpc}/bin/fpc\"" "INSTALL_PREFIX=$out"];
+    path = lib.concatStringsSep ":" fpcArchAttrs.toolchainPaths;
+    makeArgs = let
+      default' = lib.concatStringsSep " " default;
+      cross =
+        lib.concatStringsSep " " (lib.mapAttrsToList (k: v: "${k}=${v}") fpcArchAttrs.makeArgs);
+    in
+      default' + " " + cross;
+  in
+    stdenv.mkDerivation (finalAttrs: rec {
+      version = fpc.version;
+      pname = "fpc";
+      src = fpc.src;
+
+      nativeBuildInputs = [findutils binutils gawk fpc];
+      glibc = fpc.glibc;
+
+      patches = fpc.patches;
+
+      postPatch = ''
+        # substitute the markers set by the mark-paths patch
+        substituteInPlace compiler/systems/t_linux.pas --subst-var-by dynlinker-prefix "${glibc}"
+        substituteInPlace compiler/systems/t_linux.pas --subst-var-by syslibpath "${glibc}/lib"
+        # Replace the `codesign --remove-signature` command with a custom script, since `codesign` is not available
+        # in nixpkgs
+        # Remove the -no_uuid strip flag which does not work on llvm-strip, only
+        # Apple strip.
+        substituteInPlace compiler/Makefile \
+          --replace \
+            "\$(CODESIGN) --remove-signature" \
+            "${fpc}/remove-signature.sh}" \
+          --replace "ifneq (\$(CODESIGN),)" "ifeq (\$(OS_TARGET), darwin)" \
+          --replace "-no_uuid" ""
+      '';
+
+      buildPhase = ''
+        PATH="$PATH:${path}" \
+          make all ${makeArgs}
+      '';
+
+      # HACK: if you crosscompile for mingw64 or x86_64-apple-darwin, Makefile would expect a crosscompiler at ppcrossx64 (if your host is x86_64, ofc)
+      # But if you install the native compiler first, the lazarus won't build...
+      # So we have to install the cross compiler and the units, then clean and build the compiler AGAIN.
+      installPhase =
+        ''
+          make crossinstall ${makeArgs} ;
+        ''
+        + ''
+          for i in $out/lib/fpc/${finalAttrs.version}/ppc*; do
+            ln -fs $i $out/bin/$(basename $i)
+          done
+        '';
+
+      meta = with lib; {
+        description = "Free Pascal Compiler from a source distribution";
+        homepage = "https://www.freepascal.org";
+        maintainers = [maintainers.raskin];
+        license = with licenses; [gpl2 lgpl2];
+        platforms = platforms.unix;
+        inherit archName fpc;
+      };
+    });
+in rec {
+  fpcCombo = {
+    fpcCross,
+    symlinkJoin,
+    ...
+  }: let
+    fpcCrossAndBuild = symlinkJoin {
+      name = "cross";
+      paths = [fpcCross.meta.fpc fpcCross];
+    };
+
+    combo = {fpcJoined}:
+      stdenv.mkDerivation (finalAttrs: {
+        pname = "fpc-combo-${fpcCross.meta.archName}";
+        version = fpcCross.version;
+
+        phases = ["buildPhase"];
+
+        buildPhase = ''
+          mkdir -p $out
+          ${pkgs.outils}/bin/lndir ${fpcJoined} $out
+          cp $out/lib/fpc/etc/fpc.cfg $out/lib/fpc/etc/fpc.cfg.bak
+          rm -f $out/lib/fpc/etc/fpc.cfg $out/etc/fpc.cfg
+          substituteInPlace $out/lib/fpc/etc/fpc.cfg.bak \
+            --replace "${fpcCross.meta.fpc}" "${fpcJoined}"
+          mv $out/lib/fpc/etc/fpc.cfg.bak $out/lib/fpc/etc/fpc.cfg
+          cp $out/lib/fpc/etc/fpc.cfg $out/etc/fpc.cfg
+        '';
+      });
+  in
+    pkgs.callPackage combo {fpcJoined = fpcCrossAndBuild;};
+
+  fpcWrapper = {
+    fpcAttrs,
+    lib,
+    writeShellScriptBin,
+    fpcCross,
+    callPackage,
+  }: let
+    c = callPackage fpcCombo {inherit fpcCross;};
+  in
+    writeShellScriptBin "fpc" ''
+      PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" PPC_CONFIG_PATH="${c}/etc" \
+        ${c}/bin/pp${fpcAttrs.basename} \
+          ${lib.concatStringsSep " " (fpcAttrs.cpuArgs ++ [fpcAttrs.targetArg])} \
+          $@
+    '';
   lazarusWrapper = {
     lazarus,
     fpc,
     fpcAttrs,
     writeShellScriptBin,
     lib,
-    ...
-  }:
-    writeShellScriptBin "lazbuild" "PATH=\"$PATH:${lib.concatStringsSep ":" (["${fpc}/bin"] ++ fpcAttrs.toolchainPaths)}\" ${lazarus}/bin/lazbuild --lazarusdir=${lazarus}/share/lazarus --cpu=${fpcAttrs.makeArgs.CPU_TARGET} --os=${fpcAttrs.makeArgs.OS_TARGET}  $@";
+  }: let
+    flags = lib.concatStringsSep " " [
+      "--os=${fpcAttrs.makeArgs.OS_TARGET}"
+      "--cpu=${fpcAttrs.makeArgs.CPU_TARGET}"
+      "--lazarusdir=${lazarus}/share/lazarus"
+      "--no-write-project"
+    ];
+    fpcBinaryPath = "${fpc}/bin";
+    path = lib.concatStringsSep ":" (fpcAttrs.toolchainPaths ++ [fpcBinaryPath]);
+  in
+    writeShellScriptBin "lazbuild" ''
+      HOME=$TMP INSTANTFPCCACHE=$TMP PATH="$PATH:${path}" \
+        ${lazarus}/bin/lazbuild \
+        ${flags} \
+        $@
+    '';
 
   lazarus = {
     stdenv,
     lib,
     fetchgit,
-    makeWrapper,
     writeText,
     fpc,
-    gtk2,
-    glib,
-    pango,
-    atk,
-    gdk-pixbuf,
-    libXi,
-    xorgproto,
-    libX11,
-    libXext,
-    withQt5 ? false,
-    qtbase ? null,
-    libqt5pas-git ? null,
-    wrapQtAppsHook ? null,
-    withGtk2 ? false,
     ...
   }:
   # TODO:
@@ -191,8 +267,6 @@ in rec {
       #  Fatal: (1018) Compilation aborted
       enableParallelBuilding = false;
 
-      nativeBuildInputs = [makeWrapper] ++ lib.optional withQt5 wrapQtAppsHook;
-
       buildPhase = let
         makeFlags = [
           "FPC=fpc"
@@ -232,12 +306,15 @@ in rec {
         platforms = platforms.linux;
       };
     };
-  lazarus-3_6 = lazarus;
-  lazarus-trunk = callPackage lazarus {
+  lazarus-3_6 = callPackage lazarus {};
+  lazarus-trunk = lazarus-3_6.overrideAttrs (finalAttrs: {
     src = pins.lazarus.src;
-  };
+  });
 
-  fpc-trunk = callPackage fpcDrv {archsAttrs = {};};
+  fpcCross-trunk = callPackage fpcCrossDrv {fpc = fpc-trunk;};
+  fpcCross-3_2_2 = callPackage fpcCrossDrv {fpc = fpc-3_2_2;};
+
+  fpc-trunk = callPackage fpcDrv {};
   fpc = fpc-trunk;
 
   fpc-3_2_2 = fpc.overrideAttrs (final: prev: {

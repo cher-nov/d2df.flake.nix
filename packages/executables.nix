@@ -17,35 +17,35 @@
   mac = (import ../cross/mac) {
     inherit pkgs lib pins osxcross;
   };
+  universal = rec {
+    fpc-trunk = fpcPkgs.fpc-trunk;
+    fpc-3_2_2 = fpcPkgs.fpc-3_2_2;
+    fpc-release = fpc-3_2_2;
+    fpc = fpc-trunk;
+
+    lazarus-trunk = fpcPkgs.lazarus-trunk.overrideAttrs {
+      fpc = fpc;
+    };
+    lazarus-3_6 = fpcPkgs.lazarus-3_6.overrideAttrs {
+      fpc = fpc;
+    };
+    lazarus = lazarus-trunk;
+  };
   f = crossPkgs: let
     archsAttrs = lib.mapAttrs (arch: archAttrs: archAttrs.infoAttrs.fpcAttrs) crossPkgs;
-    universal = rec {
-      fpc-trunk = fpcPkgs.fpc-trunk.override {inherit archsAttrs;};
-      fpc-3_0_4 = fpcPkgs.fpc-3_0_4.override {inherit archsAttrs;};
-      fpc-3_2_2 = fpcPkgs.fpc-3_2_2.override {inherit archsAttrs;};
-      fpc-release = fpc-3_2_2;
-      lazarus-trunk =
-        if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
-        then
-          (pkgs.callPackage fpcPkgs.lazarus-trunk {
-            fpc = fpc-release;
-          })
-        else null;
-      lazarus-3_6 =
-        if (lib.any (archAttrs: archAttrs.infoAttrs.fpcAttrs.lazarusExists) (lib.attrValues crossPkgs))
-        then
-          (pkgs.callPackage fpcPkgs.lazarus-3_6 {
-            fpc = fpc-release;
-          })
-        else null;
-
-      fpc = fpc-trunk;
-      lazarus = lazarus-trunk;
-    };
     fromCrossPkgsAttrs = arch: archAttrs: let
-      fpcWrapper = fpc:
+      fpcCross-trunk = fpcPkgs.fpcCross-trunk.override {
+        fpcArchAttrs = archAttrs.infoAttrs.fpcAttrs;
+        archName = arch;
+      };
+      fpcCross-3_2_2 = fpcPkgs.fpcCross-3_2_2.override {
+        fpcArchAttrs = archAttrs.infoAttrs.fpcAttrs;
+        archName = arch;
+      };
+      fpcCross = fpcCross-trunk;
+      fpcWrapper = fpc: fpcCross:
         pkgs.callPackage fpcPkgs.fpcWrapper rec {
-          inherit fpc;
+          inherit fpcCross;
           fpcAttrs = let
             prevFpcAttrs = archAttrs.infoAttrs.fpcAttrs;
           in
@@ -62,31 +62,19 @@
             };
         };
       gamePkgs = rec {
-        fpc-3_0_4 = fpcWrapper universal.fpc-3_0_4;
-        fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2;
-        fpc-release = fpcWrapper universal.fpc-release;
-        fpc-trunk = fpcWrapper universal.fpc-trunk;
-        fpc = fpcWrapper universal.fpc;
+        fpc = fpc-trunk;
+        fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2 fpcCross-3_2_2;
+        fpc-trunk = fpcWrapper universal.fpc-trunk fpcCross-trunk;
+        inherit fpcCross;
         lazarus-trunk =
           if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
           then
             (pkgs.callPackage fpcPkgs.lazarusWrapper {
               # FIXME
               # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc-release;
+              fpc = fpc;
               fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
               lazarus = universal.lazarus-trunk;
-            })
-          else null;
-        lazarus =
-          if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
-          then
-            (pkgs.callPackage fpcPkgs.lazarusWrapper {
-              # FIXME
-              # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc-release;
-              fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
-              lazarus = universal.lazarus;
             })
           else null;
         lazarus-3_6 =
@@ -95,17 +83,18 @@
             (pkgs.callPackage fpcPkgs.lazarusWrapper {
               # FIXME
               # lazarus doesn't compile editor with trunk fpc
-              fpc = universal.fpc-release;
+              fpc = fpc-3_2_2;
               fpcAttrs = archAttrs.infoAttrs.fpcAttrs;
               lazarus = universal.lazarus-3_6;
             })
           else null;
+        lazarus = lazarus-3_6;
         editor =
           if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
           then
             (pkgs.callPackage d2dfPkgs.editor {
               inherit d2df-editor;
-              lazarus = lazarus-3_6;
+              lazarus = lazarus;
             })
           else null;
         doom2d = pkgs.callPackage d2dfPkgs.doom2df-base {

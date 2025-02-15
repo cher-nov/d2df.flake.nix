@@ -1,5 +1,5 @@
 [SDL2]
-src.github = "libsdl-org/SDL"
+src.github_tag = "libsdl-org/SDL"
 fetch.github = "libsdl-org/SDL"
 src.include_regex = "release-2.*"
 

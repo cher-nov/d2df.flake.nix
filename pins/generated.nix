@@ -7,13 +7,13 @@
 }: {
   SDL2 = {
     pname = "SDL2";
-    version = "release-2.30.11";
+    version = "release-2.32.0";
     src = fetchFromGitHub {
       owner = "libsdl-org";
       repo = "SDL";
-      rev = "release-2.30.11";
+      rev = "release-2.32.0";
       fetchSubmodules = false;
-      sha256 = "sha256-2NVZNqYhnAsljuF0BhBSJ5HmE9cS41gJep4Q3VxUGkY=";
+      sha256 = "sha256-BdyMlttrDwQMoz+bO6bfU3bh0xKnT8yQF6nb6OGRbHw=";
     };
   };
   SDL2_android = {
@@ -29,13 +29,13 @@
   };
   SDL2_mixer = {
     pname = "SDL2_mixer";
-    version = "release-2.8.0";
+    version = "release-2.8.1";
     src = fetchFromGitHub {
       owner = "libsdl-org";
       repo = "SDL_mixer";
-      rev = "release-2.8.0";
+      rev = "release-2.8.1";
       fetchSubmodules = false;
-      sha256 = "sha256-jLKawxnwP5dJglUhgHfWgmKh27i32Rr4LcJQdpXasco=";
+      sha256 = "sha256-6HOTLwGi2oSQChwHE/oNHfZpcMh8xTuwNQSpKS01bwI=";
     };
   };
   dfwad = {
@@ -47,6 +47,7 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-ywsHzIW78U/C+jAsdSQ3WyGraA6t3E9BeDn14aUgCjk=";
     };
     date = "2025-01-14";
@@ -60,6 +61,7 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-JIvasudVSQjWttg9fockmyJbGPrQe1hzsQRChpDzW8c=";
     };
     date = "2024-11-14";
@@ -73,22 +75,24 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-NZ6Fe5Tj3BTQw6yEggJL4IfhX/MOuGtQLJfltJuUDMo=";
     };
     date = "2021-11-07";
   };
   fpc = {
     pname = "fpc";
-    version = "b1c2023af1f7b395a9b204f3fd63a14ff48825bf";
+    version = "d71f8233735c29084123bcba463b9e955982410c";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source";
-      rev = "b1c2023af1f7b395a9b204f3fd63a14ff48825bf";
+      rev = "d71f8233735c29084123bcba463b9e955982410c";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-PQQlqDhsHNVlKFIbl9X5GnIrPGWPETeYVn/y1xrTjtQ=";
+      sparseCheckout = [];
+      sha256 = "sha256-qRa2OcmMv8sbRujUDLdWChELADV4cX1kjW/OZ/Of4cY=";
     };
-    date = "2025-01-19";
+    date = "2025-02-14";
   };
   game-music-emu = {
     pname = "game-music-emu";
@@ -103,16 +107,17 @@
   };
   lazarus = {
     pname = "lazarus";
-    version = "14cab142ef87aba3bad4b48f784dc4ee75541886";
+    version = "5df0a8f05afbdcd9ce15b459fe75c6ad5e8c9cb2";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/lazarus/lazarus";
-      rev = "14cab142ef87aba3bad4b48f784dc4ee75541886";
+      rev = "5df0a8f05afbdcd9ce15b459fe75c6ad5e8c9cb2";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sha256 = "sha256-2gh1bMcjmH0nVCqzk7moseVa0oxLkPcjxkhNT7xwhCQ=";
+      sparseCheckout = [];
+      sha256 = "sha256-Ez+aK2PIRoZEmLn8IUNiOblsx85R/Z+huflXEytVfPA=";
     };
-    date = "2025-01-19";
+    date = "2025-02-15";
   };
   libmodplug = {
     pname = "libmodplug";
@@ -123,6 +128,7 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-wBOAbCLUExdU+rg5NSghC8QXlMwsYBUkt2EsEvFKMug=";
     };
     date = "2022-01-31";
@@ -136,6 +142,7 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-JezLmOf+qsqrv5qtYDYe0Ta7ykyfYVq8cZ0iHL7jvgk=";
     };
     date = "2025-01-05";
@@ -226,19 +233,20 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
+      sparseCheckout = [];
       sha256 = "sha256-7LvZMtYEkOR89QaQu2S+4xAz7d76CNMrc1ptYG7vUlM=";
     };
     date = "2022-11-22";
   };
   wavpack = {
     pname = "wavpack";
-    version = "5.7.0";
+    version = "5.8.1";
     src = fetchFromGitHub {
       owner = "dbry";
       repo = "WavPack";
-      rev = "5.7.0";
+      rev = "5.8.1";
       fetchSubmodules = false;
-      sha256 = "sha256-vFZxg1mVqE7Kp38vEGA5V8m2tjqhssFsUZURixhlfk0=";
+      sha256 = "sha256-V9jRIuDpZYIBohJRouGr2TI32BZMXSNVfavqPl56YO0=";
     };
   };
 }

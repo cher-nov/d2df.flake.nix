@@ -19,19 +19,20 @@
     "Doom2D-Forever": {
       "flake": false,
       "locked": {
-        "lastModified": 1738907064,
-        "narHash": "sha256-eHIpTNs5oJEw4mK0wQMUiXU6Ik/w5pRz7Z29LOeyUj0=",
-        "ref": "refs/heads/master",
-        "rev": "7d0c8a21476acddfca1cea79c402783138522a7c",
-        "revCount": 1561,
+        "lastModified": 1739551546,
+        "narHash": "sha256-iQBIa3T3ilKECK6+HLllWZUq6LfjILeTirdV6X/rhlU=",
+        "ref": "macos-midi",
+        "rev": "4c6bd5b835b97afb7aa7ccbc66c73c3804ab160d",
+        "revCount": 1562,
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/Doom2D/Doom2D-Forever"
+        "url": "https://github.com/polybluez/Doom2D-Forever"
       },
       "original": {
+        "ref": "macos-midi",
         "submodules": true,
         "type": "git",
-        "url": "https://github.com/Doom2D/Doom2D-Forever"
+        "url": "https://github.com/polybluez/Doom2D-Forever"
       }
     },
     "d2df-distro-content": {
