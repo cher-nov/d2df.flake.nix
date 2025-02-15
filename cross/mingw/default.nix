@@ -3,7 +3,7 @@
   lib,
   pins,
 }: let
-  mkMingwCrossPkg = arch': vendor: sys: nixpkgsArch: fpcTarget: fpcCpu: fpcBasename: let
+  mkMingwCrossPkg = arch': vendor: sys: nixpkgsArch: fpcTarget: fpcCpu: fpcBasename: chosenMatrix: let
     crossPkgs = pkgs.pkgsCross.${nixpkgsArch};
     gcc =
       crossPkgs.buildPackages.wrapCC
@@ -15,7 +15,37 @@
           };
         })
       );
+
+    # Win XP+, presumably
     stdenvWin32Threads = crossPkgs.buildPackages.overrideCC crossPkgs.stdenv gcc;
+
+    # Windows 7+, presumably
+    stdenvDefault = crossPkgs.stdenv;
+
+    matrix = {
+      win32Threads = {
+        stdenv = stdenvWin32Threads;
+        winNt = "0x0400";
+        CFLAGS = [];
+        LDFLAGS = [];
+      };
+      mcfgthread = {
+        stdenv = stdenvDefault;
+        winNt = "0x0601";
+        CFLAGS = [
+          "-pthread"
+          "-I${crossPkgs.windows.mcfgthreads.dev}/include"
+          "-I${crossPkgs.windows.mingw_w64_pthreads}/include"
+        ];
+        LDFLAGS = [
+          "-pthread"
+          "-L${crossPkgs.windows.mcfgthreads}/lib"
+          "-L${crossPkgs.windows.mingw_w64_pthreads}/lib"
+        ];
+      };
+    };
+    activeMatrix = matrix."${chosenMatrix}";
+    stdenv = activeMatrix.stdenv;
     fmodex = let
       drv = {
         stdenv,
@@ -76,7 +106,15 @@
       inherit lib pkgs pins;
       arch = "${arch'}-${vendor}-${sys}";
       cmake = let
-        windres = "${pkgs.writeShellScript "${arch}-windres" "echo $@; PATH=${stdenvWin32Threads.cc}/bin/ ${stdenvWin32Threads.cc}/bin/${arch}-windres $@"}";
+        inherit stdenv;
+        inherit ld as;
+        winNt = activeMatrix.winNt;
+        cc = stdenv.cc;
+        windres = "${pkgs.writeShellScript "${arch}-windres" "echo $@; PATH=${cc}/bin/ ${cc}/bin/${arch}-windres $@"}";
+        ranlib = "${cc}/bin/${arch}-ranlib";
+        ar = "${cc}/bin/${arch}-ar";
+        cCompiler = "${cc}/bin/${arch}-gcc";
+        cppCompiler = "${cc}/bin/${arch}-c++";
         toolchain = pkgs.writeTextFile {
           name = "${arch}.cmake-toolchain";
           text = ''
@@ -92,50 +130,52 @@
             set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
             set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)
             set(CMAKE_FIND_ROOT_PATH
-              "${stdenvWin32Threads.cc}")
+              "${cc}")
 
-            set(CMAKE_C_COMPILER "${stdenvWin32Threads.cc}/bin/${arch}-cc")
-            set(CMAKE_CXX_COMPILER "${stdenvWin32Threads.cc}/bin/${arch}-c++")
-            set(CMAKE_AR "${stdenvWin32Threads.cc}/bin/${arch}-ar" CACHE FILEPATH "ar")
-            set(CMAKE_RANLIB "${stdenvWin32Threads.cc}/bin/${arch}-ranlib" CACHE FILEPATH "ranlib")
+            set(CMAKE_C_COMPILER "${cCompiler}")
+            set(CMAKE_CXX_COMPILER "${cppCompiler}")
+            set(CMAKE_AR "${ar}" CACHE FILEPATH "ar")
+            set(CMAKE_RANLIB "${ranlib}" CACHE FILEPATH "ranlib")
             set(CMAKE_WINDRES "${windres}" CACHE FILEPATH "windres")
             set(CMAKE_RC_COMPILER "${windres}" CACHE FILEPATH "windres")
+
+            # some projects use this as an unofficial variable for windows versions
+            set(CMAKE_SYSTEM_VERSION 6.1)
+            set(windows-version ${winNt})
           '';
         };
         cmakeFlags = lib.concatStringsSep " " [
-          "-D_WIN32_WINNT=0x0400"
-          "-DWINVER=0x0400"
+          "-D_WIN32_WINNT=${winNt}"
+          "-DWINVER=${winNt}"
           "-DCMAKE_TOOLCHAIN_FILE=${toolchain}"
         ];
         exports = let
-          CFLAGS = lib.concatStringsSep " " [
-            "-DWINVER=0x0400"
-            "-D_WIN32_WINNT=0x0400"
-            "-static-libgcc"
-            #"-I${lib.trace "${crossPkgs.windows.mingw_w64_pthreads}" crossPkgs.windows.mingw_w64_pthreads}/include"
-            #"-L${crossPkgs.windows.mingw_w64}/lib"
-            #"-L${crossPkgs.windows.mingw_w64}/lib64"
-            #"-L${pthread}/lib"
-            #"-L${pthread}/lib64"
-          ];
+          CFLAGS = lib.concatStringsSep " " ([
+              "-DWINVER=${winNt}"
+              "-D_WIN32_WINNT=${winNt}"
+              "-static-libgcc"
+              "-static"
+            ]
+            ++ activeMatrix.CFLAGS);
           CXXFLAGS = CFLAGS + " -static-libstdc++";
-          LDFLAGS = lib.concatStringsSep " " [
-            "-DWINVER=0x0400"
-            "-D_WIN32_WINNT=0x0400"
-          ];
+          LDFLAGS = lib.concatStringsSep " " ([
+              "-DWINVER=${winNt}"
+              "-D_WIN32_WINNT=${winNt}"
+            ]
+            ++ activeMatrix.LDFLAGS);
         in
           lib.concatStringsSep " " [
             "PATH=\"$PATH:${stdenvWin32Threads.cc}/bin\""
             "CFLAGS=\"$CFLAGS ${CFLAGS}\""
             "CXXFLAGS=\"$CXXFLAGS ${CXXFLAGS}\""
             "LDFLAGS=\"$CFLAGS ${LDFLAGS}\""
-            "CC='${stdenvWin32Threads.cc}/bin/${arch}-gcc'"
-            "CXX='${stdenvWin32Threads.cc}/bin/${arch}-g++'"
-            "LD='${stdenvWin32Threads.cc}/bin/${arch}-ld'"
-            "AR='${stdenvWin32Threads.cc}/bin/${arch}-ar'"
-            "RANLIB='${stdenvWin32Threads.cc}/bin/${arch}-ranlib'"
-            "WINDRES='${stdenvWin32Threads.cc}/bin/${arch}-windres'"
-            "RC='${stdenvWin32Threads.cc}/bin/${arch}-windres'"
+            "CC='${cCompiler}'"
+            "CXX='${cppCompiler}'"
+            "LD='${ld}'"
+            "AR='${ar}'"
+            "RANLIB='${ranlib}'"
+            "WINDRES='${windres}'"
+            "RC='${windres}'"
           ];
       in "${exports} ${crossPkgs.buildPackages.cmake}/bin/cmake ${cmakeFlags}";
     };
@@ -144,11 +184,11 @@
   in
     lib.recursiveUpdate
     {
-      infoAttrs = mkMingwArch arch' vendor sys fpcTarget fpcCpu fpcBasename as ld;
+      infoAttrs = mkMingwArch arch' vendor sys fpcTarget fpcCpu fpcBasename as ld chosenMatrix;
       inherit fmodex;
     }
     set;
-  mkMingwArch = arch: vendor: sys: fpcTarget: fpcCpu: fpcBasename: as: ld: {
+  mkMingwArch = arch: vendor: sys: fpcTarget: fpcCpu: fpcBasename: as: ld: matrix: {
     caseSensitive = false;
     d2dforeverFeaturesSuport = {
       openglDesktop = true;
@@ -157,13 +197,24 @@
       loadedAsLibrary = false;
     };
     isWindows = true;
-    bundle = {
-      io = "SDL2";
-      sound = "FMOD";
-      graphics = "OpenGL2";
-      headless = "Disable";
-      holmes = "Enable";
-    };
+    bundle = let
+      bundleMatrix = {
+        win32Threads = {
+          io = "SDL2";
+          sound = "FMOD";
+          graphics = "OpenGL2";
+          headless = "Disable";
+          holmes = "Enable";
+        };
+        mcfgthread = {
+          io = "SDL2";
+          sound = "OpenAL";
+          graphics = "OpenGL2";
+          headless = "Disable";
+          holmes = "Enable";
+        };
+      };
+    in bundleMatrix.${matrix};
     fpcAttrs = rec {
       lazarusExists = true;
       cpuArgs = [""];
@@ -181,6 +232,6 @@
     };
   };
 in {
-  mingw32 = lib.removeAttrs (mkMingwCrossPkg "i686" "w64" "mingw32" "mingw32" "win32" "i386" "cross386") ["openal" "fluidsynth"];
-  mingw64 = lib.removeAttrs (mkMingwCrossPkg "x86_64" "w64" "mingw32" "mingwW64" "win64" "x86_64" "cx64") ["openal" "fluidsynth"];
+  mingw32 = lib.removeAttrs (mkMingwCrossPkg "i686" "w64" "mingw32" "mingw32" "win32" "i386" "cross386" "win32Threads") ["openal" "fluidsynth"];
+  mingw64 = mkMingwCrossPkg "x86_64" "w64" "mingw32" "mingwW64" "win64" "x86_64" "crossx64" "mcfgthread";
 }

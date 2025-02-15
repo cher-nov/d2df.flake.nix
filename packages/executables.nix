@@ -65,7 +65,6 @@
         fpc = fpc-trunk;
         fpc-3_2_2 = fpcWrapper universal.fpc-3_2_2 fpcCross-3_2_2;
         fpc-trunk = fpcWrapper universal.fpc-trunk fpcCross-trunk;
-        inherit fpcCross;
         lazarus-trunk =
           if (archAttrs.infoAttrs.fpcAttrs.lazarusExists)
           then

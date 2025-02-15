@@ -102,7 +102,7 @@ in rec {
         rm -r build
       '';
     });
-  libvorbis = source.libvorbis {
+  libvorbis = (source.libvorbis {
     cmakeExtraArgs = lib.concatStringsSep " " [
       "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
       "-DCMAKE_PREFIX_PATH=${libogg}"
@@ -110,7 +110,12 @@ in rec {
       "-DOGG_LIBRARY=${findLib libogg "libogg"}"
       "-DOGG_INCLUDE_DIR=${libogg}/include/"
     ];
-  };
+  }).overrideAttrs (finalAttrs: {
+    buildInputs = finalAttrs.buildInputs or [] ++ [pkgs.gnused];
+    preBuild = finalAttrs.preBuild or "" + ''
+      sed -E -i 's/vorbis.def|vorbisenc.def|vorbisfile.def//g' lib/CMakeLists.txt
+    '';
+  });
   game-music-emu = source.game-music-emu {
     cmakeExtraArgs = "-DENABLE_UBSAN=off";
   };
