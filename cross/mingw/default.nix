@@ -214,7 +214,8 @@
           holmes = "Enable";
         };
       };
-    in bundleMatrix.${matrix};
+    in
+      bundleMatrix.${matrix};
     fpcAttrs = rec {
       lazarusExists = true;
       cpuArgs = [""];
