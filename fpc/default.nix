@@ -48,9 +48,6 @@
         make all ${lib.concatStringsSep " " default}
       '';
 
-      # HACK: if you crosscompile for mingw64 or x86_64-apple-darwin, Makefile would expect a crosscompiler at ppcrossx64 (if your host is x86_64, ofc)
-      # But if you install the native compiler first, the lazarus won't build...
-      # So we have to install the cross compiler and the units, then clean and build the compiler AGAIN.
       installPhase =
         ''
           make install ${lib.concatStringsSep " " default}
@@ -128,9 +125,6 @@
           make all ${makeArgs}
       '';
 
-      # HACK: if you crosscompile for mingw64 or x86_64-apple-darwin, Makefile would expect a crosscompiler at ppcrossx64 (if your host is x86_64, ofc)
-      # But if you install the native compiler first, the lazarus won't build...
-      # So we have to install the cross compiler and the units, then clean and build the compiler AGAIN.
       installPhase =
         ''
           make crossinstall ${makeArgs} ;
