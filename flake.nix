@@ -123,12 +123,9 @@
       };
 
       forPrebuild = let
-        thisPkgs = self.legacyPackages.${system};
-        nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal" "mingw32" "mingw64"];
-        allArches = lib.attrNames nativeArches;
-        allDrvs = lib.flatten (lib.map (arch: thisPkgs.${arch}.__forPrebuild) allArches);
+        arches = ["mingw32" "mingw64" "x86_64-apple-darwin" "arm64-apple-darwin" "android"];
       in
-        pkgs.linkFarmFromDrvs "cache" allDrvs;
+        pkgs.linkFarmFromDrvs "cache" (lib.map (x: self.legacyPackages.x86_64-linux.${x}.bundles.default.overrideAttrs (final: {pname = x;})) arches);
 
       devShells = {
         default = pkgs.mkShell {

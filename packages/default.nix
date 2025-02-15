@@ -170,18 +170,6 @@
     });
   in {
     __archPkgs = archAttrs;
-    __forPrebuild = let
-      essentials = lib.filterAttrs (n: v:
-        !((lib.hasPrefix "fpc" n)
-          || (lib.hasPrefix "lazarus" n)
-          || (lib.hasPrefix "infoAttrs" n)
-          || (lib.hasPrefix "doom2d" n)
-          || (lib.hasPrefix "editor" n)
-          || (lib.hasPrefix "androidSdk" n)
-          || (lib.hasPrefix "androidPlatform" n)))
-      archAttrs;
-    in
-      lib.attrValues essentials;
     inherit defaultExecutable executables bundles;
   });
 in
