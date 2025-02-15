@@ -53,7 +53,7 @@ jobs:
           bash ./game/bundle/scripts/mkAndroid.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-android
+          name: Doom2D-Forever.apk
           path: result
           if-no-files-found: error
       - name: Build Windows x86 ZIP bundle
@@ -74,8 +74,8 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-mingw32
-          path: doom2df-mingw32.zip
+          name: doom2df_mingw32
+          path: doom2df_windows.x86.zip
       - name: Build Windows x86_64 ZIP bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
@@ -94,8 +94,8 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-mingw64
-          path: doom2df-mingw64.zip
+          name: doom2df_mingw64
+          path: doom2df_win64.x86-64.zip
       - name: Build MacOS x86_64 ZIP bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
@@ -114,7 +114,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-x86_64-apple-darwin
-          path: doom2df-x86_64-apple-darwin.zip
+          path: doom2df_macos.intel64.zip
       - name: Build MacOS aarch64 ZIP bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: doom2df-arm64-apple-darwin
-          path: doom2df-arm64-apple-darwin.zip
+          path: doom2df_macos.arm64.zip
       - name: Build MacOS x86_64 app bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
@@ -149,8 +149,8 @@ jobs:
           bash ./game/bundle/scripts/mkApple.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: Doom2DF.dmg
-          path: Doom2DF.dmg
+          name: Doom2D-Forever.dmg
+          path: Doom2D-Forever.dmg
           if-no-files-found: error
       - name: Calculate new build number
         run: |
@@ -168,7 +168,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch'}}
         with:
-          artifacts: doom2df-mingw32.zip, doom2df-android.apk, doom2df-mingw64.zip, doom2df-x86_64-apple-darwin.zip, doom2df-arm64-apple-darwin.zip, Doom2DF.dmg
+          artifacts: doom2df_windows.x86.zip, Doom2D-Forever.apk, doom2df_win64.x86-64, doom2df_macos.intel64.zip, doom2df_macos.arm64.zip, Doom2D-Forever.dmg
           token: ${{ secrets.GITHUB_TOKEN }}
           name: ${{ env.RELEASE_NAME }}
           bodyFile: release_body

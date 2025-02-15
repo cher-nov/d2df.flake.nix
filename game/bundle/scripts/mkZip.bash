@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-export BUILD_FOLDER="doom2df-${BUILD_ARCH}"
+export BUILD_FOLDER="doom2df_${BUILD_ARCH}"
 mkdir -p $BUILD_FOLDER
 [ ! -f "df_distro_content.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"') df_distro_content.rar
 if [ ! -d "content" ]; then

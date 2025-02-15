@@ -48,4 +48,4 @@ if [[ -n "${ASSETS_GUS:-}" ]]; then
     rar x -tsp df_distro_soundfont.rar "instruments/*" "timidity.cfg" $ASSETS_DIR
 fi
 
-genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 -o Doom2DF.dmg $BASE_FOLDER
+genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 -o Doom2D-Forever.dmg $BASE_FOLDER
