@@ -91,6 +91,7 @@
         cmakeFlags = lib.concatStringsSep " " [
           "-DCMAKE_TOOLCHAIN_FILE=${osxcross}/tools/toolchain.cmake"
           "-DCMAKE_OSX_DEPLOYMENT_TARGET=\"${macosDeploymentTarget}\""
+          "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
         ];
       in "${lib.concatStringsSep " " exports} ${pkgs.cmake}/bin/cmake ${cmakeFlags}";
     };

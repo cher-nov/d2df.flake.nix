@@ -123,6 +123,7 @@
             set(CMAKE_HOST_SYSTEM_NAME Linux)
             set(CMAKE_HOST_SYSTEM_PROCESSOR x86_64)
             set(CMAKE_CROSSCOMPILING ON)
+            set(CMAKE_BUILD_TYPE RelWithDebInfo)
             # search for programs in the build host directories
             set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
             # for libraries and headers in the target directories

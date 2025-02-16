@@ -131,6 +131,7 @@
             "-DANDROID_PLATFORM=android-${androidPlatform}"
             "-DANDROID_NDK=${androidNdk}"
             "-DANDROID_STL=c++_static"
+            "-DCMAKE_BUILD_TYPE=Release"
           ]
           #++ lib.optionals (CPU_TARGET == "arm") ["-DANDROID_ARM_NEON=FALSE"]
         );
