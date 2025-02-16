@@ -19,12 +19,12 @@ if [[ -n "${ASSETS_GUS:-}" ]]; then
 fi
 
 nix build --print-build-logs .#android.bundles.default
-cp result doom2df-android.apk
-chmod 777 doom2df-android.apk
+cp result $BASE_APK.apk
+chmod 777 $BASE_APK.apk
 pushd android
-7zz a -y -mtm -ssp -tzip ../doom2df-android.apk -w .
+7zz a -y -mtm -ssp -tzip ../$BASE_APK.apk -w .
 popd
 
 openssl req -x509 -subj "/C=GB/ST=London/L=London/O=Global Security/OU=IT Department/CN=example.com" -nodes -days 10000 -newkey rsa:2048 -keyout keyfile.pem -out certificate.pem
 openssl pkcs12 -export -in certificate.pem -inkey keyfile.pem -out my_keystore.p12 -passout "pass:" -name my_key
-apksigner sign --ks my_keystore.p12 --ks-pass "pass:" doom2df-android.apk
+apksigner sign --ks my_keystore.p12 --ks-pass "pass:" $BASE_APK.apk

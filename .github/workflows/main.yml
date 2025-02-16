@@ -49,12 +49,13 @@ jobs:
       - name: Build debug APK
         env:
           ASSETS_GUS: 1
+          BASE_APK: Doom2D-Forever
         run: |
           bash ./game/bundle/scripts/mkAndroid.bash
       - uses: actions/upload-artifact@v4
         with:
           name: Doom2D-Forever.apk
-          path: result
+          path: Doom2D-Forever.apk
           if-no-files-found: error
       - name: Build Windows x86 ZIP bundle
         env:
@@ -62,6 +63,7 @@ jobs:
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
           EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
           DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+          BASE_FOLDER: doom2df_windows.x86
         run: |
           export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
           export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
@@ -74,7 +76,7 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df_mingw32
+          name: doom2df_windows.x86
           path: doom2df_windows.x86.zip
       - name: Build Windows x86_64 ZIP bundle
         env:
@@ -82,6 +84,7 @@ jobs:
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
           EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
           DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+          BASE_FOLDER: doom2df_win64.x86-64
         run: |
           export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
           export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
@@ -94,7 +97,7 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df_mingw64
+          name: doom2df_win64.x86-64
           path: doom2df_win64.x86-64.zip
       - name: Build MacOS x86_64 ZIP bundle
         env:
@@ -102,6 +105,7 @@ jobs:
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
           EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
           DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+          BASE_FOLDER: doom2df_macos.intel64
         run: |
           export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
           export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
@@ -113,7 +117,7 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-x86_64-apple-darwin
+          name: doom2df_macos.intel64
           path: doom2df_macos.intel64.zip
       - name: Build MacOS aarch64 ZIP bundle
         env:
@@ -121,6 +125,7 @@ jobs:
           RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
           EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
           DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
+          BASE_FOLDER: doom2df_macos.aarch64
         run: |
           export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
           export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
@@ -132,8 +137,8 @@ jobs:
           bash ./game/bundle/scripts/mkZip.bash
       - uses: actions/upload-artifact@v4
         with:
-          name: doom2df-arm64-apple-darwin
-          path: doom2df_macos.arm64.zip
+          name: doom2df_macos.aarch64
+          path: doom2df_macos.aarch64.zip
       - name: Build MacOS x86_64 app bundle
         env:
           D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
