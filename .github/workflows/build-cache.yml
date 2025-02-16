@@ -56,7 +56,7 @@ jobs:
 
   merge-caches:
     name: Merge caches
-    needs: make-similar-caches
+    needs: make-caches
     permissions:
       actions: write
     runs-on: ubuntu-22.04
