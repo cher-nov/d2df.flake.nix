@@ -7,7 +7,18 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  build:
+  make-caches:
+    name: Make caches
+    permissions:
+      actions: write
+    strategy:
+      matrix:
+        arch:
+          - android
+          - mingw32
+          - mingw64
+          - x86_64-apple-darwin
+          - arm64-apple-darwin
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +35,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android || :
           sudo rm -rf /opt/ghc || :
           sudo docker image prune --all --force || :
-          sudo docker builder prune -a || :          
+          sudo docker builder prune -a || :
           echo
           echo "=== After pruning ==="
           df -h
@@ -32,14 +43,53 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Build forPrebuild
+      - name: Build .#${{ matrix.arch }}.bundles.default
         run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#forPrebuild.x86_64-linux
+          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#${{ matrix.arch }}.bundles.default
+      - name: Save Nix store
+        uses: nix-community/cache-nix-action/save@v5.1.0
+        with:
+          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}-bundle_${{ matrix.arch }}
+          purge-prefixes: build-${{ runner.os }}
+          purge-created: 0
+          purge-primary-key: always
+
+  merge-caches:
+    name: Merge caches
+    needs: make-similar-caches
+    permissions:
+      actions: write
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nixbuild/nix-quick-install-action@v29
+      - name: Remove unnecessary packages
+        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
+          echo "=== Before pruning ==="
+          df -h
+          sudo rm -rf /opt || :
+          sudo rm -rf /usr/share/dotnet || :
+          sudo rm -rf "/usr/local/share/boost" || :
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || :
+          sudo rm -rf /usr/local/lib/android || :
+          sudo rm -rf /opt/ghc || :
+          sudo docker image prune --all --force || :
+          sudo docker builder prune -a || :
+          echo
+          echo "=== After pruning ==="
+          df -h
+      - name: Calculate cache hash based on nixpkgs' revision
+        run: |
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - name: Save Nix store
         uses: nix-community/cache-nix-action/save@v5.1.0
         with:
           primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
+          restore-preixes-all-matches: build-${{ runner.os }}
           purge: true
           purge-prefixes: build-${{ runner.os }}
           purge-created: 0
           purge-primary-key: always
+
