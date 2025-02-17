@@ -220,6 +220,7 @@
     fpcAttrs = rec {
       lazarusExists = true;
       cpuArgs = [""];
+      wrapperArgs = ["-O3" "-g" "-gl"];
       targetArg = "-T${fpcTarget}";
       basename = fpcBasename;
       makeArgs = {

@@ -188,6 +188,7 @@ in rec {
     writeShellScriptBin "fpc" ''
       PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" PPC_CONFIG_PATH="${c}/etc" \
         ${c}/bin/pp${fpcAttrs.basename} \
+          ${lib.concatStringsSep " " (fpcAttrs.wrapperArgs)} \
           ${lib.concatStringsSep " " (fpcAttrs.cpuArgs ++ [fpcAttrs.targetArg])} \
           $@
     '';
