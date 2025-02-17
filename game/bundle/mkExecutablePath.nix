@@ -80,4 +80,18 @@ stdenvNoCC.mkDerivation {
     cp -r * $out
     rm $out/env-vars
   '';
+
+  meta = {
+    licenses = let
+      getLibraries = arch: arch.sharedLibraries ++ [arch.doom2df];
+      all = lib.foldl (acc: cur: acc ++ (getLibraries cur)) [] (lib.attrValues byArchPkgsAttrs);
+      files =
+        lib.map (x: {
+          inherit (x) pname;
+          license = x.meta.licenseFiles;
+        })
+        all;
+    in
+      files;
+  };
 }

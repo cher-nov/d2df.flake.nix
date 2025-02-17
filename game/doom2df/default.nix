@@ -129,7 +129,7 @@
 in
   stdenv.mkDerivation rec {
     inherit version src;
-    pname = "doom2df";
+    pname = "Doom2D-Forever";
     name = "${pname}-${lib.optionalString buildAsLibrary "lib-"}${version}";
 
     patches = [];
@@ -210,4 +210,8 @@ in
         mkdir -p $out/bin
         cp src/game/bin/${basename} $out/bin
       '';
+
+    meta = {
+      licenseFiles = ["${src}/COPYING"];
+    };
   }

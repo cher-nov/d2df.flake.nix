@@ -12,6 +12,7 @@
     pname,
     version,
     src,
+    licenseFiles ? [],
   }: {
     cmakeListsPath ? null,
     cmakePrefix ? "",
@@ -19,8 +20,9 @@
     extraCmds ? "",
   }:
     pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
-      inherit version src;
-      pname = "${pname}-${arch}";
+      inherit src;
+      pname = "${pname}";
+      version = "${version}-${arch}";
 
       dontStrip = true;
       dontPatchELF = true;
@@ -50,6 +52,10 @@
         make install
         runHook postInstall
       '';
+
+      meta = lib.optionalAttrs (licenseFiles != []) {
+        inherit licenseFiles;
+      };
     });
   buildCmakeProject = _cmakeDrv {inherit cmake arch;};
   source = (import ./_source.nix {inherit pins;}) {

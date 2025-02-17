@@ -69,13 +69,30 @@
             then "sha256-F6kFWvkpbUawIMSZBLoHytlth/T3QUSS+Ke7cU1O12c="
             else "sha256-aPK+/b1dwo1MsegzXTaxBozF56Rko0jxBJYuVi1f0LQ=";
         };
-      in
-        stdenv.mkDerivation rec {
-          pname = "fmod";
-          inherit version shortVersion;
-
+      in let
+        license = stdenv.mkDerivation {
+          pname = "fmodex-license";
+          version = "${installerSuffix}-${version}";
+          inherit shortVersion;
           nativeBuildInputs = [p7zip];
+          unpackPhase = false;
+          dontUnpack = true;
+          dontStrip = true;
+          dontPatchELF = true;
+          dontBuild = true;
 
+          installPhase = ''
+            mkdir -p $out
+            7z e -aoa ${src}
+            cp LICENSE.TXT $out/
+          '';
+        };
+      in
+        stdenv.mkDerivation {
+          pname = "fmodex";
+          version = "${installerSuffix}-${version}";
+          inherit shortVersion;
+          nativeBuildInputs = [p7zip];
           unpackPhase = false;
           dontUnpack = true;
           dontStrip = true;
@@ -91,6 +108,7 @@
           '';
 
           meta = with lib; {
+            licenseFiles = ["${license}/LICENSE.TXT"];
             description = "Programming library and toolkit for the creation and playback of interactive audio";
             homepage = "http://www.fmod.org/";
             license = licenses.unfreeRedistributable;
