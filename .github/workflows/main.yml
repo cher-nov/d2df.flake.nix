@@ -47,6 +47,11 @@ jobs:
         with:
           name: flake.lock
           path: flake.lock
+      - name: Save release_body
+        uses: actions/upload-artifact@v4
+        with:
+          name: release_body
+          path: release_body
 
   build:
     name: Build
@@ -254,27 +259,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the master branch
-        uses: actions/checkout@v4
-      - name: Install Nix
-        uses: nixbuild/nix-quick-install-action@v29
-        with:
-          nix_conf: |
-            require-sigs = false
-      - name: Delete old flake.lock
-        run: |
-          rm -f flake.lock || :
-      - name: Download all artifacts in this run
+      - name: Download all artifacts in this run (release_body and artifacts)
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - name: Enter CI tailored shell
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          devShell: .#ciDefault
-      - name: Update Doom2D related inputs and populate environment variables
-        run: |
-          bash ./game/bundle/scripts/mkEnv.bash
       - name: Calculate new build number
         run: |
           GITHUB_RESPONSE_FILE=github_response
