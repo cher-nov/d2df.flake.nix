@@ -71,7 +71,7 @@
       loadedAsLibrary = true;
     };
     fpcAttrs = let
-      cpuArgs = ["-Cp${fpcCpu}" "-Cf${fpcFloat}" "-Fl${ndkLib}" "-XP${binutilsPrefix}"] ++ ["-O1" "-g" "-gl"];
+      cpuArgs = ["-Cp${fpcCpu}" "-Cf${fpcFloat}" "-Fl${ndkLib}" "-XP${binutilsPrefix}"];
     in {
       lazarusExists = false;
       inherit cpuArgs;
