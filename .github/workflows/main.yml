@@ -133,6 +133,7 @@ jobs:
         if: ${{ matrix.arch == 'android' }}
         env:
           BASE_APK: Doom2D-Forever
+          ASSETS_GUS: 1
         run: |
           bash ./game/bundle/scripts/mkAndroid.bash
       - name: Upload debug APK

@@ -52,6 +52,22 @@ in {
       cp -r ${androidIcons}/* res
       cp -r ${gameAssetsPath}/* resources/
       cp -r ${gameExecutablePath}/* aux/lib/
+      mkdir -p resources/docs/legal
+      # FIXME
+      # Copied from mkGamePath
+      ${let
+        licenses = lib.flatten gameExecutablePath.meta.licenses;
+        transformName = licenseFile: pname: let
+          basename = builtins.baseNameOf licenseFile;
+          split = lib.splitString "." basename;
+        in
+          if (lib.length split) == 1
+          then "${basename}.${pname}.txt"
+          else "${lib.concatStringsSep "." (lib.lists.init split)}.${pname}.${lib.strings.toLower (lib.lists.last split)}";
+        perLicenseAttrs = licenseAttrs: lib.map (x: "cp -f ${x} resources/docs/legal/${transformName x licenseAttrs.pname}") licenseAttrs.license;
+        final = lib.map perLicenseAttrs licenses;
+      in
+        lib.concatStringsSep " ;\n" (lib.flatten final)}
       cp ${androidManifest} AndroidManifest.xml
     ''
     # Use SDL Java sources from the version we compiled our game with.

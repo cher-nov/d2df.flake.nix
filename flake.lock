@@ -49,7 +49,7 @@
     "d2df-distro-soundfont": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-CgHqmUMyK19ZZ2jDF7x2DCHZMpwSHiCdMihfz5Tj4qY=",
+        "narHash": "sha256-NXRUm6XcrnqwZ5QEyblvomh4mD8yUacEWP1y3vCrQ0w=",
         "type": "file",
         "url": "https://doom2d.org/doom2d_forever/latest/df_midi_bank.rar"
       },
