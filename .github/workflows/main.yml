@@ -108,6 +108,15 @@ jobs:
         if: ${{ matrix.arch == 'mingw' }}
         run: |
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
+      - name: Enter CI tailored shell
+        uses: rrbutani/use-nix-shell-action@v1
+        with:
+          devShell: .#ciDefault
+      - name: Enter Android tailored shell
+        if: ${{ matrix.arch == 'android' }}
+        uses: rrbutani/use-nix-shell-action@v1
+        with:
+          devShell: .#android
       - name: Populate environment variables
         env:
           UPDATE_FLAKE: 0
@@ -120,15 +129,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
-      - name: Enter CI tailored shell
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          devShell: .#ciDefault
-      - name: Enter Android tailored shell
-        if: ${{ matrix.arch == 'android' }}
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          devShell: .#android
       - name: Build debug APK
         if: ${{ matrix.arch == 'android' }}
         env:
