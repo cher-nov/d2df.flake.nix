@@ -219,7 +219,7 @@
       bundleMatrix.${matrix};
     fpcAttrs = rec {
       lazarusExists = true;
-      cpuArgs = [""];
+      cpuArgs = [] ++ ["-O3" "-g" "-gl"];
       targetArg = "-T${fpcTarget}";
       basename = fpcBasename;
       makeArgs = {

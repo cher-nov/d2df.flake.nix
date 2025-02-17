@@ -24,15 +24,17 @@
       holmes = "Enable";
     };
     fpcAttrs = rec {
-      cpuArgs = [
-        "-XP${toolchain}/bin/${target}-"
-        "-Fl${sdk}/usr/lib"
-        "-Fl${sdk}/usr/lib/system"
-        "-k-F${sdk}/System/Library/Frameworks/"
-        "-k-L${sdk}/usr/lib"
-        "-k-L${sdk}/usr/lib/system"
-        #"-k-mmacosx-version-min=11.0"
-      ];
+      cpuArgs =
+        [
+          "-XP${toolchain}/bin/${target}-"
+          "-Fl${sdk}/usr/lib"
+          "-Fl${sdk}/usr/lib/system"
+          "-k-F${sdk}/System/Library/Frameworks/"
+          "-k-L${sdk}/usr/lib"
+          "-k-L${sdk}/usr/lib/system"
+          #"-k-mmacosx-version-min=11.0"
+        ]
+        ++ ["-O3" "-g" "-gl"];
       targetArg = "-Tdarwin";
       basename = fpcBinary;
       makeArgs = {
