@@ -5,7 +5,7 @@ in {
   buildWad = {
     outName ? "game",
     lstPath ? "game.lst",
-    DF-res,
+    DF-Assets,
     buildWadScript ? standard,
     stdenvNoCC,
     gnused,
@@ -28,9 +28,9 @@ in {
       buildPhase =
         # FIXME
         # Script should be able to support arbitrary paths, not just in the current directory
-        # But it doesn't for now, so we copy files from DF-ress to build directory.
+        # But it doesn't for now, so we copy files from DF-Assets to build directory.
         ''
-          cp -r ${DF-res}/*WAD ${DF-res}/*.lst .
+          cp -r ${DF-Assets}/*WAD ${DF-Assets}/*.lst .
         ''
         # FIXME
         # For some reason, shrshade.lst specifies the source folder in lowercase.

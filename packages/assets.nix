@@ -3,7 +3,7 @@
   callPackage,
   stdenv,
   writeText,
-  DF-res,
+  DF-Assets,
   d2df-editor,
   buildWad,
   dfwad,
@@ -15,7 +15,7 @@
       outName = wad;
       lstPath = "${wad}.lst";
       dfwadCompression = "best";
-      inherit DF-res;
+      inherit DF-Assets;
       inherit dfwad;
     };
   }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);

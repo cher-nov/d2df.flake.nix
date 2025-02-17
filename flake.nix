@@ -9,8 +9,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    DF-res = {
-      url = "github:Doom2D/DF-Res";
+    DF-Assets = {
+      url = "github:Doom2D/DF-Assets";
       flake = false;
     };
     Doom2D-Forever = {
@@ -36,7 +36,7 @@
     flake-utils,
     nix-github-actions,
     osxcross,
-    DF-res,
+    DF-Assets,
     Doom2D-Forever,
     d2df-editor,
     d2df-distro-content,
@@ -80,7 +80,7 @@
       };
     in {
       dfInputs = {
-        inherit Doom2D-Forever d2df-editor DF-res d2df-distro-content d2df-distro-soundfont;
+        inherit Doom2D-Forever d2df-editor DF-Assets d2df-distro-content d2df-distro-soundfont;
       };
 
       osxcross = osxcross;
@@ -101,7 +101,7 @@
       assets = import ./packages/assets.nix {
         inherit lib;
         inherit (pkgs) callPackage stdenv writeText dfwad;
-        inherit DF-res d2df-editor;
+        inherit DF-Assets d2df-editor;
         inherit (d2dfPkgs) buildWad;
         inherit (assetsLib) mkAssetsPath;
       };

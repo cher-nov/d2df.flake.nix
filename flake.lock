@@ -1,18 +1,18 @@
 {
   "nodes": {
-    "DF-res": {
+    "DF-Assets": {
       "flake": false,
       "locked": {
         "lastModified": 1739278381,
         "narHash": "sha256-9RmoCC7f6t7Ea8FV515/Yc1ya+2UJtheCCBBuQxZcbA=",
         "owner": "Doom2D",
-        "repo": "DF-Res",
+        "repo": "DF-Assets",
         "rev": "064755b2d071eab613e20df07fcaf86b6ee5991d",
         "type": "github"
       },
       "original": {
         "owner": "Doom2D",
-        "repo": "DF-Res",
+        "repo": "DF-Assets",
         "type": "github"
       }
     },
@@ -49,7 +49,7 @@
     "d2df-distro-soundfont": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-dbtQNnheyL5XZ3RqU373x6ngGcU9yxIordNA/FdiY0A=",
+        "narHash": "sha256-CgHqmUMyK19ZZ2jDF7x2DCHZMpwSHiCdMihfz5Tj4qY=",
         "type": "file",
         "url": "https://doom2d.org/doom2d_forever/latest/df_midi_bank.rar"
       },
@@ -180,7 +180,7 @@
     },
     "root": {
       "inputs": {
-        "DF-res": "DF-res",
+        "DF-Assets": "DF-Assets",
         "Doom2D-Forever": "Doom2D-Forever",
         "d2df-distro-content": "d2df-distro-content",
         "d2df-distro-soundfont": "d2df-distro-soundfont",
