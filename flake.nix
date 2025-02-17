@@ -123,32 +123,50 @@
       };
 
       forPrebuild = let
-        arches = ["mingw32" "mingw64" "x86_64-apple-darwin" "arm64-apple-darwin" "android"];
+        arches = ["mingw32" "mingw64" "x86_64-apple-darwin" "arm64-apple-darwin" "armeabi-v7a-linux-android" "arm64-v8a-linux-android"];
       in
-        pkgs.linkFarmFromDrvs "cache" (lib.map (x: self.legacyPackages.x86_64-linux.${x}.bundles.default.overrideAttrs (final: {pname = x;})) arches);
+        lib.foldl (acc: cur: let
+          filtered = lib.removeAttrs self.legacyPackages.x86_64-linux.${cur}.__archPkgs ["doom2d" "infoAttrs"];
+          drvs = lib.filter (x: !builtins.isNull x && (x ? name)) (lib.attrValues filtered);
+        in
+          acc
+          // {
+            "${cur}" =
+              pkgs.closureInfo {rootPaths = [(pkgs.linkFarmFromDrvs "cache-${cur}" drvs) pkgs.dfwad];};
+          }) {}
+        arches;
 
       devShells = {
         default = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            bash
             alejandra
             nixd
+          ];
+        };
+
+        ciDefault = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [
+            bash
             jq
             _7zz
+            zstd
             git
             findutils
             dos2unix
-            libfaketime
             coreutils
-            openjdk
-            npins
             unrar-wrapper
             rar
-            openssl
             coreutils-full
+            cdrkit
+          ];
+        };
+
+        android = pkgs.mkShell {
+          nativeBuildInputs = with pkgs; [
+            openjdk
+            openssl
             (pkgs.writeShellScriptBin "zipalign" "${self.legacyPackages.${system}.arm64-v8a-linux-android.__archPkgs.androidSdk}/libexec/android-sdk/build-tools/35.0.0/zipalign $@")
             (pkgs.writeShellScriptBin "apksigner" "${self.legacyPackages.${system}.arm64-v8a-linux-android.__archPkgs.androidSdk}/libexec/android-sdk/build-tools/35.0.0/apksigner $@")
-            cdrkit
           ];
         };
       };

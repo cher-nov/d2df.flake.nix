@@ -11,19 +11,20 @@ jobs:
     name: Make caches
     permissions:
       actions: write
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch:
           - android
-          - mingw32
-          - mingw64
-          - x86_64-apple-darwin
-          - arm64-apple-darwin
-    runs-on: ubuntu-latest
+          - apple
+          - mingw
     steps:
       - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v29
-      - name: Remove unnecessary packages
+        with:
+          nix_conf: |
+            require-sigs = false
+      - name: Free space
         run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
           echo "=== Before pruning ==="
           df -h
@@ -43,53 +44,36 @@ jobs:
         run: |
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Build .#${{ matrix.arch }}.bundles.default
-        run: |
-          nix build --inputs-from . --verbose --show-trace --print-build-logs --print-out-paths .#${{ matrix.arch }}.bundles.default
-      - name: Save Nix store
-        uses: nix-community/cache-nix-action/save@v5.1.0
+      - uses: actions/cache/restore@v4
+        name: Restore persistent cache
         with:
-          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}-bundle_${{ matrix.arch }}
-          purge-prefixes: build-${{ runner.os }}
-          purge-created: 0
-          purge-primary-key: always
-
-  merge-caches:
-    name: Merge caches
-    needs: make-caches
-    permissions:
-      actions: write
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v29
-      - name: Remove unnecessary packages
-        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
-          echo "=== Before pruning ==="
-          df -h
-          sudo rm -rf /opt || :
-          sudo rm -rf /usr/share/dotnet || :
-          sudo rm -rf "/usr/local/share/boost" || :
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
-          sudo rm -rf /opt/hostedtoolcache/CodeQL || :
-          sudo rm -rf /usr/local/lib/android || :
-          sudo rm -rf /opt/ghc || :
-          sudo docker image prune --all --force || :
-          sudo docker builder prune -a || :
-          echo
-          echo "=== After pruning ==="
-          df -h
-      - name: Calculate cache hash based on nixpkgs' revision
+          path: /tmp/nixcache_${{ matrix.arch }}
+          key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-${{ matrix.arch }}
+      - name: Save Android toolchain to cache
+        if: ${{ matrix.arch == 'android' }}
         run: |
-          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
-          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
-      - name: Save Nix store
-        uses: nix-community/cache-nix-action/save@v5.1.0
-        with:
-          primary-key: build-${{ runner.os }}-${{ env.NIXPKGS_REV }}
-          restore-preixes-all-matches: build-${{ runner.os }}
-          purge: true
-          purge-prefixes: build-${{ runner.os }}
-          purge-created: 0
-          purge-primary-key: always
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.arm64-v8a-linux-android
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.arm64-v8a-linux-android
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.armeabi-v7a-linux-android
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.armeabi-v7a-linux-android
 
+
+      - name: Save macOS toolchain to cache
+        if: ${{ matrix.arch == 'apple' }}
+        run: |
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.arm64-apple-darwin
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.arm64-apple-darwin
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.x86_64-apple-darwin
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.x86_64-apple-darwin
+      - name: Save Mingw toolchain to cache
+        if: ${{ matrix.arch == 'mingw' }}
+        run: |
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.mingw32
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.mingw32
+          nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.mingw64
+          nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.mingw64
+      - uses: actions/cache/save@v4
+        name: Save persistent cache
+        with:
+          path: /tmp/nixcache_${{ matrix.arch }}
+          key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-${{ matrix.arch }}
