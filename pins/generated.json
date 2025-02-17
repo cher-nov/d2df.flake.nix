@@ -124,7 +124,7 @@
     },
     "fpc": {
         "cargoLocks": null,
-        "date": "2025-02-14",
+        "date": "2025-02-17",
         "extract": null,
         "name": "fpc",
         "passthru": null,
@@ -134,13 +134,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "d71f8233735c29084123bcba463b9e955982410c",
-            "sha256": "sha256-qRa2OcmMv8sbRujUDLdWChELADV4cX1kjW/OZ/Of4cY=",
+            "rev": "0730e86c9db81917c48711b7f00c1dd503d1ac91",
+            "sha256": "sha256-CZvBExE64inTQPwUW7NzzPXcWGRSbkyqHI5btTpkd/k=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/fpc/source"
         },
-        "version": "d71f8233735c29084123bcba463b9e955982410c"
+        "version": "0730e86c9db81917c48711b7f00c1dd503d1ac91"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -156,16 +156,16 @@
             "name": null,
             "owner": "libgme",
             "repo": "game-music-emu",
-            "rev": "0.6.3",
-            "sha256": "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=",
+            "rev": "0.6.4",
+            "sha256": "sha256-qGNWFFUUjv2R5e/nQrriAyDJCARISqNB8e5/1zEJ3fk=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "0.6.3"
+        "version": "0.6.4"
     },
     "lazarus": {
         "cargoLocks": null,
-        "date": "2025-02-15",
+        "date": "2025-02-16",
         "extract": null,
         "name": "lazarus",
         "passthru": null,
@@ -175,13 +175,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "5df0a8f05afbdcd9ce15b459fe75c6ad5e8c9cb2",
-            "sha256": "sha256-Ez+aK2PIRoZEmLn8IUNiOblsx85R/Z+huflXEytVfPA=",
+            "rev": "649f6ccbc83c3998a953f365fe5a985a2343411a",
+            "sha256": "sha256-oOnsS1UoELipVODJIeER7bv9mcbu95k+C+IEP/maVdA=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
         },
-        "version": "5df0a8f05afbdcd9ce15b459fe75c6ad5e8c9cb2"
+        "version": "649f6ccbc83c3998a953f365fe5a985a2343411a"
     },
     "libmodplug": {
         "cargoLocks": null,
