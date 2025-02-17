@@ -92,13 +92,13 @@
   };
   game-music-emu = {
     pname = "game-music-emu";
-    version = "0.6.4";
+    version = "0.6.3";
     src = fetchFromGitHub {
       owner = "libgme";
       repo = "game-music-emu";
-      rev = "0.6.4";
+      rev = "0.6.3";
       fetchSubmodules = false;
-      sha256 = "sha256-qGNWFFUUjv2R5e/nQrriAyDJCARISqNB8e5/1zEJ3fk=";
+      sha256 = "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=";
     };
   };
   lazarus = {

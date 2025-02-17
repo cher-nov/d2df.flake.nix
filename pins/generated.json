@@ -156,12 +156,12 @@
             "name": null,
             "owner": "libgme",
             "repo": "game-music-emu",
-            "rev": "0.6.4",
-            "sha256": "sha256-qGNWFFUUjv2R5e/nQrriAyDJCARISqNB8e5/1zEJ3fk=",
+            "rev": "0.6.3",
+            "sha256": "sha256-XmPcFfKsEe07hH7f0xMs9hRJshOO/p58Zm9fYsmCCoA=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "0.6.4"
+        "version": "0.6.3"
     },
     "lazarus": {
         "cargoLocks": null,

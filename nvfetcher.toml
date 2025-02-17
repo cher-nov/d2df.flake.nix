@@ -59,8 +59,10 @@ src.github = "xiph/ogg"
 fetch.github = "xiph/ogg"
 
 [game-music-emu]
-src.github = "libgme/game-music-emu"
+src.github_tag = "libgme/game-music-emu"
 fetch.github = "libgme/game-music-emu"
+# Doesn't work with 0.6.4+ for now
+src.include_regex = "0.6.3"
 
 [fluidsynth]
 src.git = "https://github.com/chirs241097/fluidsynth-sans-glib"
