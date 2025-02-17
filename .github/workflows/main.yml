@@ -110,7 +110,7 @@ jobs:
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
       - name: Populate environment variables
         env:
-          - UPDATE_FLAKE: 0
+          UPDATE_FLAKE: 0
         run: |
           bash ./game/bundle/scripts/mkEnv.bash
       - name: Delete old flake.lock
