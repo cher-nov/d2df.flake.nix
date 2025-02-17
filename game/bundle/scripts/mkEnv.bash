@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
-
-nix flake update Doom2D-Forever d2df-editor DF-Assets d2df-distro-soundfont d2df-distro-content
+if [[ "${UPDATE_FLAKE:-1}" == "1" ]]; then
+    nix flake update Doom2D-Forever d2df-editor DF-Assets d2df-distro-soundfont d2df-distro-content
+fi
 
 NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
 D2DF_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."Doom2D-Forever".locked.rev')
@@ -10,8 +11,8 @@ RES_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.node
 DISTRO_CONTENT_PATH=$(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-content"')
 DISTRO_SOUNDFONT_PATH=$(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"')
 
-git clone https://github.com/Doom2D/Doom2D-Forever
-git clone https://github.com/Doom2D/DF-Res
+git clone https://github.com/Doom2D/Doom2D-Forever || :
+git clone https://github.com/Doom2D/DF-Res || :
 
 D2DF_LAST_COMMIT_DATE=$(git   --git-dir Doom2D-Forever/.git    show -s --format=%ad --date=iso $D2DF_REV)
 EDITOR_LAST_COMMIT_DATE=$(git --git-dir Doom2D-Forever/.git show -s --format=%ad --date=iso $EDITOR_REV)

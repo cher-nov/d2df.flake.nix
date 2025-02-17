@@ -108,6 +108,11 @@ jobs:
         if: ${{ matrix.arch == 'mingw' }}
         run: |
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
+      - name: Populate environment variables
+        env:
+          - UPDATE_FLAKE: 0
+        run: |
+          bash ./game/bundle/scripts/mkEnv.bash
       - name: Delete old flake.lock
         run: |
           rm -f flake.lock
@@ -127,7 +132,6 @@ jobs:
       - name: Build debug APK
         if: ${{ matrix.arch == 'android' }}
         env:
-          ASSETS_GUS: 1
           BASE_APK: Doom2D-Forever
         run: |
           bash ./game/bundle/scripts/mkAndroid.bash

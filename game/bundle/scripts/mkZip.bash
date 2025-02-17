@@ -13,6 +13,10 @@ cp -r result/* ${BUILD_FOLDER}/
 # Because the result is copied from the nix store, files are readonly.
 # Make them writable.
 find $BUILD_FOLDER -exec chmod 777 {} \;
+mkdir -p $BUILD_FOLDER/docs_base/docs/legal
+cp -r $BUILD_FOLDER/legal/* $BUILD_FOLDER/docs_base/docs/legal
+find $BUILD_FOLDER/docs_base/docs -type f -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
+
 [[ ! -z "${IS_WINDOWS-}" ]] && find "${BUILD_FOLDER}/assets" -iname "*.txt" -exec unix2dos {} \;
 find $BUILD_FOLDER/executables/ -type f -iname 'doom2df*' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
 find $BUILD_FOLDER/executables/ -type f -iname 'editor*' -exec touch -d "$EDITOR_LAST_COMMIT_DATE" {} \;
@@ -30,3 +34,4 @@ fi
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w content/.
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w "${BUILD_FOLDER}/executables/."
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w "${BUILD_FOLDER}/assets/."
+7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w "${BUILD_FOLDER}/docs_base/."

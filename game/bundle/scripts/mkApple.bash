@@ -1,3 +1,4 @@
+#!/bin/bash
 set -euo pipefail
 
 export BUILD_ARCH="x86_64-apple-darwin"
