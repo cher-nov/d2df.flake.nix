@@ -145,6 +145,10 @@
             # search for programs in the build host directories
             set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
             # for libraries and headers in the target directories
+            set(CMAKE_PLATFORM_NO_VERSIONED_SONAME ON)
+            set(DLL_NAME_WITH_SOVERSION OFF)
+            set(CMAKE_DLL_NAME_WITH_SOVERSION OFF)
+            set(CMAKE_SHARED_LIBRARY_NAME_WITH_VERSION OFF)
             set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
             set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
             set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE BOTH)

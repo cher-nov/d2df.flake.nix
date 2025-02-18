@@ -131,6 +131,7 @@ in rec {
   };
   libmpg123 = source.libmpg123 {
     cmakeListsPath = "ports/cmake";
+    cmakeExtraArgs = "-DBUILD_LIBOUT123=off";
   };
   libmodplug =
     source.libmodplug {
@@ -158,6 +159,7 @@ in rec {
         prev.installPhase
         + ''
           [[ -d "$out/lib64" ]] && find $out/lib64/ -exec cp {} $out/lib \; || echo :
+          mv $out/bin/libfluidsynth-3.dll $out/bin/libfluidsynth.dll || :
         '';
     });
   wavpack = source.wavpack {

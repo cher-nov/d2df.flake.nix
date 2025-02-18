@@ -38,7 +38,12 @@ stdenvNoCC.mkDerivation {
         '')
       archAttrs.sharedLibraries;
     in
-      lib.concatStringsSep "\n" i;
+      lib.concatStringsSep "\n" (i
+        ++ [
+          "mv ${archAttrs.prefix}/libogg.dll ${archAttrs.prefix}/ogg.dll || :"
+          "find -L ${archAttrs.prefix} -iname 'libsyn123*' -type f -exec rm {} +"
+          "find -L ${archAttrs.prefix} -iname 'libvorbisenc*' -type f -exec rm {} +"
+        ]);
     copyGameAndEditor = archAttrs: let
       suffix = lib.optionalString (archAttrs.isWindows) ".exe";
     in
