@@ -19,11 +19,11 @@
     "Doom2D-Forever": {
       "flake": false,
       "locked": {
-        "lastModified": 1739803973,
-        "narHash": "sha256-OnORI0uwvcz4Zs41G6VIhEeDwmpUVKBJOUbJ+b84c3s=",
+        "lastModified": 1739875524,
+        "narHash": "sha256-Crw7zVrcGhgIvVFFDuCscFYbf9EyPx7SyKUwAzM6gzY=",
         "ref": "refs/heads/master",
-        "rev": "878342d3ffdb71f39209717e03e1f5323a90a880",
-        "revCount": 1568,
+        "rev": "21dbc266ac29085b3a06ce5070a11c29dcfda7a6",
+        "revCount": 1571,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/Doom2D/Doom2D-Forever"

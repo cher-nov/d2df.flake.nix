@@ -31,6 +31,17 @@ else
     find ${BUILD_FOLDER}/executables/ -type f -iname '*.so' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
 fi
 
+if [[ -n "${ASSETS_SOUNDFONT:-}" ]]; then
+    [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
+    rar x -tsp df_distro_soundfont.rar "data/banks/*" ${BUILD_FOLDER}/assets
+fi
+
+if [[ -n "${ASSETS_GUS:-}" ]]; then
+    [ ! -f "df_distro_soundfont.rar" ] && cp $(nix eval '.#dfInputs' --json 2>/dev/null | jq --raw-output '."x86_64-linux"."d2df-distro-soundfont"') df_distro_soundfont.rar
+    rar x -tsp df_distro_soundfont.rar "instruments/*" "timidity.cfg" "docs/legal/*" ${BUILD_FOLDER}/assets
+fi
+
+
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w content/.
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w "${BUILD_FOLDER}/executables/."
 7zz a -y -mtm -ssp -tzip "${BUILD_FOLDER}.zip" -w "${BUILD_FOLDER}/assets/."
