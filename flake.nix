@@ -88,7 +88,7 @@
       checks = let
         nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
       in
-        lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: x.executables) (lib.attrValues nativeArches)));
+        lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: lib.mapAttrs (n: v: {inherit (v) defines; drv = v.drv.overrideAttrs {pname = n; name = n;};}) (x.executables)) (lib.attrValues nativeArches)));
 
       assetsLib = assetsLib;
 
