@@ -56,8 +56,6 @@ jobs:
           nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.arm64-v8a-linux-android
           nix build --verbose --show-trace --inputs-from . .#forPrebuild.x86_64-linux.armeabi-v7a-linux-android
           nix copy --to /tmp/nixcache_${{ matrix.arch }} .#forPrebuild.x86_64-linux.armeabi-v7a-linux-android
-
-
       - name: Save macOS toolchain to cache
         if: ${{ matrix.arch == 'apple' }}
         run: |

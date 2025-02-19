@@ -7,12 +7,55 @@ jobs:
   nix-matrix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Free space
+        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
+          echo "=== Before pruning ==="
+          df -h
+          sudo rm -rf /opt || :
+          sudo rm -rf /usr/share/dotnet || :
+          sudo rm -rf "/usr/local/share/boost" || :
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || :
+          sudo rm -rf /usr/local/lib/android || :
+          sudo rm -rf /opt/ghc || :
+          sudo docker image prune --all --force || :
+          sudo docker builder prune -a || :
+          echo
+          echo "=== After pruning ==="
+          df -h
+      - name: Checkout the master branch
+        uses: actions/checkout@v4
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+        uses: nixbuild/nix-quick-install-action@v29
+        with:
+          nix_conf: |
+            require-sigs = false
+      - name: Calculate cache hash based on nixpkgs' revision
+        run: |
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
+      - uses: actions/cache/restore@v4
+        name: Restore Mingw cache
+        with:
+          path: /tmp/nixcache_mingw
+          key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-mingw
+      - uses: actions/cache/restore@v4
+        name: Restore Android cache
+        with:
+          path: /tmp/nixcache_android
+          key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-android
+      - uses: actions/cache/restore@v4
+        name: Restore Apple cache
+        with:
+          path: /tmp/nixcache_apple
+          key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-apple
+      - name: Copy all toolchains
+        run: |
+          nix copy --all --from /tmp/nixcache_mingw
+          nix copy --all --from /tmp/nixcache_android
+          nix copy --all --from /tmp/nixcache_apple
       - name: Run Nix checks
-        id: set-matrix
         run: |
           nix flake update Doom2D-Forever d2df-editor DF-res
-          nix flake check
+          nix flake check --keep-going
+
