@@ -95,11 +95,7 @@ in rec {
       cmakeExtraArgs = lib.concatStringsSep " " [
         "-DALSOFT_UTILS=off"
         "-DALSOFT_EXAMPLES=off"
-        "-DALSOFT_BACKEND_SDL2=on"
-        "-DALSOFT_REQUIRE_SDL2=on"
         "-DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=BOTH"
-        "-DCMAKE_PREFIX_PATH=${SDL2}"
-        "-DCMAKE_FIND_ROOT_PATH=${SDL2}"
       ];
     })
     .overrideAttrs (prev: {
