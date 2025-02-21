@@ -8,10 +8,13 @@ export ASSETS_DIR="${APP_BASE}/Contents/Resources"
 export MACOS_ICNS="$(nix build --verbose --show-trace --print-build-logs --print-out-paths .#assetsLib.x86_64-linux.macOsIcns)"
 export MACOS_INFO="$(nix build --verbose --show-trace --print-build-logs --print-out-paths .#assetsLib.x86_64-linux.macOsPlist)"
 
-mkdir -p $APP_BASE/Contents/{MacOS,Resources}
+mkdir -p $APP_BASE/Contents/{MacOS,Resources,Licenses}
 
 nix build --print-build-logs ".#${BUILD_ARCH}.bundles.default"
 cp -r result/executables/* $APP_BASE/Contents/MacOS
+# FIXME
+# Perhaps there is a better place to store COPYING files for the build.
+cp -r result/legal/* $APP_BASE/Contents/Licenses
 mv $APP_BASE/Contents/MacOS/Doom2DF $APP_BASE/Contents/MacOS/Doom2DF_unwrapped
 cp $MACOS_INFO $APP_BASE/Contents/Info.plist
 cat << EOF > $APP_BASE/Contents/MacOS/Doom2DF
@@ -26,6 +29,7 @@ touch -d "$D2DF_LAST_COMMIT_DATE" "$APP_BASE/Contents/MacOS/Doom2DF_unwrapped"
 touch -d "$D2DF_LAST_COMMIT_DATE" "$APP_BASE/Contents/MacOS/Doom2DF"
 touch -d "$D2DF_LAST_COMMIT_DATE" "$APP_BASE/Contents/Info.plist"
 find $APP_BASE/Contents/MacOS/ -type f -iname '*.dylib' -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
+find $APP_BASE/Contents/Licenses -type f -exec touch -d "$D2DF_LAST_COMMIT_DATE" {} \;
 
 cp -r result/assets/* $APP_BASE/Contents/Resources
 find $APP_BASE/Contents/Resources -type f -exec touch -d "$RES_LAST_COMMIT_DATE" {} \;
