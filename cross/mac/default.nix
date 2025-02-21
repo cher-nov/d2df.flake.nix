@@ -97,10 +97,14 @@
       in "${lib.concatStringsSep " " exports} ${pkgs.cmake}/bin/cmake ${cmakeFlags}";
     };
   in
-    lib.recursiveUpdate {
+    lib.recursiveUpdate common {
       infoAttrs = mkMacArch target fpcCpu fpcBinary;
-    }
-    common;
+      # Use openal 1.22, because 1.24 doesn't play stereo .wav (gachi)
+      openal = common.openal.overrideAttrs {
+        version = "1.22";
+        src = pins.openal_android.src;
+      };
+    };
 in {
   arm64-apple-darwin = mkMacCrossPkg "aarch64-apple-darwin22.1" "aarch64-apple-darwin" "aarch64" "crossa64";
   x86_64-apple-darwin = mkMacCrossPkg "x86_64-apple-darwin22.1" "x86_64-apple-macosx11.0.0" "x86_64" "cx64";
