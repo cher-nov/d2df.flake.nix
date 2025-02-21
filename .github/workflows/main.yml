@@ -280,7 +280,7 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/releases \
             -H "Authorization: ${{ secrets.GITHUB_TOKEN }}" \
             > $GITHUB_RESPONSE_FILE
-          TODAY_RELEASES_COUNT=$(jq --arg TODAY $TODAY '[.[] | select(.prerelease == true and (.published_at | startswith($TODAY) ) )] | length' $GITHUB_RESPONSE_FILE)
+          TODAY_RELEASES_COUNT=$(jq --arg TODAY $TODAY '[.[] | select((.published_at | startswith($TODAY) ) )] | length' $GITHUB_RESPONSE_FILE)
           THIS_RELEASE_COUNT=$(( $TODAY_RELEASES_COUNT + 1 ))
           RELEASE_PREFIX="0.667b"
           RELEASE_NAME="${RELEASE_PREFIX}-$(date +'%Y.%m.%d')-$THIS_RELEASE_COUNT"
