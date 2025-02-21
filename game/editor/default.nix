@@ -10,7 +10,7 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "doom2d-forever-editor";
-  version = "v0.667-${d2df-editor.shortRev}";
+  version = "v0.667-${d2df-editor.shortRev or "unknown"}";
   name = "${finalAttrs.pname}-${finalAttrs.version}";
   src = d2df-editor;
   nativeBuildInputs = with pkgs; [
@@ -30,7 +30,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   env = {
     D2DF_BUILD_USER = "nixbld";
-    D2DF_BUILD_HASH = d2df-editor.rev;
+    D2DF_BUILD_HASH = d2df-editor.rev or "unknown";
   };
 
   buildPhase = ''

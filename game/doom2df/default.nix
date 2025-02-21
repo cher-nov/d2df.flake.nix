@@ -49,7 +49,7 @@
 }: let
   optional = lib.optional;
   optionals = lib.optionals;
-  version = "0.667-${Doom2D-Forever.shortRev}";
+  version = "0.667-${Doom2D-Forever.shortRev or "unknown"}";
   basename = "Doom2DF";
   src = Doom2D-Forever;
 
@@ -140,7 +140,7 @@ in
 
     env = {
       D2DF_BUILD_USER = "nixbld";
-      D2DF_BUILD_HASH = Doom2D-Forever.rev;
+      D2DF_BUILD_HASH = Doom2D-Forever.rev or "unknown";
     };
 
     nativeBuildInputs =
