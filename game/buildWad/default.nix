@@ -11,6 +11,8 @@ in {
     gnused,
     gawk,
     convmv,
+    coreutils,
+    util-linux,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -23,7 +25,7 @@ in {
       dontPatchELF = true;
       dontFixup = true;
 
-      nativeBuildInputs = [gawk gnused convmv dfwad];
+      nativeBuildInputs = [gawk gnused convmv dfwad coreutils util-linux];
 
       buildPhase =
         # FIXME
@@ -40,7 +42,16 @@ in {
         ''
         + ''
           awk -f ${buildWadScript} -v prefix="temp" ${lstPath}
+          # For some reason, this AWK script sets wrong perms
+          chmod -R 777 temp
+          # Convert win1251 names to UTF-8
           convmv -f CP1251 -t UTF-8 --notest -r temp
+          # Remove extensions from nested wads
+          find temp -mindepth 4 -type f -exec sh -c '                           \
+                     WITHOUT_EXT=$(basename $1 | rev | cut -f 2- -d '.' | rev); \
+                     echo moving $1 to $(dirname $1)/$WITHOUT_EXT;              \
+                     mv    $1 $(dirname $1)/$WITHOUT_EXT;                       \
+                     ' sh {} \;
           dfwad -v -z "${dfwadCompression}" temp/ ${outName}.wad pack
         '';
 
