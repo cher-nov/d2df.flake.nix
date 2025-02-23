@@ -124,7 +124,7 @@
     },
     "fpc": {
         "cargoLocks": null,
-        "date": "2025-02-17",
+        "date": "2025-02-23",
         "extract": null,
         "name": "fpc",
         "passthru": null,
@@ -134,13 +134,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "0730e86c9db81917c48711b7f00c1dd503d1ac91",
-            "sha256": "sha256-CZvBExE64inTQPwUW7NzzPXcWGRSbkyqHI5btTpkd/k=",
+            "rev": "e749c81040070d3e8cb0c070e6e63f2f9b54fef4",
+            "sha256": "sha256-njp6LgZp4544YQfEX07hzo0ANffLGsoWQDmfIBgiOJs=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/fpc/source"
         },
-        "version": "0730e86c9db81917c48711b7f00c1dd503d1ac91"
+        "version": "e749c81040070d3e8cb0c070e6e63f2f9b54fef4"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -165,7 +165,7 @@
     },
     "lazarus": {
         "cargoLocks": null,
-        "date": "2025-02-16",
+        "date": "2025-02-23",
         "extract": null,
         "name": "lazarus",
         "passthru": null,
@@ -175,13 +175,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "649f6ccbc83c3998a953f365fe5a985a2343411a",
-            "sha256": "sha256-oOnsS1UoELipVODJIeER7bv9mcbu95k+C+IEP/maVdA=",
+            "rev": "247765dd5db80a9a6f408936058cdd72c103083a",
+            "sha256": "sha256-RqwjCmd0mY0Su8qxnYxgIJH2t8kPKXbokpsQEdg9g8o=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
         },
-        "version": "649f6ccbc83c3998a953f365fe5a985a2343411a"
+        "version": "247765dd5db80a9a6f408936058cdd72c103083a"
     },
     "libmodplug": {
         "cargoLocks": null,
