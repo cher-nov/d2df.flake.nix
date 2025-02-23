@@ -97,7 +97,8 @@
           else null;
         doom2d = pkgs.callPackage d2dfPkgs.doom2df-base {
           inherit Doom2D-Forever;
-          inherit fpc;
+          fpcWrapper = fpc;
+          isDarwin = lib.hasSuffix "darwin" arch;
           inherit
             (archAttrs)
             enet

@@ -2,7 +2,8 @@
   lib,
   stdenv,
   autoPatchelfHook,
-  fpc,
+  fpcWrapper,
+  isDarwin ? false,
   enet,
   Doom2D-Forever,
   buildAsLibrary ? false,
@@ -25,6 +26,7 @@
   SDL2_mixer ? null,
   withOpenAL ? false,
   openal ? null,
+  openalAsFramework ? true,
   withVorbis ? false,
   libvorbis ? null,
   libogg ? null,
@@ -126,6 +128,7 @@
 
   soundActuallyUsed = !(disableSound || withSoundStub);
   #++ optimizationFlags;
+  nativeOpenAL = (isDarwin && !openalAsFramework) || !isDarwin;
 in
   stdenv.mkDerivation rec {
     inherit version src;
@@ -145,10 +148,10 @@ in
 
     nativeBuildInputs =
       [
-        fpc
+        fpcWrapper
         enet
       ]
-      ++ optional withOpenAL openal
+      ++ optional (withOpenAL && nativeOpenAL) openal
       ++ optional withSDL1 SDL
       ++ optional (soundActuallyUsed && withSDL1_mixer) SDL_mixer
       ++ optional withSDL2 SDL2
@@ -170,7 +173,7 @@ in
       ++ optional withSDL1_mixer SDL_mixer
       ++ optional withSDL2 SDL2
       ++ optional withSDL2_mixer SDL2_mixer
-      ++ optional withOpenAL openal
+      ++ optional (withOpenAL && nativeOpenAL) openal
       ++ optional (soundActuallyUsed && withLibXmp) libxmp
       ++ optional (soundActuallyUsed && withMpg123) libmpg123
       ++ optionals (soundActuallyUsed && withOpus) [libopus opusfile]
@@ -184,7 +187,7 @@ in
     buildPhase = ''
       pushd src/game
       mkdir bin tmp
-      ${fpc}/bin/fpc \
+      fpc \
         -FEbin -FUtmp \
         -al Doom2DF.lpr \
         ${(lib.concatStringsSep " " defines)} \
