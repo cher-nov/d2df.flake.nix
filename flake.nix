@@ -58,6 +58,21 @@
             dfwad = final.callPackage d2dfPkgs.dfwad {
               src = pins.dfwad.src;
             };
+            cctools = osxcross.packages.${system}.cctools;
+            macdylibbundler = prev.macdylibbundler.overrideAttrs (prevAttrs: let
+              otool = final.writeShellScriptBin "otool" ''
+                ${final.cctools}/bin/x86_64-apple-darwin20.4-otool $@
+              '';
+              install_name_tool = final.writeShellScriptBin "install_name_tool" ''
+                ${final.cctools}/bin/x86_64-apple-darwin20.4-install_name_tool $@
+              '';
+            in {
+              postInstall = ''
+                wrapProgram $out/bin/dylibbundler \
+                  --prefix PATH ":" "${otool}/bin" \
+                  --prefix PATH ":" "${install_name_tool}/bin"
+              '';
+            });
           })
         ];
       };

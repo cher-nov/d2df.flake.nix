@@ -6,39 +6,78 @@
   cdrkit,
   macOsIcns,
   lib,
+  rcodesign,
+  macdylibbundler,
+  cctools,
+  findutils,
   _7zz,
-}:
-stdenv.mkDerivation (finalAttrs: {
-  pname = "d2df-app-bundle";
-  version = "0.667";
-
-  buildInputs = [_7zz cdrkit];
-
-  src = null;
-
-  dontUnpack = true;
-
-  buildPhase =
-    ''
-      mkdir -p build
-      cd build
-    ''
-    + (''
-        mkdir -p Doom2DF.app/Contents/{MacOS,Resources,Licenses}
-        cp ${macOsIcns} Doom2DF.app/Contents/Resources/Doom2DF.icns
-        7zz x -mtm -ssp -y ${assets} -oDoom2DF.app/Contents/Resources
-        7zz x -mtm -ssp -y ${executables} -oDoom2DF.app/Contents/MacOS
-      ''
-      + lib.optionalString (!builtins.isNull licenses) ''
-        7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Licenses
-      '')
-    + ''
-      genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 \
-        -o out.dmg Doom2DF.app
-    '';
-
-  installPhase = ''
-    cd /build
-    mv build/out.dmg $out
+}: let
+  arches = executables.meta.arches;
+  perArch = attrs: let
+    name = attrs.appBundleName;
+  in ''
+    cd /build/build
+    mkdir -p Doom2DF.app/Contents/lib/${name}
+    cp $TMP/${name}/Doom2DF Doom2DF.app/Contents/MacOS/Doom2DF_${name}
+    cd $TMP/${name}
+    dylibbundler -ns -of -b \
+      -s $TMP/${name} \
+      -d /build/build/Doom2DF.app/Contents/lib/${name} -p '@executable_path/../lib/${name}' -x /build/build/Doom2DF.app/Contents/MacOS/Doom2DF_${name}
   '';
-})
+in
+  stdenv.mkDerivation (finalAttrs: {
+    pname = "d2df-app-bundle";
+    version = "0.667";
+
+    buildInputs = [_7zz cdrkit rcodesign macdylibbundler findutils];
+
+    nativeBuildInputs = lib.flatten (lib.map (x: x.sharedLibraries) (lib.attrValues arches));
+
+    src = null;
+
+    dontUnpack = true;
+
+    buildPhase =
+      ''
+        cd /build
+        mkdir -p build
+        cd build
+        mkdir -p Doom2DF.app/Contents/{MacOS,Resources}
+      ''
+      + (
+        ''
+          TMP=$(mktemp -d)
+          7zz x -mtm -ssp -y ${executables} -o$TMP
+        ''
+        + lib.concatStringsSep "\n" (lib.map (x: perArch x.value) (lib.attrsToList arches))
+        + ''
+          cd /build/build
+        ''
+        + ''
+          ${cctools}/bin/x86_64-apple-darwin20.4-lipo ${lib.concatStringsSep " "
+            (lib.map (x: "Doom2DF.app/Contents/MacOS/Doom2DF_${x.value.appBundleName}") (lib.attrsToList arches))} -create -output Doom2DF.app/Contents/MacOS/Doom2DF
+          find Doom2DF.app/Contents/MacOS/ -iname 'Doom2DF_*' -exec rm {} \;
+        ''
+      )
+      + (''
+          cp ${macOsIcns} Doom2DF.app/Contents/Resources/Doom2DF.icns
+          7zz x -mtm -ssp -y ${assets} -oDoom2DF.app/Contents/Resources
+        ''
+        + lib.optionalString (!builtins.isNull licenses) ''
+          mkdir -p Doom2DF.app/Contents/Licenses
+          7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Licenses
+        '')
+      + ''
+        rcodesign sign Doom2DF.app/Contents/MacOS/Doom2DF
+        find Doom2DF.app/Contents/lib -type f -exec rcodesign sign {} \;
+      ''
+      + ''
+        genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 \
+          -o out.dmg Doom2DF.app
+      '';
+
+    installPhase = ''
+      cd /build
+      mv build/out.dmg $out
+    '';
+  })

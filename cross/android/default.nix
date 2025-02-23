@@ -62,6 +62,7 @@
     inherit androidNativeBundleAbi;
     isAndroid = true;
     isWindows = false;
+    majorPlatform = "android";
     bundleFormats = ["apk"];
     caseSensitive = true;
     d2dforeverFeaturesSuport = {
@@ -76,7 +77,7 @@
       lazarusExists = false;
       inherit cpuArgs;
       targetArg = "-Tandroid" + " " + (lib.concatStringsSep " " targetArg);
-      wrapperArgs = ["-O3" "-g" "-gl"];
+      wrapperArgs = ["-O1" "-g" "-gl"];
       basename = basename;
       makeArgs = {
         OS_TARGET = "android";

@@ -165,16 +165,17 @@
       assets = defaultAssetsPath.override {
         withEditor = !builtins.isNull archAttrs.editor;
         toLower = archAttrs.infoAttrs.caseSensitive;
-        flexuiDistro = true;
-        withDistroContent = true;
+        flexuiDistro = false;
+        withDistroContent = false;
         distroContent = d2df-distro-content;
         distroMidiBanks = d2df-distro-soundfont;
-        withDistroGus = true;
+        withDistroGus = false;
       };
       executables = callPackage mkExecutablePath rec {
         byArchPkgsAttrs = {
           "${arch}" = {
             sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
+            majorPlatform = archAttrs.infoAttrs.majorPlatform;
             doom2df = defaultExecutable;
             editor = archAttrs.editor;
             isWindows = archAttrs.infoAttrs.isWindows;
@@ -206,6 +207,52 @@
     bundles = createBundles arch archAttrs;
   });
 
+  mkMac = executablesAttrs: let
+    macArches = lib.filterAttrs (n: v: lib.hasSuffix "darwin" n) executablesAttrs;
+    assets = defaultAssetsPath.override {
+      withEditor = false;
+      toLower = true;
+      flexuiDistro = false;
+      withDistroContent = false;
+      distroContent = d2df-distro-content;
+      distroMidiBanks = d2df-distro-soundfont;
+    };
+    licenses = callPackage mkLicenses {inherit assets executables;};
+    executables = callPackage mkExecutablePath {
+      byArchPkgsAttrs =
+        lib.mapAttrs (arch: archAttrs: let
+          doom2d = archAttrs.doom2d.override {
+            withSDL2 = true;
+            withOpenAL = true;
+            isDarwin = true;
+            withVorbis = true;
+            withLibXmp = true;
+            withMpg123 = true;
+            withOpus = true;
+            withGme = true;
+            withOpenGL2 = true;
+            withHolmes = true;
+            withMiniupnpc = true;
+          };
+        in {
+          sharedLibraries = lib.map (drv: drv.out) doom2d.buildInputs;
+          doom2df = doom2d;
+          isWindows = false;
+          majorPlatform = archAttrs.majorPlatform;
+          appBundleName = archAttrs.infoAttrs.appBundleName;
+          asLibrary = false;
+          editor = null;
+          prefix = "${archAttrs.infoAttrs.appBundleName}";
+        })
+        macArches;
+    };
+  in {
+    macOS = {
+      inherit executables assets licenses;
+      bundles.default = callPackage mkApple {inherit executables assets licenses macOsIcns;};
+    };
+  };
+
   mkAndroid = executablesAttrs: let
     elem = lib.last (lib.attrValues (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs));
     # FIXME
@@ -233,6 +280,7 @@
           # Android version is hardcoded
           doom2df = doom2d;
           isWindows = false;
+          majorPlatform = archAttrs.majorPlatform;
           asLibrary = true;
           editor = null;
           prefix = "${archAttrs.infoAttrs.androidNativeBundleAbi}";
@@ -266,4 +314,5 @@
   };
 in
   (createBundlesAndExecutables executablesAttrs)
+  // (mkMac executablesAttrs)
   // (mkAndroid executablesAttrs)

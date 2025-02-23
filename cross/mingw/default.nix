@@ -220,6 +220,7 @@
       loadedAsLibrary = false;
     };
     isWindows = true;
+    majorPlatform = "windows";
     bundleFormats = ["zip"];
     bundle = let
       bundleMatrix = {

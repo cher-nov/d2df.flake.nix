@@ -16,6 +16,8 @@
       loadedAsLibrary = false;
     };
     isWindows = false;
+    majorPlatform = "macOS";
+    appBundleName = fpcCpu;
     bundleFormats = ["zip" "apple"];
     bundle = {
       io = "SDL2";
@@ -34,7 +36,7 @@
         "-k-L${sdk}/usr/lib/system"
         #"-k-mmacosx-version-min=11.0"
       ];
-      wrapperArgs = ["-O3" "-g" "-gl"];
+      wrapperArgs = ["-O1" "-g" "-gl"];
       targetArg = "-Tdarwin";
       basename = fpcBinary;
       makeArgs = {
@@ -100,6 +102,9 @@
   in
     lib.recursiveUpdate common {
       infoAttrs = mkMacArch target fpcCpu fpcBinary;
+      macdylibbundler = pkgs.macdylibbundler;
+      rcodesign = pkgs.rcodesign;
+      cctools = pkgs.cctools;
       # Use openal 1.22, because 1.24 doesn't play stereo .wav (gachi)
       openal = common.openal.overrideAttrs {
         version = "1.22";

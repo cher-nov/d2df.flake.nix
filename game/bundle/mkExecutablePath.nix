@@ -88,6 +88,7 @@ stdenvNoCC.mkDerivation {
   '';
 
   meta = {
+    arches = byArchPkgsAttrs;
     licenses = let
       getLibraries = arch: arch.sharedLibraries ++ [arch.doom2df];
       all = lib.foldl (acc: cur: acc ++ (getLibraries cur)) [] (lib.attrValues byArchPkgsAttrs);
