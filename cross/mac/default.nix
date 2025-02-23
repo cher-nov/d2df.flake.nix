@@ -16,6 +16,7 @@
       loadedAsLibrary = false;
     };
     isWindows = false;
+    bundleFormats = ["zip" "apple"];
     bundle = {
       io = "SDL2";
       sound = "OpenAL";

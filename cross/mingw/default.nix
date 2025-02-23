@@ -220,6 +220,7 @@
       loadedAsLibrary = false;
     };
     isWindows = true;
+    bundleFormats = ["zip"];
     bundle = let
       bundleMatrix = {
         win32Threads = {

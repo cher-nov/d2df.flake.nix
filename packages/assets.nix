@@ -19,7 +19,7 @@
       inherit dfwad;
     };
   }) ["game" "editor" "shrshade" "standart" "doom2d" "doomer"]);
-  defaultAssetsPath = mkAssetsPath {
+  defaultAssetsPath = mkAssetsPath.override {
     doom2dWad = wads.doom2d;
     doomerWad = wads.doomer;
     standartWad = wads.standart;

@@ -6,14 +6,20 @@
   executablesAttrs,
   mkExecutablePath,
   mkGamePath,
+  mkZip,
+  mkApple,
+  mkLicenses,
   mkAndroidApk,
   androidRoot,
   androidIcons,
+  macOsIcns,
   mkAndroidManifest,
+  d2df-distro-content,
+  d2df-distro-soundfont,
 }: let
-  createBundlesAndExecutables = lib.mapAttrs (arch: archAttrs: let
+  createAllPossibleExecutables = "";
+  createAllCombos = arch: archAttrs: let
     info = archAttrs.infoAttrs.d2dforeverFeaturesSuport;
-
     features = {
       io = {
         SDL1 = archAttrs: archAttrs ? "SDL1";
@@ -146,31 +152,60 @@
     };
     matrix = featuresMatrix features archAttrs;
     allCombos = lib.listToAttrs (lib.map (x: mkExecutable archAttrs.doom2d x) matrix);
-    defaultExecutable = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
-      withMiniupnpc = true;
-    };
-    executables = allCombos;
-    bundles = lib.recursiveUpdate {} (lib.optionalAttrs (!info.loadedAsLibrary) rec {
-      gameExecutablePath = callPackage mkExecutablePath rec {
+  in
+    allCombos;
+  createBundlesAndExecutables = lib.mapAttrs (arch: archAttrs: let
+    createExecutables = arch: archAttrs: createAllCombos arch archAttrs;
+    createBundles = arch: archAttrs: let
+      info = archAttrs.infoAttrs;
+      allCombos = createAllCombos arch archAttrs;
+      defaultExecutable = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
+        withMiniupnpc = true;
+      };
+      assets = defaultAssetsPath.override {
+        withEditor = !builtins.isNull archAttrs.editor;
+        toLower = archAttrs.infoAttrs.caseSensitive;
+        flexuiDistro = true;
+        withDistroContent = true;
+        distroContent = d2df-distro-content;
+        distroMidiBanks = d2df-distro-soundfont;
+        withDistroGus = true;
+      };
+      executables = callPackage mkExecutablePath rec {
         byArchPkgsAttrs = {
           "${arch}" = {
             sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
             doom2df = defaultExecutable;
             editor = archAttrs.editor;
             isWindows = archAttrs.infoAttrs.isWindows;
-            asLibrary = info.loadedAsLibrary;
+            asLibrary = info.loadedAsLibrary or false;
             prefix = ".";
           };
         };
       };
-      default = callPackage mkGamePath {
-        inherit gameExecutablePath;
-        gameAssetsPath = defaultAssetsPath.override {withEditor = !builtins.isNull archAttrs.editor;toLower = archAttrs.infoAttrs.caseSensitive;};
+      licenses = callPackage mkLicenses {inherit assets executables;};
+      zip = let
+        zip = callPackage mkZip {inherit assets executables licenses;};
+      in
+        if (lib.lists.elem "zip" archAttrs.infoAttrs.bundleFormats)
+        then zip
+        else null;
+      apple = let
+        apple = callPackage mkApple {inherit assets executables licenses macOsIcns;};
+      in
+        if (lib.lists.elem "apple" archAttrs.infoAttrs.bundleFormats)
+        then apple
+        else null;
+    in
+      lib.filterAttrs (n: v: !builtins.isNull v) {
+        inherit zip apple;
       };
-    });
+
+    executables = createExecutables;
   in {
     __archPkgs = archAttrs;
-    inherit defaultExecutable executables bundles;
+    executables = createExecutables arch archAttrs;
+    bundles = createBundles arch archAttrs;
   });
 in
   (createBundlesAndExecutables executablesAttrs)
@@ -209,13 +244,22 @@ in
           (lib.filterAttrs (n: v: lib.hasSuffix "android" n) executablesAttrs);
       };
     in {
-      bundles = {
-        inherit gameExecutablePath;
-        default = mkAndroidApk {
+      bundles = rec {
+        assets = defaultAssetsPath.override {
+          withEditor = false;
+          toLower = true;
+          withDistroContent = true;
+          flexuiDistro = false;
+          distroContent = d2df-distro-content;
+          distroMidiBanks = d2df-distro-soundfont;
+          withDistroGus = true;
+        };
+        executables = gameExecutablePath;
+        licenses = callPackage mkLicenses {inherit assets executables;};
+        default = callPackage mkAndroidApk {
           androidSdk = sdk;
           SDL2ForJava = sdl;
-          gameAssetsPath = defaultAssetsPath.override {toLower = true;};
-          inherit androidRoot androidIcons androidPlatform mkAndroidManifest gameExecutablePath;
+          inherit androidRoot androidIcons androidPlatform mkAndroidManifest assets executables licenses;
         };
       };
       executables = {};

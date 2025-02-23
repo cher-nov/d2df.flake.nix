@@ -1,6 +1,7 @@
 {callPackage}: {
-  mkGamePath = callPackage ./mkGamePath.nix;
+  mkLicenses = ./mkLicenses.nix;
   mkExecutablePath = ./mkExecutablePath.nix;
-  mkZipBundle = callPackage ./mkZipBundle.nix;
-  mkAndroidApk = callPackage ./mkAndroidApk.nix;
+  mkZip = ./mkZip.nix;
+  mkApple = ./mkApple.nix;
+  mkAndroidApk = ./mkAndroidApk.nix;
 }

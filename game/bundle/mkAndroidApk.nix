@@ -1,7 +1,9 @@
 args @ {
   stdenv,
+  callPackage,
   jdk17,
   jdk8,
+  _7zz,
   openssl,
   findutils,
   coreutils-full,
@@ -13,8 +15,9 @@ args @ {
   mkAndroidManifest,
   androidPlatform,
   androidIcons,
-  gameAssetsPath,
-  gameExecutablePath,
+  assets,
+  executables,
+  licenses ? null,
 }:
 stdenv.mkDerivation (finalAttrs: let
   ANDROID_HOME = "${androidSdk}/libexec/android-sdk";
@@ -25,7 +28,7 @@ stdenv.mkDerivation (finalAttrs: let
   d8 = "${ANDROID_HOME}/build-tools/35.0.0/d8";
   apksigner = "${ANDROID_HOME}/build-tools/35.0.0/apksigner";
   zipalign = "${ANDROID_HOME}/build-tools/35.0.0/zipalign";
-  androidManifest = mkAndroidManifest {
+  androidManifest = callPackage mkAndroidManifest {
     packageName = "org.d2df.app";
     versionName = "0.667-git";
     minSdkVersion = androidPlatform;
@@ -37,7 +40,7 @@ in {
   pname = "d2df-apk";
   name = "${finalAttrs.pname}-${finalAttrs.version}";
 
-  nativeBuildInputs = [findutils jdk coreutils-full file openssl];
+  nativeBuildInputs = [findutils jdk coreutils-full file openssl _7zz];
 
   src = androidRoot;
 
@@ -48,28 +51,17 @@ in {
       mkdir -p resources aux/lib
       mkdir -p src/org/libsdl/app/
     ''
-    + ''
-      cp -r ${androidIcons}/* res
-      cp -r ${gameAssetsPath}/* resources/
-      cp -r ${gameExecutablePath}/* aux/lib/
-      mkdir -p resources/docs/legal
-      # FIXME
-      # Copied from mkGamePath
-      ${let
-        licenses = lib.flatten gameExecutablePath.meta.licenses;
-        transformName = licenseFile: pname: let
-          basename = builtins.baseNameOf licenseFile;
-          split = lib.splitString "." basename;
-        in
-          if (lib.length split) == 1
-          then "${basename}.${pname}.txt"
-          else "${lib.concatStringsSep "." (lib.lists.init split)}.${pname}.${lib.strings.toLower (lib.lists.last split)}";
-        perLicenseAttrs = licenseAttrs: lib.map (x: "cp -f ${x} resources/docs/legal/${transformName x licenseAttrs.pname}") licenseAttrs.license;
-        final = lib.map perLicenseAttrs licenses;
-      in
-        lib.concatStringsSep " ;\n" (lib.flatten final)}
-      cp ${androidManifest} AndroidManifest.xml
-    ''
+    + (''
+        cp -r ${androidIcons}/* res
+        cp ${androidManifest} AndroidManifest.xml
+      ''
+      + ''
+        7zz x -mtm -ssp -y ${assets} -oresources
+        7zz x -mtm -ssp -y ${executables} -oaux/lib
+      ''
+      + lib.optionalString (!builtins.isNull licenses) ''
+        7zz x -mtm -ssp -y ${licenses} -oresources
+      '')
     # Use SDL Java sources from the version we compiled our game with.
     + ''
       cp -r "${SDL2ForJava.src}/android-project/app/src/main/java/org/libsdl/app" "src/org/libsdl"

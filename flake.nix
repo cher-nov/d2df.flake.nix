@@ -88,7 +88,14 @@
       checks = let
         nativeArches = lib.removeAttrs self.legacyPackages.${system} ["android" "universal"];
       in
-        lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x: lib.mapAttrs (n: v: {inherit (v) defines; drv = v.drv.overrideAttrs {pname = n; name = n;};}) (x.executables)) (lib.attrValues nativeArches)));
+        lib.mapAttrs (n: v: v.drv) (lib.foldl (acc: x: acc // x) {} (lib.map (x:
+          lib.mapAttrs (n: v: {
+            inherit (v) defines;
+            drv = v.drv.overrideAttrs {
+              pname = n;
+              name = n;
+            };
+          }) (x.executables)) (lib.attrValues nativeArches)));
 
       assetsLib = assetsLib;
 
@@ -112,10 +119,12 @@
         inherit lib;
         inherit pins;
         inherit (pkgs) callPackage;
-        inherit (assetsLib) androidRoot androidIcons mkAndroidManifest;
+        inherit (assetsLib) androidRoot androidIcons mkAndroidManifest macOsIcns;
         defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
-        inherit (bundles) mkExecutablePath mkGamePath mkAndroidApk;
+        inherit (bundles) mkExecutablePath mkZip mkApple mkLicenses mkGamePath mkAndroidApk;
         executablesAttrs = self.executables.${system};
+        d2df-distro-content = inputs.d2df-distro-content;
+        d2df-distro-soundfont = inputs.d2df-distro-soundfont;
       };
 
       packages = {
