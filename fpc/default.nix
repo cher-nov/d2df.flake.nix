@@ -226,7 +226,7 @@ in rec {
   # TODO:
   #  1. the build date is embedded in the binary through `$I %DATE%` - we should dump that
   let
-    version = "3.0.0-0";
+    version = "3.0.6-0";
 
     # as of 2.0.10 a suffix is being added. That may or may not disappear and then
     # come back, so just leave this here.
@@ -240,8 +240,8 @@ in rec {
         RevisionStr = version;
       }));
   in
-    stdenv.mkDerivation rec {
-      pname = "lazarus-git-${pins.lazarus.src.rev}";
+    stdenv.mkDerivation (finalAttrs: {
+      pname = "lazarus";
       inherit version;
 
       src = fetchgit {
@@ -261,6 +261,9 @@ in rec {
       # Disable parallel build, errors:
       #  Fatal: (1018) Compilation aborted
       enableParallelBuilding = false;
+
+      # FIXME
+      dontCheckForBrokenSymlinks = true;
 
       buildPhase = let
         makeFlags = [
@@ -300,10 +303,11 @@ in rec {
         maintainers = with maintainers; [raskin];
         platforms = platforms.linux;
       };
-    };
+    });
   lazarus-3_6 = callPackage lazarus {};
   lazarus-trunk = lazarus-3_6.overrideAttrs (finalAttrs: {
     src = pins.lazarus.src;
+    version = "git-${pins.lazarus.src.rev}";
   });
 
   fpcCross-trunk = callPackage fpcCrossDrv {fpc = fpc-trunk;};
