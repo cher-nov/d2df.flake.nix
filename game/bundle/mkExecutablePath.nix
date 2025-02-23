@@ -29,19 +29,17 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [gawk gnused zip findutils outils coreutils _7zz];
 
   buildPhase = let
+    script = needsSuffix: archAttrs: let
+      suffix = lib.optionalString (needsSuffix && archAttrs.isWindows) ".exe";
+    in ''      \
+            TARGET=${archAttrs.prefix}/''${0##*/}${suffix}; \
+            cp $0 $TARGET; \
+            ${lib.optionalString withDates "touch -d \"${gameDate}\" $TARGET"}'';
     copyLibraries = archAttrs: let
       i = lib.map (library:
         ''
-          [ -d "${library}/lib" ] && find -L ${library}/lib -iname '*.so' -type f -exec cp {} ${archAttrs.prefix} \;
-        ''
-        + ''
-          [ -d "${library}/lib" ] && find -L ${library}/lib -iname '*.dylib' -type f -exec cp {} ${archAttrs.prefix} \;
-        ''
-        + lib.optionalString archAttrs.isWindows ''
-          [ -d "${library}/bin" ] && find -L ${library}/bin -iname '*.dll' -type f -exec cp {} ${archAttrs.prefix} \;
-        ''
-        + lib.optionalString withDates ''
-          find -L ${archAttrs.prefix} -iname '*.so' -or -iname '*.dylib' -or -iname '*.dll' -exec touch -d "${gameDate}" \;
+          find -L ${library}/ -type f \( -iname '*.so' -or -iname '*.dll' -or -iname '*.dylib' \) \
+          -exec sh -c '${script false archAttrs}' {} \;
         '')
       archAttrs.sharedLibraries;
     in
@@ -51,31 +49,24 @@ stdenvNoCC.mkDerivation {
           "find -L ${archAttrs.prefix} -iname 'libsyn123*' -type f -exec rm {} +"
           "find -L ${archAttrs.prefix} -iname 'libvorbisenc*' -type f -exec rm {} +"
         ]);
-    copyGameAndEditor = archAttrs: let
-      suffix = lib.optionalString (archAttrs.isWindows) ".exe";
-    in let
-      script = suffix: ''        \
-                         TARGET=${archAttrs.prefix}/''${0##*/}${suffix}; \
-                         cp $0 $TARGET; \
-                         ${lib.optionalString withDates "touch -d \"${gameDate}\" $TARGET"}'';
-    in (
+    copyGameAndEditor = archAttrs: (
       lib.optionalString (!builtins.isNull archAttrs.doom2df)
       (
         if archAttrs.asLibrary
         then ''
           [ -d "${archAttrs.doom2df}/lib" ] && find -L ${archAttrs.doom2df}/lib -type f \
-             -exec sh -c '${script ""}' {} \;
+             -exec sh -c '${script false archAttrs}' {} \;
         ''
         else ''
           [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f \
-             -exec sh -c '${script suffix}' {} \;
+             -exec sh -c '${script true archAttrs}' {} \;
         ''
       )
       + (
         lib.optionalString (!builtins.isNull archAttrs.editor)
         ''
           [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f \
-             -exec sh -c '${script suffix}' {} \;
+             -exec sh -c '${script true archAttrs}' {} \;
         ''
       )
     );

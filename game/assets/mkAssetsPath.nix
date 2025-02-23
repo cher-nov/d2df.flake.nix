@@ -7,6 +7,9 @@
   withEditor ? false,
   editorWad ? null,
   editorLangRu ? null,
+  withDates ? false,
+  assetsDate ? null,
+  editorDate ? null,
   withDistroContent ? false,
   distroContent ? null,
   distroMidiBanks ? null,
@@ -52,26 +55,32 @@ stdenvNoCC.mkDerivation {
       cp ${editorWad} data/${resName "editor.WAD"}
       cp ${editorLangRu} data/lang/
     ''
-    + lib.optionalString withDistroContent (let
-      flexUiMask = lib.optionalString (!flexuiDistro) "data/flexui.wad";
-      activeMasks = lib.filter (x: x != "") [flexUiMask];
-      filters = lib.map (x: "-x\"${x}\"") activeMasks;
-      switch = lib.concatStringsSep " " filters;
-    in
-      lib.traceVal ''
-        rar x -tsp ${distroContent} ${switch} .
-      '')
-    + lib.optionalString withDistroSoundfont ''
-      rar x -tsp ${distroMidiBanks} "data/banks/*" .
-    ''
-    + lib.optionalString withDistroGus ''
-      rar x -tsp ${distroMidiBanks} "instruments/*" "timidity.cfg" assets
-    ''
     + ''
       ${lib.concatStringsSep "\n"
         (lib.map
           (root: "find ${root} -type f -exec sh -c 'cp \"$0\" $(pwd)' {} +")
           extraRoots)}
+    ''
+    + lib.optionalString withDates ''
+      find . -exec touch -d "${assetsDate}" {} \;
+    ''
+    + lib.optionalString (withEditor && withDates) ''
+      touch -d "${editorDate}" data/${resName "editor.WAD"}
+      find data/lang -type f -exec touch -d "${editorDate}" {} \;
+    ''
+    + lib.optionalString withDistroContent (let
+      flexUiMask = lib.optionalString (!flexuiDistro) "data/flexui.wad";
+      activeMasks = lib.filter (x: x != "") [flexUiMask];
+      filters = lib.map (x: "-x\"${x}\"") activeMasks;
+      switch = lib.concatStringsSep " " filters;
+    in ''
+      rar x -tsp ${distroContent} ${switch} .
+    '')
+    + lib.optionalString withDistroSoundfont ''
+      rar x -tsp ${distroMidiBanks} "data/banks/*" .
+    ''
+    + lib.optionalString withDistroGus ''
+      rar x -tsp ${distroMidiBanks} "instruments/*" "timidity.cfg" .
     '';
 
   installPhase = ''
