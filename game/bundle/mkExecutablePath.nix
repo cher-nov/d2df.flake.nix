@@ -36,12 +36,12 @@ stdenvNoCC.mkDerivation {
             cp $0 $TARGET; \
             ${lib.optionalString withDates "touch -d \"${gameDate}\" $TARGET"}'';
     copyLibraries = archAttrs: let
-      i = lib.map (library:
-        ''
+      i =
+        lib.map (library: ''
           find -L ${library}/ -type f \( -iname '*.so' -or -iname '*.dll' -or -iname '*.dylib' \) \
           -exec sh -c '${script false archAttrs}' {} \;
         '')
-      archAttrs.sharedLibraries;
+        archAttrs.sharedLibraries;
     in
       lib.concatStringsSep "\n" (i
         ++ [
