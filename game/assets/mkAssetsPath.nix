@@ -4,8 +4,9 @@
   standartWad,
   shrshadeWad,
   gameWad,
-  editorWad,
-  editorLangRu,
+  withEditor ? false,
+  editorWad ? null,
+  editorLangRu ? null,
   extraRoots ? [],
   stdenvNoCC,
   gnused,
@@ -28,14 +29,15 @@ stdenvNoCC.mkDerivation {
       then res
       else lib.toLower res;
   in ''
-    mkdir -p data/models wads maps/megawads/ data/lang
+    mkdir -p data/models wads maps/megawads/
+    ${lib.optionalString withEditor "mkdir -p data/lang"}
     cp ${doom2dWad} maps/megawads/${resName "Doom2D.WAD"}
     cp ${doomerWad} data/models/${resName "Doomer.WAD"}
     cp ${shrshadeWad} wads/${resName "shrshade.WAD"}
     cp ${standartWad} wads/${resName "standart.WAD"}
-    cp ${editorWad} data/${resName "editor.WAD"}
     cp ${gameWad} data/${resName "game.WAD"}
-    cp ${editorLangRu} data/lang/
+    ${lib.optionalString withEditor "cp ${editorWad} data/${resName "editor.WAD"}"}
+    ${lib.optionalString withEditor "cp ${editorLangRu} data/lang/"}
     ${lib.concatStringsSep "\n"
       (lib.map
         (root: "find ${root} -type f -exec sh -c 'cp \"$0\" $(pwd)' {} +")

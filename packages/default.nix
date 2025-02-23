@@ -165,7 +165,7 @@
       };
       default = callPackage mkGamePath {
         inherit gameExecutablePath;
-        gameAssetsPath = defaultAssetsPath.override {toLower = archAttrs.infoAttrs.caseSensitive;};
+        gameAssetsPath = defaultAssetsPath.override {withEditor = !builtins.isNull archAttrs.editor;toLower = archAttrs.infoAttrs.caseSensitive;};
       };
     });
   in {
