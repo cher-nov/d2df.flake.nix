@@ -76,7 +76,7 @@
       lazarusExists = false;
       inherit cpuArgs;
       targetArg = "-Tandroid" + " " + (lib.concatStringsSep " " targetArg);
-      wrapperArgs = ["-O1" "-g" "-gl"];
+      wrapperArgs = ["-O3" "-g" "-gl"];
       basename = basename;
       makeArgs = {
         OS_TARGET = "android";
