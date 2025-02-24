@@ -162,7 +162,7 @@
       headlessCombo = builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines.sound == "NoSound" && v.defines.io == "sysStub" && v.defines.headless == "Enable" && v.defines.graphics == "GLStub") allCombos));
       headlessDrv = headlessCombo.drv.overrideAttrs (prevAttrs: {
         installPhase = prevAttrs.installPhase + ''
-          mv $out/bin/Doom2DF $out/bin/Doom2DF_headless
+          mv $out/bin/Doom2DF $out/bin/headless
         '';
       });
       bundleCombo = lib.removeAttrs archAttrs.infoAttrs.bundle ["assets"];
