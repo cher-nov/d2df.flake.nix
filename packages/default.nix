@@ -159,6 +159,12 @@
     createBundles = arch: archAttrs: let
       info = archAttrs.infoAttrs;
       allCombos = createAllCombos arch archAttrs;
+      headlessCombo = builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines.sound == "NoSound" && v.defines.io == "sysStub" && v.defines.headless == "Enable" && v.defines.graphics == "GLStub") allCombos));
+      headlessDrv = headlessCombo.drv.overrideAttrs (prevAttrs: {
+        installPhase = prevAttrs.installPhase + ''
+          mv $out/bin/Doom2DF $out/bin/Doom2DF_headless
+        '';
+      });
       bundleCombo = lib.removeAttrs archAttrs.infoAttrs.bundle ["assets"];
       targetCombo = builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == bundleCombo) allCombos));
       defaultExecutable = (targetCombo.drv).override {
@@ -180,6 +186,8 @@
             sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
             majorPlatform = archAttrs.infoAttrs.majorPlatform;
             doom2df = defaultExecutable;
+            doom2dfHeadless = headlessDrv;
+            withHeadless = true;
             editor = archAttrs.editor;
             isWindows = archAttrs.infoAttrs.isWindows;
             asLibrary = info.loadedAsLibrary or false;
