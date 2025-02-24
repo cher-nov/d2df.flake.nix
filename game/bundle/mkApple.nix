@@ -65,19 +65,20 @@ in
         ''
         + lib.optionalString (!builtins.isNull licenses) ''
           mkdir -p Doom2DF.app/Contents/Licenses
-          7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Licenses
+          7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Resources
         '')
       + ''
         rcodesign sign Doom2DF.app/Contents/MacOS/Doom2DF
         find Doom2DF.app/Contents/lib -type f -exec rcodesign sign {} \;
       ''
       + ''
+        cd /build
         genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 \
-          -o out.dmg Doom2DF.app
+          -o out.dmg build
       '';
 
     installPhase = ''
       cd /build
-      mv build/out.dmg $out
+      mv out.dmg $out
     '';
   })
