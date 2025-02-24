@@ -81,7 +81,7 @@ jobs:
         run: |
           ./game/bundle/scripts/mkEnv.bash
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
-          echo "NIXPKGS_REV=\"$NIXPKGS_REV\"" >> "$GITHUB_ENV"
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - uses: actions/cache/restore@v4
         name: Restore persistent cache
         with:
