@@ -191,15 +191,9 @@
         if (lib.lists.elem "zip" archAttrs.infoAttrs.bundleFormats)
         then zip
         else null;
-      apple = let
-        apple = callPackage mkApple {inherit assets executables licenses macOsIcns;};
-      in
-        if (lib.lists.elem "apple" archAttrs.infoAttrs.bundleFormats)
-        then apple
-        else null;
     in
       lib.filterAttrs (n: v: !builtins.isNull v) {
-        inherit zip apple;
+        inherit zip;
       };
   in {
     __archPkgs = archAttrs;
@@ -221,18 +215,10 @@
     executables = callPackage mkExecutablePath {
       byArchPkgsAttrs =
         lib.mapAttrs (arch: archAttrs: let
-          doom2d = archAttrs.doom2d.override {
-            withSDL2 = true;
-            withOpenAL = true;
-            isDarwin = true;
-            withVorbis = true;
-            withLibXmp = true;
-            withMpg123 = true;
-            withOpus = true;
-            withGme = true;
-            withOpenGL2 = true;
-            withHolmes = true;
+          allCombos = createAllCombos arch archAttrs;
+          doom2d = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
             withMiniupnpc = true;
+            isDarwin = true;
           };
         in {
           sharedLibraries = lib.map (drv: drv.out) doom2d.buildInputs;
