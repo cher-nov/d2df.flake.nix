@@ -230,6 +230,7 @@
           graphics = "OpenGL2";
           headless = "Disable";
           holmes = "Enable";
+          assets.midiBank = "native";
         };
         mcfgthread = {
           io = "SDL2";
@@ -237,6 +238,7 @@
           graphics = "OpenGL2";
           headless = "Disable";
           holmes = "Enable";
+          assets.midiBank = "soundfont";
         };
       };
     in

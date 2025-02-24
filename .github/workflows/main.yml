@@ -12,22 +12,6 @@ jobs:
     name: Prepare the environment
     runs-on: ubuntu-latest
     steps:
-      - name: Free space
-        run: | # stolen from https://github.com/easimon/maximize-build-space and https://github.com/actions/runner-images/issues/2840
-          echo "=== Before pruning ==="
-          df -h
-          sudo rm -rf /opt || :
-          sudo rm -rf /usr/share/dotnet || :
-          sudo rm -rf "/usr/local/share/boost" || :
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || :
-          sudo rm -rf /opt/hostedtoolcache/CodeQL || :
-          sudo rm -rf /usr/local/lib/android || :
-          sudo rm -rf /opt/ghc || :
-          sudo docker image prune --all --force || :
-          sudo docker builder prune -a || :
-          echo
-          echo "=== After pruning ==="
-          df -h
       - name: Checkout the master branch
         uses: actions/checkout@v4
       - name: Install Nix
@@ -57,6 +41,11 @@ jobs:
     name: Build
     needs: prepare
     runs-on: ubuntu-22.04
+    env:
+      GAME_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
+      ASSETS_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
+      EDITOR_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
+      NIXPKGS_REV: ${{ env.NIXPKGS_REV }}
     strategy:
       matrix:
         arch:
@@ -87,41 +76,15 @@ jobs:
         with:
           nix_conf: |
             require-sigs = false
-      - name: Calculate cache hash based on nixpkgs' revision
-        run: |
-          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
-          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - uses: actions/cache/restore@v4
         name: Restore persistent cache
         with:
           path: /tmp/nixcache_${{ matrix.arch }}
           key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-${{ matrix.arch }}
-      - name: Restore Android toolchain from cache
+      - name: Restore toolchain from cache
         if: ${{ matrix.arch == 'android' }}
         run: |
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
-      - name: Restore macOS toolchain from cache
-        if: ${{ matrix.arch == 'apple' }}
-        run: |
-          nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
-      - name: Restore Mingw toolchain from cache
-        if: ${{ matrix.arch == 'mingw' }}
-        run: |
-          nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
-      - name: Enter CI tailored shell
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          devShell: .#ciDefault
-      - name: Enter Android tailored shell
-        if: ${{ matrix.arch == 'android' }}
-        uses: rrbutani/use-nix-shell-action@v1
-        with:
-          devShell: .#android
-      - name: Populate environment variables
-        env:
-          UPDATE_FLAKE: 0
-        run: |
-          bash ./game/bundle/scripts/mkEnv.bash
       - name: Delete old flake.lock
         run: |
           rm -f flake.lock
@@ -132,10 +95,10 @@ jobs:
       - name: Build debug APK
         if: ${{ matrix.arch == 'android' }}
         env:
-          BASE_APK: Doom2D-Forever
-          ASSETS_GUS: 1
+          BUNDLE_NAME: android.bundles.default
         run: |
-          bash ./game/bundle/scripts/mkAndroid.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result Doom2D-Forever.apk
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'android' }}
@@ -146,21 +109,10 @@ jobs:
       - name: Build Windows x86 ZIP bundle
         if: ${{ matrix.arch == 'mingw' }}
         env:
-          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
-          BUILD_FOLDER: doom2df_windows.x86
+          BUNDLE_NAME: mingw32.bundles.zip
         run: |
-          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
-          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
-          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
-          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
-
-          export BUILD_ARCH=mingw32
-          export IS_WINDOWS=1
-
-          bash ./game/bundle/scripts/mkZip.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result doom2df_windows.x86.zip
       - name: Upload Windows x86 ZIP bundle
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'mingw' }}
@@ -170,22 +122,10 @@ jobs:
       - name: Build Windows x86_64 ZIP bundle
         if: ${{ matrix.arch == 'mingw' }}
         env:
-          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
-          BUILD_FOLDER: doom2df_win64.x86-64
-          ASSETS_SOUNDFONT: 1
+          BUNDLE_NAME: mingw64.bundles.zip
         run: |
-          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
-          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
-          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
-          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
-
-          export BUILD_ARCH=mingw64
-          export IS_WINDOWS=1
-
-          bash ./game/bundle/scripts/mkZip.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result doom2df_win64.x86-64.zip
       - name: Upload Windows x86_64 ZIP bundle
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'mingw' }}
@@ -195,21 +135,10 @@ jobs:
       - name: Build MacOS x86_64 ZIP bundle
         if: ${{ matrix.arch == 'apple' }}
         env:
-          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
-          BUILD_FOLDER: doom2df_macos.intel64
-          ASSETS_SOUNDFONT: 1
+          BUNDLE_NAME: x86_64-apple-darwin.bundles.zip
         run: |
-          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
-          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
-          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
-          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
-
-          export BUILD_ARCH=x86_64-apple-darwin
-
-          bash ./game/bundle/scripts/mkZip.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result doom2df_macos.intel64.zip
       - name: Upload MacOS x86_64 ZIP bundle
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'apple' }}
@@ -219,21 +148,10 @@ jobs:
       - name: Build MacOS aarch64 ZIP bundle
         if: ${{ matrix.arch == 'apple' }}
         env:
-          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
-          BUILD_FOLDER: doom2df_macos.aarch64
-          ASSETS_SOUNDFONT: 1
+          BUNDLE_NAME: arm64-apple-darwin.bundles.zip
         run: |
-          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
-          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
-          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
-          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
-
-          export BUILD_ARCH=arm64-apple-darwin
-
-          bash ./game/bundle/scripts/mkZip.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result doom2df_macos.aarch64.zip
       - name: Upload MacOS aarch64 ZIP bundle
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'apple' }}
@@ -243,18 +161,10 @@ jobs:
       - name: Build MacOS app bundle
         if: ${{ matrix.arch == 'apple' }}
         env:
-          D2DF_LAST_COMMIT_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-          RES_LAST_COMMIT_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-          EDITOR_LAST_COMMIT_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-          DISTRO_CONTENT_CREATION_DATE: ${{ env.DISTRO_CONTENT_CREATION_DATE }}
-          ASSETS_SOUNDFONT: 1
+          BUNDLE_NAME: macOS.bundles.default
         run: |
-          export D2DF_LAST_COMMIT_DATE=$D2DF_LAST_COMMIT_DATE
-          export RES_LAST_COMMIT_DATE=$RES_LAST_COMMIT_DATE
-          export EDITOR_LAST_COMMIT_DATE=$EDITOR_LAST_COMMIT_DATE
-          export DISTRO_CONTENT_CREATION_DATE=$DISTRO_CONTENT_CREATION_DATE
-
-          bash ./game/bundle/scripts/mkApple.bash
+          bash ./game/bundle/scripts/mkOverride.bash
+          cp result Doom2D-Forever.dmg
       - name: Upload MacOS app bundle
         uses: actions/upload-artifact@v4
         if: ${{ matrix.arch == 'apple' }}

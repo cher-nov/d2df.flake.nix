@@ -159,17 +159,20 @@
     createBundles = arch: archAttrs: let
       info = archAttrs.infoAttrs;
       allCombos = createAllCombos arch archAttrs;
-      defaultExecutable = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
+      bundleCombo = lib.removeAttrs archAttrs.infoAttrs.bundle ["assets"];
+      targetCombo = builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == bundleCombo) allCombos));
+      defaultExecutable = (targetCombo.drv).override {
         withMiniupnpc = true;
       };
       assets = defaultAssetsPath.override {
         withEditor = !builtins.isNull archAttrs.editor;
         toLower = archAttrs.infoAttrs.caseSensitive;
-        flexuiDistro = false;
-        withDistroContent = false;
+        flexuiDistro = archAttrs.infoAttrs.bundle.holmes == "Enable";
+        withDistroContent = true;
         distroContent = d2df-distro-content;
         distroMidiBanks = d2df-distro-soundfont;
-        withDistroGus = false;
+        withDistroGus = archAttrs.infoAttrs.bundle.assets.midiBank == "gus";
+        withDistroSoundfont = archAttrs.infoAttrs.bundle.assets.midiBank == "soundfont";
       };
       executables = callPackage mkExecutablePath rec {
         byArchPkgsAttrs = {
@@ -206,17 +209,21 @@
     assets = defaultAssetsPath.override {
       withEditor = false;
       toLower = true;
-      flexuiDistro = false;
-      withDistroContent = false;
+      flexuiDistro = lib.any (a: a.infoAttrs.bundle.holmes == "Enable") (lib.attrValues executablesAttrs);
+      withDistroContent = true;
       distroContent = d2df-distro-content;
       distroMidiBanks = d2df-distro-soundfont;
+      withDistroGus = lib.any (a: a.infoAttrs.bundle.assets.midiBank == "gus") (lib.attrValues macArches);
+      withDistroSoundfont = lib.any (a: a.infoAttrs.bundle.assets.midiBank == "soundfont") (lib.attrValues macArches);
     };
     licenses = callPackage mkLicenses {inherit assets executables;};
     executables = callPackage mkExecutablePath {
       byArchPkgsAttrs =
         lib.mapAttrs (arch: archAttrs: let
           allCombos = createAllCombos arch archAttrs;
-          doom2d = ((builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == archAttrs.infoAttrs.bundle) allCombos))).drv).override {
+          bundleCombo = lib.removeAttrs archAttrs.infoAttrs.bundle ["assets"];
+          targetCombo = builtins.head (lib.attrValues (lib.filterAttrs (n: v: v.defines == bundleCombo) allCombos));
+          doom2d = (targetCombo.drv).override {
             withMiniupnpc = true;
             isDarwin = true;
           };

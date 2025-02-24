@@ -25,6 +25,7 @@
       graphics = "OpenGL2";
       headless = "Disable";
       holmes = "Enable";
+      assets.midiBank = "soundfont";
     };
     fpcAttrs = rec {
       cpuArgs = [
