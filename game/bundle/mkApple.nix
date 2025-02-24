@@ -64,7 +64,6 @@ in
           7zz x -mtm -ssp -y ${assets} -oDoom2DF.app/Contents/Resources
         ''
         + lib.optionalString (!builtins.isNull licenses) ''
-          mkdir -p Doom2DF.app/Contents/Licenses
           7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Resources
         '')
       + ''
