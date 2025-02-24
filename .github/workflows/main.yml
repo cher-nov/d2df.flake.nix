@@ -91,7 +91,6 @@ jobs:
           path: /tmp/nixcache_${{ matrix.arch }}
           key: ${{ runner.os }}-${{ env.NIXPKGS_REV }}-${{ matrix.arch }}
       - name: Restore toolchain from cache
-        if: ${{ matrix.arch == 'android' }}
         run: |
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
       - name: Delete old flake.lock
