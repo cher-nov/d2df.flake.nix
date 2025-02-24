@@ -29,17 +29,17 @@ stdenvNoCC.mkDerivation {
   nativeBuildInputs = [gawk gnused zip findutils outils coreutils _7zz];
 
   buildPhase = let
-    script = needsSuffix: archAttrs: let
+    script = date: needsSuffix: archAttrs: let
       suffix = lib.optionalString (needsSuffix && archAttrs.isWindows) ".exe";
     in ''      \
             TARGET=${archAttrs.prefix}/''${0##*/}${suffix}; \
             cp $0 $TARGET; \
-            ${lib.optionalString withDates "touch -d \"${gameDate}\" $TARGET"}'';
+            ${lib.optionalString withDates "touch -d \"${date}\" $TARGET"}'';
     copyLibraries = archAttrs: let
       i =
         lib.map (library: ''
           find -L ${library}/ -type f \( -iname '*.so' -or -iname '*.dll' -or -iname '*.dylib' \) \
-          -exec sh -c '${script false archAttrs}' {} \;
+          -exec sh -c '${script gameDate false archAttrs}' {} \;
         '')
         archAttrs.sharedLibraries;
     in
@@ -55,18 +55,18 @@ stdenvNoCC.mkDerivation {
         if archAttrs.asLibrary
         then ''
           [ -d "${archAttrs.doom2df}/lib" ] && find -L ${archAttrs.doom2df}/lib -type f \
-             -exec sh -c '${script false archAttrs}' {} \;
+             -exec sh -c '${script gameDate false archAttrs}' {} \;
         ''
         else ''
           [ -d "${archAttrs.doom2df}/bin" ] && find -L ${archAttrs.doom2df}/bin -type f \
-             -exec sh -c '${script true archAttrs}' {} \;
+             -exec sh -c '${script gameDate true archAttrs}' {} \;
         ''
       )
       + (
         lib.optionalString (!builtins.isNull archAttrs.editor)
         ''
           [ -d "${archAttrs.editor}/bin" ] && find -L ${archAttrs.editor}/bin -type f \
-             -exec sh -c '${script true archAttrs}' {} \;
+             -exec sh -c '${script editorDate true archAttrs}' {} \;
         ''
       )
     );
