@@ -179,6 +179,7 @@
         distroMidiBanks = d2df-distro-soundfont;
         withDistroGus = archAttrs.infoAttrs.bundle.assets.midiBank == "gus";
         withDistroSoundfont = archAttrs.infoAttrs.bundle.assets.midiBank == "soundfont";
+        unixLineEndings = !archAttrs.infoAttrs.isWindows;
       };
       executables = callPackage mkExecutablePath rec {
         byArchPkgsAttrs = {

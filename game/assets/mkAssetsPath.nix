@@ -25,14 +25,16 @@
   rar,
   _7zz,
   lib,
+  dos2unix,
   toLower ? false,
+  unixLineEndings ? true,
 }:
 stdenvNoCC.mkDerivation {
   pname = "d2df-assets-path";
   version = "git";
   phases = ["buildPhase" "installPhase"];
 
-  nativeBuildInputs = [gawk gnused zip findutils rar _7zz];
+  nativeBuildInputs = [gawk gnused zip findutils rar _7zz dos2unix];
 
   buildPhase = let
     resName = res:
@@ -81,6 +83,8 @@ stdenvNoCC.mkDerivation {
     ''
     + lib.optionalString withDistroGus ''
       rar x -tsp ${distroMidiBanks} "instruments/*" "timidity.cfg" .
+    '' + lib.optionalString (!unixLineEndings) ''
+      find . -type f -iname '*.txt' -exec unix2dos {} \;
     '';
 
   installPhase = ''
