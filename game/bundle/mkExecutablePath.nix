@@ -63,7 +63,7 @@ stdenvNoCC.mkDerivation {
             find -L ${archAttrs.doom2df}/bin -type f \
                -exec sh -c '${script gameDate ".exe" true archAttrs}' {} \;
           ''
-          + lib.optionalString archAttrs.withHeadless ''
+          + lib.optionalString (archAttrs.withHeadless or false) ''
             find -L ${archAttrs.doom2dfHeadless}/bin -type f \
                -exec sh -c '${script gameDate ".exe" true archAttrs}' {} \;
           ''
