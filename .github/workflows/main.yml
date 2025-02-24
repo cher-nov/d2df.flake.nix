@@ -41,11 +41,6 @@ jobs:
     name: Build
     needs: prepare
     runs-on: ubuntu-22.04
-    env:
-      GAME_DATE: ${{ env.D2DF_LAST_COMMIT_DATE }}
-      ASSETS_DATE: ${{ env.RES_LAST_COMMIT_DATE }}
-      EDITOR_DATE: ${{ env.EDITOR_LAST_COMMIT_DATE }}
-      NIXPKGS_REV: ${{ env.NIXPKGS_REV }}
     strategy:
       matrix:
         arch:
@@ -76,6 +71,20 @@ jobs:
         with:
           nix_conf: |
             require-sigs = false
+      - name: Enter CI tailored shell
+        uses: rrbutani/use-nix-shell-action@v1
+        with:
+          devShell: .#ciDefault
+      - name: Populate environment variables
+        env:
+          UPDATE_FLAKE: 0
+        run: |
+          bash ./game/bundle/scripts/mkEnv.bash
+          NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
+          echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
+          echo "GAME_DATE=$D2DF_LAST_COMMIT_DATE" >> $GITHUB_ENV
+          echo "ASSETS_DATE=$RES_LAST_OCMMIT_DATE" >> $GITHUB_ENV
+          echo "EDITOR_DATE=$EDITOR_LAST_COMMIT_DATE" >> $GITHUB_ENV
       - uses: actions/cache/restore@v4
         name: Restore persistent cache
         with:
@@ -207,4 +216,3 @@ jobs:
           tag: ${{ env.RELEASE_NAME }}
           allowUpdates: false
           artifactErrorsFailBuild: true
-
