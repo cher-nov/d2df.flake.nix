@@ -134,7 +134,7 @@
         inherit lib;
         inherit pins;
         inherit (pkgs) callPackage;
-        inherit (assetsLib) androidRoot androidIcons mkAndroidManifest macOsIcns;
+        inherit (assetsLib) androidRoot androidIcons mkAndroidManifest macOsIcns macOsPlist;
         defaultAssetsPath = self.assets.${system}.defaultAssetsPath;
         inherit (bundles) mkExecutablePath mkZip mkApple mkLicenses mkGamePath mkAndroidApk;
         executablesAttrs = self.executables.${system};

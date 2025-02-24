@@ -13,6 +13,7 @@
   androidRoot,
   androidIcons,
   macOsIcns,
+  macOsPlist,
   mkAndroidManifest,
   d2df-distro-content,
   d2df-distro-soundfont,
@@ -251,7 +252,7 @@
   in {
     macOS = {
       inherit executables assets licenses;
-      bundles.default = callPackage mkApple {inherit executables assets licenses macOsIcns;};
+      bundles.default = callPackage mkApple {inherit executables assets licenses macOsIcns macOsPlist;};
     };
   };
 

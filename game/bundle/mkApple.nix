@@ -5,6 +5,7 @@
   licenses ? null,
   cdrkit,
   macOsIcns,
+  macOsPlist,
   lib,
   rcodesign,
   macdylibbundler,
@@ -43,6 +44,7 @@ in
         mkdir -p build
         cd build
         mkdir -p Doom2DF.app/Contents/{MacOS,Resources}
+        cp ${macOsPlist} Doom2DF.app/Contents/Info.plist
       ''
       + (
         ''
@@ -67,11 +69,8 @@ in
           7zz x -mtm -ssp -y ${licenses} -oDoom2DF.app/Contents/Resources
         '')
       + ''
-        rcodesign sign Doom2DF.app/Contents/MacOS/Doom2DF
-        find Doom2DF.app/Contents/lib -type f -exec rcodesign sign {} \;
-      ''
-      + ''
         cd /build
+        rcodesign -v sign build/Doom2DF.app
         genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 \
           -o out.dmg build
       '';
