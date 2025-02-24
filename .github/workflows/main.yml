@@ -82,9 +82,12 @@ jobs:
           ./game/bundle/scripts/mkEnv.bash
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=\"$NIXPKGS_REV\"" >> "$GITHUB_ENV"
-          echo "GAME_DATE=\"$D2DF_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
-          echo "ASSETS_DATE=\"$RES_LAST_OCMMIT_DATE\"" >> "$GITHUB_ENV"
-          echo "EDITOR_DATE=\"$EDITOR_LAST_COMMIT_DATE\"" >> "$GITHUB_ENV"
+          export GAME_DATE="$D2DF_LAST_COMMIT_DATE"
+          export ASSETS_DATE="$RES_LAST_COMMIT_DATE"
+          export EDITOR_DATE="$EDITOR_LAST_COMMIT_DATE"
+          echo "GAME_DATE=$GAME_DATE" >> "$GITHUB_ENV"
+          echo "ASSETS_DATE=$ASSETS_DATE" >> "$GITHUB_ENV"
+          echo "EDITOR_DATE=$EDITOR_DATE" >> "$GITHUB_ENV"
       - uses: actions/cache/restore@v4
         name: Restore persistent cache
         with:
