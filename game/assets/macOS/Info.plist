@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleGetInfoString</key>
-    <string>Copyleft 2003-2025 Jabberwock AND rs.falcon</string>
+    <string>www.doom2d.org, 2003-2025</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyleft 2003-2025 Jabberwock AND rs.falcon</string>
+    <string>www.doom2d.org, 2003-2025</string>
     <key>CFBundleExecutable</key>
-    <string>Doom2DF</string>
+    <string>Doom2DF_Launcher</string>
     <key>CFBundleIdentifier</key>
     <string>org.doom2df</string>
     <key>CFBundleName</key>
@@ -26,5 +26,12 @@
     <integer>0</integer>
     <key>IFMinorVersion</key>
     <integer>667</integer>
+  	<key>LSRequiresNativeExecution</key>
+	  <true/>
+    <key>LSArchitecturePriority</key>
+    <array>
+        <string>arm64</string>
+        <string>x86_64</string>
+    </array>
 </dict>
 </plist>

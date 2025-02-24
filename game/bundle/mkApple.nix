@@ -11,6 +11,7 @@
   macdylibbundler,
   cctools,
   findutils,
+  writeText,
   _7zz,
 }: let
   arches = executables.meta.arches;
@@ -25,6 +26,15 @@
       -s $TMP/${name} \
       -d /build/build/Doom2DF.app/Contents/lib/${name} -p '@executable_path/../lib/${name}' -x /build/build/Doom2DF.app/Contents/MacOS/Doom2DF_${name}
   '';
+  # Due to a bug in MacOS, Rosetta (Intel) would always be used on M series MacBooks.
+  # Create a shim to launch with preferred architectures.
+  # https://stackoverflow.com/questions/68199148/application-reports-different-architecture-depending-on-launch-method
+  script = writeText "launcher" (
+    ''
+      #!/bin/bash
+      script_path="$(dirname "$0")"
+      ARCHPREFERENCE=arm64,x86_64 arch "$script_path/Doom2DF"
+    '');
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "d2df-app-bundle";
@@ -71,6 +81,8 @@ in
       + ''
         cd /build
         rcodesign -v sign build/Doom2DF.app
+        cp ${script} build/Doom2DF.app/Contents/MacOS/Doom2DF_Launcher
+        chmod -R 777 build/Doom2DF.app
         genisoimage -D -V "Doom2D Forever" -no-pad -r -apple -file-mode 0555 \
           -o out.dmg build
       '';
