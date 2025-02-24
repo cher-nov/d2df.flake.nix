@@ -25,7 +25,7 @@ jobs:
           devShell: .#ciDefault
       - name: Update Doom2D related inputs and populate environment variables
         run: |
-          bash ./game/bundle/scripts/mkEnv.bash
+          ./game/bundle/scripts/mkEnv.bash
       - name: Save updated flake.lock
         uses: actions/upload-artifact@v4
         with:
@@ -79,7 +79,7 @@ jobs:
         env:
           UPDATE_FLAKE: 0
         run: |
-          bash ./game/bundle/scripts/mkEnv.bash
+          ./game/bundle/scripts/mkEnv.bash
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
           echo "GAME_DATE=$D2DF_LAST_COMMIT_DATE" >> $GITHUB_ENV
@@ -105,7 +105,7 @@ jobs:
         env:
           BUNDLE_NAME: android.bundles.default
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result Doom2D-Forever.apk
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -119,7 +119,7 @@ jobs:
         env:
           BUNDLE_NAME: mingw32.bundles.zip
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result doom2df_windows.x86.zip
       - name: Upload Windows x86 ZIP bundle
         uses: actions/upload-artifact@v4
@@ -132,7 +132,7 @@ jobs:
         env:
           BUNDLE_NAME: mingw64.bundles.zip
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result doom2df_win64.x86-64.zip
       - name: Upload Windows x86_64 ZIP bundle
         uses: actions/upload-artifact@v4
@@ -145,7 +145,7 @@ jobs:
         env:
           BUNDLE_NAME: x86_64-apple-darwin.bundles.zip
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result doom2df_macos.intel64.zip
       - name: Upload MacOS x86_64 ZIP bundle
         uses: actions/upload-artifact@v4
@@ -158,7 +158,7 @@ jobs:
         env:
           BUNDLE_NAME: arm64-apple-darwin.bundles.zip
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result doom2df_macos.aarch64.zip
       - name: Upload MacOS aarch64 ZIP bundle
         uses: actions/upload-artifact@v4
@@ -171,7 +171,7 @@ jobs:
         env:
           BUNDLE_NAME: macOS.bundles.default
         run: |
-          bash ./game/bundle/scripts/mkOverride.bash
+          ./game/bundle/scripts/mkOverride.bash
           cp result Doom2D-Forever.dmg
       - name: Upload MacOS app bundle
         uses: actions/upload-artifact@v4
