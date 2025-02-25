@@ -9,4 +9,6 @@ cat <<EOF
 })
 EOF
 )
-nix build --impure --expr "$CMD"
+nix build \
+    --verbose --show-trace --print-build-logs \
+    --impure --expr "$CMD"
