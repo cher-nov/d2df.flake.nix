@@ -124,7 +124,7 @@
     },
     "fpc": {
         "cargoLocks": null,
-        "date": "2025-02-23",
+        "date": "2025-02-25",
         "extract": null,
         "name": "fpc",
         "passthru": null,
@@ -134,13 +134,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "e749c81040070d3e8cb0c070e6e63f2f9b54fef4",
-            "sha256": "sha256-njp6LgZp4544YQfEX07hzo0ANffLGsoWQDmfIBgiOJs=",
+            "rev": "76d155d87265167c96216ae0de03eeb4bf71e336",
+            "sha256": "sha256-i/MEpamx/TNQqmMRQnnCPzTsSjNjBheabX6Mz64d/1M=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/fpc/source"
         },
-        "version": "e749c81040070d3e8cb0c070e6e63f2f9b54fef4"
+        "version": "76d155d87265167c96216ae0de03eeb4bf71e336"
     },
     "game-music-emu": {
         "cargoLocks": null,
@@ -165,7 +165,7 @@
     },
     "lazarus": {
         "cargoLocks": null,
-        "date": "2025-02-23",
+        "date": "2025-02-25",
         "extract": null,
         "name": "lazarus",
         "passthru": null,
@@ -175,13 +175,13 @@
             "fetchSubmodules": false,
             "leaveDotGit": false,
             "name": null,
-            "rev": "247765dd5db80a9a6f408936058cdd72c103083a",
-            "sha256": "sha256-RqwjCmd0mY0Su8qxnYxgIJH2t8kPKXbokpsQEdg9g8o=",
+            "rev": "406e06d1a9564b08dbf4f54f0831b016ab603ce7",
+            "sha256": "sha256-gbpbsxb6b6Kza/NjnLxiFa78ZIGT1TEBwh40Dxg8hRE=",
             "sparseCheckout": [],
             "type": "git",
             "url": "https://gitlab.com/freepascal.org/lazarus/lazarus"
         },
-        "version": "247765dd5db80a9a6f408936058cdd72c103083a"
+        "version": "406e06d1a9564b08dbf4f54f0831b016ab603ce7"
     },
     "libmodplug": {
         "cargoLocks": null,
@@ -300,12 +300,12 @@
             "name": null,
             "owner": "libxmp",
             "repo": "libxmp",
-            "rev": "libxmp-4.6.1",
-            "sha256": "sha256-jied4Rt1/Jh4OGFbQr4w1ALiXgsL3UYQEdJ2G/WRjqk=",
+            "rev": "libxmp-4.6.2",
+            "sha256": "sha256-AfHathuBmF9OhtTyt8WabZKzFtnAkX1YeiYFF079z80=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "libxmp-4.6.1"
+        "version": "libxmp-4.6.2"
     },
     "miniupnpc": {
         "cargoLocks": null,
@@ -321,12 +321,12 @@
             "name": null,
             "owner": "miniupnp",
             "repo": "miniupnp",
-            "rev": "miniupnpc_2_3_0",
-            "sha256": "sha256-m26LlgvPm1uLi47r1W7x35yKFGX4gucZJHAaJlnrrQk=",
+            "rev": "miniupnpc_2_2_6",
+            "sha256": "sha256-UropqH4YNR42R7L03ROx2j6Sq5RcqQ/64VYb2GcCkY8=",
             "sparseCheckout": [],
             "type": "github"
         },
-        "version": "miniupnpc_2_3_0"
+        "version": "miniupnpc_2_2_6"
     },
     "openal": {
         "cargoLocks": null,
