@@ -78,17 +78,17 @@
   };
   fpc = {
     pname = "fpc";
-    version = "76d155d87265167c96216ae0de03eeb4bf71e336";
+    version = "d86e726e87e279ea5c73e9c8d04c5f16e509f99a";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source";
-      rev = "76d155d87265167c96216ae0de03eeb4bf71e336";
+      rev = "d86e726e87e279ea5c73e9c8d04c5f16e509f99a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-i/MEpamx/TNQqmMRQnnCPzTsSjNjBheabX6Mz64d/1M=";
+      sha256 = "sha256-7uOg/kVANlU6LTeE1Z/JEVxqFrqiNYYs4i0F80gxe7o=";
     };
-    date = "2025-02-25";
+    date = "2025-02-27";
   };
   game-music-emu = {
     pname = "game-music-emu";
@@ -103,17 +103,17 @@
   };
   lazarus = {
     pname = "lazarus";
-    version = "406e06d1a9564b08dbf4f54f0831b016ab603ce7";
+    version = "4162ac50d8b3e910726b6f6b19f48e7bac26e628";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/lazarus/lazarus";
-      rev = "406e06d1a9564b08dbf4f54f0831b016ab603ce7";
+      rev = "4162ac50d8b3e910726b6f6b19f48e7bac26e628";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [ ];
-      sha256 = "sha256-gbpbsxb6b6Kza/NjnLxiFa78ZIGT1TEBwh40Dxg8hRE=";
+      sha256 = "sha256-QetIzCccr0BFz/1hG5MbZWHQ97R1ewJdlVAnceIdl34=";
     };
-    date = "2025-02-25";
+    date = "2025-02-27";
   };
   libmodplug = {
     pname = "libmodplug";
