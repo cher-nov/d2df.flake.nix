@@ -83,8 +83,6 @@
           "-L${sdk}/usr/lib"
           "-L${sdk}/usr/lib/system"
           "-I${sdk}/usr/include"
-          "-isystem ${sdk}/usr/include"
-          "-iframework ${sdk}/System/Library/Frameworks"
           # https://github.com/libsdl-org/SDL/issues/6491
           #"-lclang_rt.osx"
         ];
