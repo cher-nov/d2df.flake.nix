@@ -37,7 +37,7 @@
         "-k-L${sdk}/usr/lib/system"
         #"-k-mmacosx-version-min=11.0"
       ];
-      wrapperArgs = ["-O2" "-g" "-gl"];
+      wrapperArgs = ["-O1" "-g" "-gl"];
       targetArg = "-Tdarwin";
       basename = fpcBinary;
       makeArgs = {
