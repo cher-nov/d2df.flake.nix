@@ -68,8 +68,6 @@
         CFLAGS = lib.concatStringsSep " " [
           "-target ${target}"
           "-resource-dir ${pkgs.llvmPackages_17.clang-unwrapped.lib}/lib/clang/17"
-          "-L${sdk}/usr/lib"
-          "-L${sdk}/usr/lib/system"
           "-isysroot ${sdk}"
           "-isystem ${sdk}/usr/include"
           "-iframework ${sdk}/System/Library/Frameworks"
