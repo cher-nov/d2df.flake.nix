@@ -19,11 +19,11 @@
     "Doom2D-Forever": {
       "flake": false,
       "locked": {
-        "lastModified": 1740125210,
-        "narHash": "sha256-5/czWQmhdsuWcYmEmtnF4sNs4PNGQ2uNbsjkMbbKNjM=",
+        "lastModified": 1740681816,
+        "narHash": "sha256-INTKpDmBgWJxXJ6Zdqj8UQJRTQ/c/bOe1G7MPOS7pCY=",
         "ref": "refs/heads/master",
-        "rev": "14e52bef0dbb055137caa63015196e9b5252db5b",
-        "revCount": 1574,
+        "rev": "b19d4587b924ab6823ce559b8210efbdfd8b8e47",
+        "revCount": 1582,
         "submodules": true,
         "type": "git",
         "url": "https://github.com/Doom2D/Doom2D-Forever"
@@ -164,11 +164,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1737049136,
-        "narHash": "sha256-OS8fX4q7ACh53DJWYi2UMp2vDVmXv+bN3rc66NRMU+c=",
+        "lastModified": 1740685545,
+        "narHash": "sha256-ERcKy0kGq3QWIoTplNTf350iDoFU5/ObxGoV0Ej/gJU=",
         "owner": "polybluez",
         "repo": "osxcross",
-        "rev": "bc231398ba01098c9bc3c012a7a09496aa839fb8",
+        "rev": "2a6d494d4fc9e9d5b4d3273b417c4e03f2c04e63",
         "type": "github"
       },
       "original": {
