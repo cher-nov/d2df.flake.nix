@@ -77,6 +77,9 @@
       lazarusExists = false;
       inherit cpuArgs;
       targetArg = "-Tandroid" + " " + (lib.concatStringsSep " " targetArg);
+      # Tests revealed that there are some problems with FPC's aarch64 cpu target.
+      # To try to workaround that, use as few optimizations as possible.
+      # On Android, titlepic was observed to be used instead of some textures on the map, covering half of the map
       wrapperArgs = ["-O1" "-g" "-gl"];
       basename = basename;
       makeArgs = {

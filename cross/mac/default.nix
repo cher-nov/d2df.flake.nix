@@ -37,6 +37,11 @@
         "-k-L${sdk}/usr/lib/system"
         #"-k-mmacosx-version-min=11.0"
       ];
+      # Tests revealed that there are some problems with FPC's aarch64 cpu target.
+      # To try to workaround that, use as few optimizations as possible.
+      # On an Apple silicon Mac:
+      # 1. Titlepic is sometimes used instead of some textures on the map, covering half of the map.
+      # 2. Bus errors, unaligned access.
       wrapperArgs = ["-O1" "-g" "-gl"];
       targetArg = "-Tdarwin";
       basename = fpcBinary;
