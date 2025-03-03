@@ -164,6 +164,7 @@ in {
               Port the server will listen on.
             '';
           };
+          ping = lib.mkEnableOption "pinging of this server in masterserver";
           maxPlayers = lib.mkOption {
             type = lib.types.int;
             default = 24;
@@ -195,7 +196,7 @@ in {
           };
           logs = {
             enable = lib.mkEnableOption "logs" // {default = true;};
-            filterMessages = (lib.mkEnableOption "open firewall ports") // {default = true;};
+            filterMessages = lib.mkEnableOption "filter unimportant messages";
           };
           mapsJson = lib.mkOption {
             type = lib.types.path;
@@ -333,10 +334,14 @@ in {
         timer = timerName name;
         socket = socketName name;
         startScript = startScriptName name;
+        isOnLowerPort = cfg.port < 1024;
       in {
         description = "Doom2D Forever server instance ‘${name}’";
         wantedBy = ["multi-user.target"];
-        after = ["network.target"];
+        # FIXME
+        # What if master server and regular server are on one machine?
+        # Maybe this will work.
+        after = ["network.target" "d2df_master_server.service"];
         path = [pkgs.coreutils];
 
         serviceConfig.ExecStart = let
@@ -371,9 +376,9 @@ in {
                     value = (
                       if lib.isList option
                       then
-                        builtins.concatStringsSep
-                        ","
-                        (builtins.map (x: toValue x) option)
+                        toValue (builtins.concatStringsSep
+                          ","
+                          (builtins.map (x: builtins.toString x) option))
                       else toValue option
                     );
                   in "${key} ${value}"
@@ -465,7 +470,7 @@ in {
 
             cat "${convertedCfg}/str" > "$tempCfgPath"
             cat "$tempCfgPath" > "$tempExecPath"
-            ${pkgs.nodePackages_latest.nodejs}/bin/node "${createMapsListSrc finalMapsJson (lib.optionalAttrs (cfg.gameMode == "coop") {generateMode = "perWad";})}" | tee -a "$tempExecPath"
+            ${pkgs.nodePackages_latest.nodejs}/bin/node --jitless "${createMapsListSrc finalMapsJson (lib.optionalAttrs (cfg.gameMode == "coop") {generateMode = "perWad";})}" | tee -a "$tempExecPath"
             cat "${execFile}" >> "$tempExecPath"
             ${lib.optionalString cfg.rcon.enable ''
               [ -f "${cfg.rcon.file}" ] && echo -e "sv_rcon_password \"$(cat ${cfg.rcon.file})\"" >> "$tempExecPath" || echo "sv_rcon 0" >> "$tempExecPath"
@@ -481,6 +486,11 @@ in {
         serviceConfig.StandardInput = "socket";
         serviceConfig.StandardOutput = "journal";
         serviceConfig.StandardError = "journal";
+        serviceConfig.SecureBits = lib.optionalString isOnLowerPort "keep-caps";
+        serviceConfig.AmbientCapabilities = lib.optionals isOnLowerPort ["CAP_NET_BIND_SERVICE" "CAP_NET_ADMIN"];
+        serviceConfig.CapabilityBoundingSet = lib.optionals isOnLowerPort ["CAP_NET_BIND_SERVICE" "CAP_NET_ADMIN"];
+        serviceConfig.SocketBindDeny = "any";
+        serviceConfig.SocketBindAllow = ["udp:${builtins.toString cfg.port}"] ++ lib.optionals cfg.ping ["udp:57133"];
         serviceConfig.LogFilterPatterns = let
           playerLeft = "^CON:.*left the game\.";
           connection = "^CON: NET: Somebody is trying to connect from";
@@ -508,12 +518,10 @@ in {
         serviceConfig = {
           CPUAccounting = true;
           MemoryAccounting = true;
-          MemoryHigh = 128 * 1024 * 1024; # 128 MB
-          MemoryMax = 256 * 1024 * 1024; # 256 MB
+          MemoryHigh = 48 * 1024 * 1024;
+          MemoryMax = 72 * 1024 * 1024;
           TasksAccounting = true;
           IOAccounting = true;
-          Nice = 19;
-          IOSchedulingPriority = 7;
         };
 
         serviceConfig = {
@@ -529,9 +537,10 @@ in {
           RestrictNamespaces = true;
           RestrictRealtime = true;
           RestrictSUIDSGID = true;
-          #MemoryDenyWriteExecute = true;
+          MemoryDenyWriteExecute = true;
           LockPersonality = true;
-          PrivateUsers = true;
+          # breaks CAP_NET_BIND_SERVICE if enabled
+          PrivateUsers = !isOnLowerPort;
           ProtectKernelLogs = true;
           PrivateMounts = true;
           ProtectHostname = true;

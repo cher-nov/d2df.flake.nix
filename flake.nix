@@ -128,9 +128,11 @@
         inherit (assetsLib) mkAssetsPath;
       };
 
-      inherit pins;
+      inherit pins fpcPkgs d2dfPkgs;
 
-      legacyPackages = import ./packages {
+      nixosModules = import ./nixos/modules;
+
+      legacyPackages = let cross = import ./packages {
         inherit lib;
         inherit pins;
         inherit (pkgs) callPackage;
@@ -141,6 +143,12 @@
         d2df-distro-content = inputs.d2df-distro-content;
         d2df-distro-soundfont = inputs.d2df-distro-soundfont;
       };
+      aux = {
+        doom2d-forever-master-server = pkgs.callPackage d2dfPkgs.doom2d-forever-master-server {};
+        doom2d-multiplayer-game-data = pkgs.callPackage d2dfPkgs.doom2d-multiplayer-game-data {};
+        doom2df-base = pkgs.callPackage d2dfPkgs.doom2df-base {};
+      };
+      in lib.recursiveUpdate cross aux;
 
       packages = {
         inherit (pkgs) wadcvt dfwad;

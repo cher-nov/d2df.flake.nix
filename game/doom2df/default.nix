@@ -2,10 +2,10 @@
   lib,
   stdenv,
   autoPatchelfHook,
-  fpcWrapper,
+  fpc,
   isDarwin ? false,
   enet,
-  Doom2D-Forever,
+  Doom2D-Forever ? null,
   buildAsLibrary ? false,
   headless ? false,
   withHolmes ? false,
@@ -148,7 +148,7 @@ in
 
     nativeBuildInputs =
       [
-        fpcWrapper
+        fpc
         enet
       ]
       ++ optional (withOpenAL && nativeOpenAL) openal
@@ -216,5 +216,6 @@ in
 
     meta = {
       licenseFiles = ["${src}/COPYING"];
+      mainProgram = "Doom2DF";
     };
   }
