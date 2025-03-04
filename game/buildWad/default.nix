@@ -47,10 +47,10 @@ in {
           # Convert win1251 names to UTF-8
           convmv -f CP1251 -t UTF-8 --notest -r temp
           # Remove extensions from nested wads
-          find temp -mindepth 4 -type f -exec sh -c '                           \
-                     WITHOUT_EXT=$(basename $1 | rev | cut -f 2- -d '.' | rev); \
-                     echo moving $1 to $(dirname $1)/$WITHOUT_EXT;              \
-                     mv    $1 $(dirname $1)/$WITHOUT_EXT;                       \
+          find temp -mindepth 4 -type f -exec sh -c '
+                     WITHOUT_EXT=$(basename $1 | rev | cut -f 2- -d '.' | rev);
+                     echo "moving $1 to $(dirname $1)/$WITHOUT_EXT";
+                     mv "$1" "$(dirname $1)/$WITHOUT_EXT";
                      ' sh {} \;
           dfwad -v -z "${dfwadCompression}" temp/ ${outName}.wad pack
         '';
