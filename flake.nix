@@ -10,7 +10,7 @@
     };
 
     DF-Assets = {
-      url = "github:Doom2D/DF-Assets";
+      url = "git+https://github.com/Doom2D/DF-Assets";
       flake = false;
     };
     Doom2D-Forever = {
@@ -18,7 +18,7 @@
       flake = false;
     };
     d2df-editor = {
-      url = "github:Doom2D/Doom2D-Forever/d2df-editor.git";
+      url = "git+https://github.com/Doom2D/Doom2D-Forever?submodules=1&ref=d2df-editor.git";
       flake = false;
     };
     d2df-distro-content = {

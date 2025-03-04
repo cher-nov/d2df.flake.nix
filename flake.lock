@@ -5,15 +5,15 @@
       "locked": {
         "lastModified": 1740286330,
         "narHash": "sha256-i3GSkUW1FE1RLJRWhmYAZoHqyNyZlxnuVkpA6vP8unM=",
-        "owner": "Doom2D",
-        "repo": "DF-Assets",
+        "ref": "refs/heads/master",
         "rev": "2ffc08a80d6b529880cbe9cf7ac26475b04e9d1d",
-        "type": "github"
+        "revCount": 77,
+        "type": "git",
+        "url": "https://github.com/Doom2D/DF-Assets"
       },
       "original": {
-        "owner": "Doom2D",
-        "repo": "DF-Assets",
-        "type": "github"
+        "type": "git",
+        "url": "https://github.com/Doom2D/DF-Assets"
       }
     },
     "Doom2D-Forever": {
@@ -63,16 +63,18 @@
       "locked": {
         "lastModified": 1741097150,
         "narHash": "sha256-V4fCSjY3Sf19ouYyR1eEV7qEVC3/7KzbCYjLQbaWoH0=",
-        "owner": "Doom2D",
-        "repo": "Doom2D-Forever",
+        "ref": "d2df-editor.git",
         "rev": "15a52061a8fbb2730db5f909f8f25dbae71e8717",
-        "type": "github"
+        "revCount": 199,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
       },
       "original": {
-        "owner": "Doom2D",
         "ref": "d2df-editor.git",
-        "repo": "Doom2D-Forever",
-        "type": "github"
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/Doom2D/Doom2D-Forever"
       }
     },
     "flake-utils": {
