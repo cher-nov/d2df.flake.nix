@@ -37,7 +37,16 @@ echo "DISTRO_CONTENT_CREATION_NAME=$DISTRO_CONTENT_CREATION_NAME" >> "$GITHUB_EN
 echo "DISTRO_SOUNDFONT_CREATION_DATE=$DISTRO_SOUNDFONT_CREATION_DATE" >> "$GITHUB_ENV"
 echo "DISTRO_SOUNDFONT_CREATION_DATE_PRETTY=$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" >> "$GITHUB_ENV"
 echo "DISTRO_SOUNDFONT_CREATION_NAME=$DISTRO_SOUNDFONT_CREATION_NAME" >> "$GITHUB_ENV"
-printf \
-    'This build has the following inputs:\nDoom2D-Forever: %s\nd2df-editor: %s\nDF-Assets: %s\nnixpkgs: %s\n%s: %s\n%s: %s\n' \
-    "$D2DF_REV" "$EDITOR_REV" "$RES_REV" "$NIXPKGS_REV" "$DISTRO_CONTENT_CREATION_NAME" "$DISTRO_CONTENT_CREATION_DATE_PRETTY" "$DISTRO_SOUNDFONT_CREATION_NAME" "$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" \
-    > release_body
+printf '%s\n%s\n\n' \
+       "Build creation date: $(date '+%d %B %Y %H:%M %Z')" \
+       'Build info:' \
+       > release_body
+"$(dirname "$0")/markdown-table" -2 \
+                 "Name" "Commit/Date" \
+                 "Doom2D-Forever" "$D2DF_REV" \
+                 "d2df-editor" "$EDITOR_REV" \
+                 "DF-Assets" "$RES_REV" \
+                 "nixpkgs" "$NIXPKGS_REV" \
+                 "$DISTRO_CONTENT_CREATION_NAME" "$DISTRO_CONTENT_CREATION_DATE_PRETTY" \
+                 "$DISTRO_SOUNDFONT_CREATION_NAME" "$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" \
+                 >> release_body
