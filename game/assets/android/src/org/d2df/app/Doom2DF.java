@@ -19,6 +19,9 @@ import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
+import android.content.pm.ActivityInfo;
+import android.view.Window;
 
 import org.libsdl.app.SDL;
 import org.libsdl.app.SDLActivity;
@@ -58,8 +61,12 @@ public class Doom2DF extends SDLActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    Log.e("d2df", "Trying to set fullscreen!");
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                         WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-    Log.d("MyTagGoesHere", "This is my log message at the debug level here");
+    Log.d("d2df", "Welcome to Doom2D Forever!");
 
     CopyAssets.copyAssets(SDL.getContext(), "");
     CopyAssets.copyAssets(SDL.getContext(), "data");
@@ -72,7 +79,7 @@ public class Doom2DF extends SDLActivity {
     CopyAssets.copyAssets(SDL.getContext(), "instruments");
     CopyAssets.copyAssets(SDL.getContext(), "Get MORE game content HERE.txt");
 
-   Log.d("MyTagGoesHere", "This is my log message at the debug level here 2");
+    Log.d("d2df", "Finished copying assets.");
   }
 
   @Override
