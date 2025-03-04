@@ -83,7 +83,8 @@ stdenvNoCC.mkDerivation {
     ''
     + lib.optionalString withDistroGus ''
       rar x -tsp ${distroMidiBanks} "instruments/*" "timidity.cfg" .
-    '' + lib.optionalString (!unixLineEndings) ''
+    ''
+    + lib.optionalString (!unixLineEndings) ''
       find . -type f -iname '*.txt' -exec unix2dos {} \;
     '';
 

@@ -61,11 +61,11 @@
     "d2df-editor": {
       "flake": false,
       "locked": {
-        "lastModified": 1708948652,
-        "narHash": "sha256-yMW+jArIZxNWDbdcaKV2QrgUUV09ClaqCEBYZItg2cI=",
+        "lastModified": 1741097150,
+        "narHash": "sha256-V4fCSjY3Sf19ouYyR1eEV7qEVC3/7KzbCYjLQbaWoH0=",
         "owner": "Doom2D",
         "repo": "Doom2D-Forever",
-        "rev": "7fe67265f79c80b0263dff8645faf299962efbb2",
+        "rev": "15a52061a8fbb2730db5f909f8f25dbae71e8717",
         "type": "github"
       },
       "original": {

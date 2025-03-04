@@ -102,7 +102,7 @@ in {
       environment = {
         WINEPREFIX = "${userDir}/wine";
         XDG_RUNTIME_DIR = "${userDir}/tmp";
-        HOME="${userDir}/tmp";
+        HOME = "${userDir}/tmp";
         DISPLAY = ":${xorgDisplayNumber}";
         WINEDLLOVERRIDES = "d3d8=n;winemenubuilder.exe=d;mscoree,mshtml=";
         #WINEDEBUG="-all";
@@ -294,6 +294,14 @@ in {
 
           rm ${userDir}/data/cfg/server.cfg
           cat "${configFile}/str" > "${userDir}/data/cfg/server.cfg"
+        ''
+        # Workaround for server getting stuck at "getting external IP" stage
+        # If you set sv_lan 1 and launch the server, it won't try to get its own IP
+        # But it won't sync with master. To fix that, set sv_lan 0 in `autoexec.cfg` and `resync`.
+        # Thanks to BlackDoomer!
+        + ''
+          echo -e "\nsv_lan 1\n" >> "${userDir}/data/cfg/server.cfg"
+          echo -e "\nsv_lan 0\nresync\n" >> "${userDir}/data/cfg/autoexec.cfg"
         ''
         # Backup old logs.
         + ''

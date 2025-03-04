@@ -29,12 +29,11 @@
   # Due to a bug in MacOS, Rosetta (Intel) would always be used on M series MacBooks.
   # Create a shim to launch with preferred architectures.
   # https://stackoverflow.com/questions/68199148/application-reports-different-architecture-depending-on-launch-method
-  script = writeText "launcher" (
-    ''
-      #!/bin/bash
-      script_path="$(dirname "$0")"
-      ARCHPREFERENCE=arm64,x86_64 arch "$script_path/Doom2DF"
-    '');
+  script = writeText "launcher" ''
+    #!/bin/bash
+    script_path="$(dirname "$0")"
+    ARCHPREFERENCE=arm64,x86_64 arch "$script_path/Doom2DF"
+  '';
 in
   stdenv.mkDerivation (finalAttrs: {
     pname = "d2df-app-bundle";
