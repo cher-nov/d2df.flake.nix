@@ -75,11 +75,8 @@ jobs:
         uses: rrbutani/use-nix-shell-action@v1
         with:
           devShell: .#ciDefault
-      - name: Populate environment variables
-        env:
-          UPDATE_FLAKE: 0
+      - name: Calculate nixpkgs' lock hash
         run: |
-          ./game/bundle/scripts/mkEnv.bash
           NIXPKGS_REV=$(nix flake metadata . --json 2>/dev/null | jq --raw-output '.locks.nodes."nixpkgs".locked.rev')
           echo "NIXPKGS_REV=$NIXPKGS_REV" >> "$GITHUB_ENV"
       - uses: actions/cache/restore@v4
@@ -97,6 +94,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+      - name: Populate environment variables
+        env:
+          UPDATE_FLAKE: 0
+        run: |
+          ./game/bundle/scripts/mkEnv.bash
       - name: Build debug APK
         if: ${{ matrix.arch == 'android' }}
         env:
