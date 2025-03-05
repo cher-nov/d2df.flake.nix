@@ -66,6 +66,8 @@ jobs:
           df -h
       - name: Checkout the master branch
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v29
         with:
