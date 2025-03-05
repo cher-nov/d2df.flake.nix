@@ -48,7 +48,6 @@ public class Doom2DF extends SDLActivity {
     };
   }
 
-/*
   @Override
   protected String[] getArguments () {
     Intent intent = getIntent();
@@ -56,7 +55,6 @@ public class Doom2DF extends SDLActivity {
     String[] args = value.split("\\s+");
     return args;
   }
-*/
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
