@@ -7,13 +7,13 @@
 }: {
   SDL2 = {
     pname = "SDL2";
-    version = "release-2.32.0";
+    version = "release-2.32.2";
     src = fetchFromGitHub {
       owner = "libsdl-org";
       repo = "SDL";
-      rev = "release-2.32.0";
+      rev = "release-2.32.2";
       fetchSubmodules = false;
-      sha256 = "sha256-BdyMlttrDwQMoz+bO6bfU3bh0xKnT8yQF6nb6OGRbHw=";
+      sha256 = "sha256-Gtg8G1tRouGZbes1KhsXpYbItpNHYqJCiQKW/L77b+U=";
     };
   };
   SDL2_android = {
@@ -82,17 +82,17 @@
   };
   fpc = {
     pname = "fpc";
-    version = "d86e726e87e279ea5c73e9c8d04c5f16e509f99a";
+    version = "d34d5c545944537cf458f5d388205cb88f3ee24a";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/fpc/source";
-      rev = "d86e726e87e279ea5c73e9c8d04c5f16e509f99a";
+      rev = "d34d5c545944537cf458f5d388205cb88f3ee24a";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [];
-      sha256 = "sha256-7uOg/kVANlU6LTeE1Z/JEVxqFrqiNYYs4i0F80gxe7o=";
+      sha256 = "sha256-ggiI/2GxqhB5kN1nAMd2kghnDAEU3LxU7YG8vqeCgNA=";
     };
-    date = "2025-02-27";
+    date = "2025-03-04";
   };
   game-music-emu = {
     pname = "game-music-emu";
@@ -107,17 +107,17 @@
   };
   lazarus = {
     pname = "lazarus";
-    version = "4162ac50d8b3e910726b6f6b19f48e7bac26e628";
+    version = "847dee461c236f6460e66979f3eae77c12885a63";
     src = fetchgit {
       url = "https://gitlab.com/freepascal.org/lazarus/lazarus";
-      rev = "4162ac50d8b3e910726b6f6b19f48e7bac26e628";
+      rev = "847dee461c236f6460e66979f3eae77c12885a63";
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
       sparseCheckout = [];
-      sha256 = "sha256-QetIzCccr0BFz/1hG5MbZWHQ97R1ewJdlVAnceIdl34=";
+      sha256 = "sha256-oCFpVP2PXIDVV+geAcehtqCXisGg2uEw2FxoUakC4f4=";
     };
-    date = "2025-02-27";
+    date = "2025-03-05";
   };
   libmodplug = {
     pname = "libmodplug";
