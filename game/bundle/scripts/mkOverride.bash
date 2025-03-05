@@ -11,5 +11,5 @@ cat <<EOF
 EOF
 )
 nix build \
-    --verbose --show-trace --print-build-logs \
+    --verbose --show-trace --verbose --print-out-paths --print-build-logs \
     --impure --expr "$CMD"
