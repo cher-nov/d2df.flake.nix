@@ -6,13 +6,13 @@ BEGIN {
 		print("Variable prefix not set, exiting...")
 		exit
 	}
-	system("mkdir -p " prefix)
+	system("mkdir -p " prefix ";")
 }
 
 # When we encounter a section header (e.g., :FONTS), we set the current directory.
 /^:/ {
 	currentDir = prefix "/" substr($0,2)
-	system("mkdir -p " currentDir)
+	system("mkdir -p " currentDir ";")
 }
 
 # For each file entry, extract the source file and target filename, then copy.
@@ -44,13 +44,13 @@ BEGIN {
 		if (!currentDir) currentDir = prefix
 		basepath = sourceBase "/" sourceSection "/" sourceBasenameParts[1]
 		destPath = currentDir "/" sourceBasenameParts[1]
-		system("mkdir -p " destPath)
-		system("cp -r " basepath "/*"  " " destPath)
+		system("mkdir -p " destPath ";")
+		system("cp -f -r " basepath "/*"  " " destPath ";")
 		next
 	} else {
 		if (!currentDir) destPath = prefix "/" targetFile
 		else destPath = currentDir "/" targetFile
-		system("cp -r -p " sourceFile " " destPath)
+		system("cp -f -r -p " sourceFile " " destPath ";")
 	}
 }
 
