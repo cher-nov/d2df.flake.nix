@@ -93,9 +93,8 @@ jobs:
         run: |
           rm -f flake.lock
       - name: Restore updated flake.lock
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
+        run: |
+          nix flake update
       - name: Populate environment variables
         env:
           UPDATE_FLAKE: 0
