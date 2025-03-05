@@ -14,6 +14,7 @@ in {
     coreutils,
     util-linux,
     bash,
+    lib,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -33,7 +34,8 @@ in {
         # Script should be able to support arbitrary paths, not just in the current directory
         # But it doesn't for now, so we copy files from DF-Assets to build directory.
         ''
-          cp -r ${DF-Assets}/*WAD ${DF-Assets}/*.lst .
+          find "${DF-Assets.outPath}" -iname '*WAD' -maxdepth 1 -type d -exec cp -f -r {} "$(pwd)/" \;
+          find "${DF-Assets.outPath}" -iname '*.lst' -maxdepth 1 -type f -exec cp -f -r {} "$(pwd)/" \;
         ''
         # FIXME
         # For some reason, shrshade.lst specifies the source folder in lowercase.
