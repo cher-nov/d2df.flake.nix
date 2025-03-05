@@ -37,6 +37,7 @@ in {
         # For some reason, shrshade.lst specifies the source folder in lowercase.
         # This doesn't fly in Linux.
         ''
+          cd /build/source
           chmod -R 777 .
           echo "Fixing shrshade.wad paths"
           sed -i 's\shrshadewad\ShrShadeWAD\g' shrshade.lst
