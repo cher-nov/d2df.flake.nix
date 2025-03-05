@@ -10,6 +10,7 @@ BEGIN {
 
 # When we encounter a section header (e.g., :FONTS), we set the current directory.
 /^:/ {
+  gsub("\r", "", $0)
 	currentDir = prefix "/" substr($0,2)
   print("Setting currentDir to " currentDir)
 	system("mkdir -p " currentDir)
@@ -17,6 +18,7 @@ BEGIN {
 
 # For each file entry, extract the source file and target filename, then copy.
 {
+  gsub("\r", "", $0)
 	gsub(/\\/,"/",$0)
 	split($0, parts, "|")
 	targetFile = parts[2]
