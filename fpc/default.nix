@@ -184,9 +184,14 @@ in rec {
     callPackage,
   }: let
     c = callPackage fpcCombo {inherit fpcCross;};
+    extraPaths = [
+      "${pkgs.writeShellScriptBin
+        "${fpcAttrs.makeArgs.CPU_TARGET}-${fpcAttrs.makeArgs.OS_TARGET}-fpcres"
+        "${c}/bin/fpcres $@"}/bin"
+    ];
   in
     writeShellScriptBin "fpc" ''
-      PATH="$PATH:${lib.concatStringsSep ":" fpcAttrs.toolchainPaths}" PPC_CONFIG_PATH="${c}/etc" \
+      PATH="$PATH:${lib.concatStringsSep ":" (fpcAttrs.toolchainPaths ++ extraPaths)}" PPC_CONFIG_PATH="${c}/etc" \
         ${c}/bin/pp${fpcAttrs.basename} \
           ${lib.concatStringsSep " " (fpcAttrs.wrapperArgs)} \
           ${lib.concatStringsSep " " (fpcAttrs.cpuArgs ++ [fpcAttrs.targetArg])} \

@@ -46,19 +46,7 @@
       fpcWrapper = fpc: fpcCross:
         pkgs.callPackage fpcPkgs.fpcWrapper rec {
           inherit fpcCross;
-          fpcAttrs = let
-            prevFpcAttrs = archAttrs.infoAttrs.fpcAttrs;
-          in
-            prevFpcAttrs
-            // {
-              toolchainPaths =
-                prevFpcAttrs.toolchainPaths
-                ++ [
-                  "${pkgs.writeShellScriptBin
-                    "${prevFpcAttrs.makeArgs.CPU_TARGET}-${prevFpcAttrs.makeArgs.OS_TARGET}-fpcres"
-                    "${fpc}/bin/fpcres $@"}/bin"
-                ];
-            };
+          inherit (archAttrs.infoAttrs) fpcAttrs;
         };
       gamePkgs = rec {
         fpc = fpc-trunk;

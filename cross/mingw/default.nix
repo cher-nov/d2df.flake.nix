@@ -163,7 +163,6 @@
             set(CMAKE_RC_COMPILER "${windres}" CACHE FILEPATH "windres")
 
             # some projects use this as an unofficial variable for windows versions
-            set(CMAKE_SYSTEM_VERSION 6.1)
             set(windows-version ${winNt})
           '';
         };
@@ -245,7 +244,7 @@
       bundleMatrix.${matrix};
     fpcAttrs = rec {
       lazarusExists = true;
-      cpuArgs = [""];
+      cpuArgs = [];
       wrapperArgs = ["-O1" "-g" "-gl"];
       targetArg = "-T${fpcTarget}";
       basename = fpcBasename;
