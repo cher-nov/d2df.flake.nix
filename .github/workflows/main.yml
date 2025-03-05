@@ -89,12 +89,9 @@ jobs:
       - name: Restore toolchain from cache
         run: |
           nix copy --all --from /tmp/nixcache_${{ matrix.arch }}
-      - name: Delete old flake.lock
-        run: |
-          rm -f flake.lock
       - name: Restore updated flake.lock
         run: |
-          nix flake update
+          nix flake update Doom2D-Forever d2df-editor DF-Assets d2df-distro-content d2df-distro-soundfont
       - name: Populate environment variables
         env:
           UPDATE_FLAKE: 0
