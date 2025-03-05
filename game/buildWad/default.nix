@@ -36,8 +36,12 @@ in {
         # FIXME
         # For some reason, shrshade.lst specifies the source folder in lowercase.
         # This doesn't fly in Linux.
+        # FIXME
+        # dos line endings have to be forced, because game doesn't recognize lf lines
         ''
           set -euo pipefail
+          echo "Force dos line endings for all files in this repo"
+          find . -type f -exec unix2dos {} \;
           echo "Fixing dos line endings"
           dos2unix ${lstPath}
           echo "Fixing shrshade.wad paths"
