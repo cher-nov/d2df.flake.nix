@@ -46,16 +46,43 @@ echo "DISTRO_CONTENT_CREATION_NAME=$DISTRO_CONTENT_CREATION_NAME" >> "$GITHUB_EN
 echo "DISTRO_SOUNDFONT_CREATION_DATE=$DISTRO_SOUNDFONT_CREATION_DATE" >> "$GITHUB_ENV"
 echo "DISTRO_SOUNDFONT_CREATION_DATE_PRETTY=$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" >> "$GITHUB_ENV"
 echo "DISTRO_SOUNDFONT_CREATION_NAME=$DISTRO_SOUNDFONT_CREATION_NAME" >> "$GITHUB_ENV"
+
+function print_info() {
+    local with_url=$1;
+    local with_shortrev=$2;
+    local rev_or_date=$3;
+    local url=$4;
+    local extra_info=$5;
+    local res="";
+    local rev_or_date_print="$rev_or_date";
+    if [[ $with_shortrev == "1" ]]; then
+        rev_or_date_print=$(printf "%s" "$rev_or_date" | rev | cut -c -7 | rev);
+    fi
+    if [[ $with_url == "1" ]]; then
+        res="$(printf "[%s](%s/commit/%s)" "$rev_or_date_print" "$url" "$rev_or_date")";
+    else
+        res="$(printf "%s" "$rev_or_date_print")";
+    fi
+
+    if [[ ! -z "$extra_info" ]]; then
+        res="$(printf '%s (%s)' "$res" "$extra_info")"
+    fi
+
+    res="$(printf "%s\n" "$res")"
+
+    echo "$res"
+}
 printf '%s\n%s\n\n' \
        "Build creation date: $(date '+%d %B %Y %H:%M %Z')" \
        'Build info:' \
        > release_body
+with_url=1
 "$(dirname "$0")/markdown-table" -2 \
-                 "Name" "Commit/Date" \
-                 "Doom2D-Forever" "[$D2DF_REV](${D2DF_URL}/commit/${D2DF_REV}) ($D2DF_COMMIT_MESSAGE)" \
-                 "d2df-editor" "[$EDITOR_REV](${EDITOR_URL}/commit/${EDITOR_REV}) ($EDITOR_COMMIT_MESSAGE)" \
-                 "DF-Assets" "[$RES_REV](${RES_URL}/commit/${RES_REV}) ($RES_COMMIT_MESSAGE)" \
-                 "nixpkgs" "[$NIXPKGS_REV](${NIXPKGS_URL}/commit/${NIXPKGS_REV})" \
-                 "[$DISTRO_CONTENT_CREATION_NAME]($DISTRO_CONTENT_URL)" "$DISTRO_CONTENT_CREATION_DATE_PRETTY" \
-                 "[$DISTRO_SOUNDFONT_CREATION_NAME]($DISTRO_SOUNDFONT_URL)" "$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" \
+                                 "Name" "Commit/Date" \
+                                 "Doom2D-Forever" "$(print_info $with_url 1 "$D2DF_REV" "$D2DF_URL" "$D2DF_COMMIT_MESSAGE")" \
+                                 "d2df-editor" "$(print_info $with_url 1 "$EDITOR_REV" "$EDITOR_URL" "$EDITOR_COMMIT_MESSAGE")" \
+                                 "DF-Assets" "$(print_info $with_url 1 "$RES_REV" "$RES_URL" "$RES_COMMIT_MESSAGE")" \
+                                 "nixpkgs" "$(print_info $with_url 1 "$NIXPKGS_REV" "$NIXPKGS_URL" "")" \
+                                 "$DISTRO_CONTENT_CREATION_NAME" "$(print_info 0 0 "$DISTRO_CONTENT_CREATION_DATE_PRETTY" "$DISTRO_CONTENT_URL" "")" \
+                                 "$DISTRO_SOUNDFONT_CREATION_NAME" "$(print_info 0 0 "$DISTRO_CONTENT_CREATION_DATE_PRETTY" "$DISTRO_SOUNDFONT_URL" "")" \
                  >> release_body
