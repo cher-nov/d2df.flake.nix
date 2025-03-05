@@ -78,11 +78,11 @@ printf '%s\n%s\n\n' \
        > release_body
 with_url=1
 "$(dirname "$0")/markdown-table" -2 \
-                                 "Name" "Commit/Date" \
+                                 "Name" "Revision" \
                                  "Doom2D-Forever" "$(print_info $with_url 1 "$D2DF_REV" "$D2DF_URL" "$D2DF_COMMIT_MESSAGE")" \
                                  "d2df-editor" "$(print_info $with_url 1 "$EDITOR_REV" "$EDITOR_URL" "$EDITOR_COMMIT_MESSAGE")" \
                                  "DF-Assets" "$(print_info $with_url 1 "$RES_REV" "$RES_URL" "$RES_COMMIT_MESSAGE")" \
                                  "nixpkgs" "$(print_info $with_url 1 "$NIXPKGS_REV" "$NIXPKGS_URL" "")" \
                                  "$DISTRO_CONTENT_CREATION_NAME" "$(print_info 0 0 "$DISTRO_CONTENT_CREATION_DATE_PRETTY" "$DISTRO_CONTENT_URL" "")" \
-                                 "$DISTRO_SOUNDFONT_CREATION_NAME" "$(print_info 0 0 "$DISTRO_CONTENT_CREATION_DATE_PRETTY" "$DISTRO_SOUNDFONT_URL" "")" \
+                                 "$DISTRO_SOUNDFONT_CREATION_NAME" "$(print_info 0 0 "$DISTRO_SOUNDFONT_CREATION_DATE_PRETTY" "$DISTRO_SOUNDFONT_URL" "")" \
                  >> release_body
