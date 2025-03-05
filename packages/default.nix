@@ -187,7 +187,7 @@
       executables = callPackage mkExecutablePath rec {
         byArchPkgsAttrs = {
           "${arch}" = {
-            sharedLibraries = lib.map (drv: drv.out) defaultExecutable.buildInputs;
+            sharedLibraries = let game = lib.map (drv: drv.out) defaultExecutable.buildInputs; editor = archAttrs.editor.buildInputs or null; in lib.filter (x: !builtins.isNull x) (game ++ editor);
             majorPlatform = archAttrs.infoAttrs.majorPlatform;
             doom2df = defaultExecutable;
             doom2dfHeadless = headlessDrv;
@@ -240,7 +240,7 @@
             isDarwin = true;
           };
         in {
-          sharedLibraries = lib.map (drv: drv.out) doom2d.buildInputs;
+          sharedLibraries = lib.map (drv: drv.out) (doom2d.buildInputs);
           doom2df = doom2d;
           isWindows = false;
           majorPlatform = archAttrs.majorPlatform;

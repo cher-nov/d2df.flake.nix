@@ -4,6 +4,7 @@
   autoPatchelfHook,
   libX11 ? null,
   d2df-editor,
+  fmodex,
   lazarus,
   stdenv,
   ...
@@ -27,6 +28,8 @@ stdenv.mkDerivation (finalAttrs: {
   patches = [
     ./temp-fix-error.patch
   ];
+
+  buildInputs = [fmodex];
 
   env = {
     D2DF_BUILD_USER = "nixbld";

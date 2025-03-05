@@ -81,6 +81,7 @@
             (pkgs.callPackage d2dfPkgs.editor {
               inherit d2df-editor;
               lazarus = lazarus;
+              inherit (archAttrs) fmodex;
             })
           else null;
         doom2d = pkgs.callPackage d2dfPkgs.doom2df-base {
@@ -110,8 +111,14 @@
         };
       };
     in
-      lib.recursiveUpdate archAttrs gamePkgs;
+      (lib.recursiveUpdate archAttrs gamePkgs);
+  in let
+    res =
+      (lib.mapAttrs fromCrossPkgsAttrs crossPkgs) // {universal = universal;};
   in
-    (lib.mapAttrs fromCrossPkgsAttrs crossPkgs) // {universal = universal;};
+    # TODO remove this when 64-bit windows editor is okay
+    lib.recursiveUpdate
+    res
+    {mingw64.editor = res.mingw32.editor;};
 in
   f (android // mingw // mac)

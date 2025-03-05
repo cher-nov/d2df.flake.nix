@@ -47,7 +47,7 @@
       fetchSubmodules = false;
       deepClone = false;
       leaveDotGit = false;
-      sparseCheckout = [ ];
+      sparseCheckout = [];
       sha256 = "sha256-uCUVWF/GujuuzO/jBMqohUR75BBaSLYc3xF6UQO7iRY=";
     };
     date = "2025-03-05";
