@@ -14,7 +14,6 @@ in {
     coreutils,
     util-linux,
     bash,
-    dos2unix,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -26,7 +25,7 @@ in {
       dontPatchELF = true;
       dontFixup = true;
 
-      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux dos2unix];
+      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux];
 
       src = DF-Assets;
 
@@ -37,10 +36,7 @@ in {
         # For some reason, shrshade.lst specifies the source folder in lowercase.
         # This doesn't fly in Linux.
         ''
-          cd /build/source
           set -euo pipefail
-          find -iname '*.lst' -exec dos2unix {} \;
-          chmod -R 777 .
           echo "Fixing shrshade.wad paths"
           sed -i 's\shrshadewad\ShrShadeWAD\g' shrshade.lst
         ''
@@ -48,7 +44,7 @@ in {
           mkdir -p temp
           chmod -R 777 temp
           echo "Moving files from ${lstPath} to dfwad suitable directory"
-          awk -f ${buildWadScript} -v prefix="temp" ${lstPath}
+          ${gawk}/bin/awk -f ${buildWadScript} -v RS='\r\n' -v prefix="temp" ${lstPath}
           # For some reason, this AWK script sets wrong perms
           chmod -R 777 temp
           echo "Converting win1251 names to UTF-8"
