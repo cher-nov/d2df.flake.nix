@@ -184,6 +184,7 @@ jobs:
     name: Create a new release
     needs: build
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Download all artifacts in this run (release_body and artifacts)
         uses: actions/download-artifact@v4
