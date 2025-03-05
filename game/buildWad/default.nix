@@ -14,7 +14,7 @@ in {
     coreutils,
     util-linux,
     bash,
-    lib,
+    dos2unix,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -26,7 +26,7 @@ in {
       dontPatchELF = true;
       dontFixup = true;
 
-      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux];
+      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux dos2unix];
 
       src = DF-Assets;
 
@@ -38,6 +38,8 @@ in {
         # This doesn't fly in Linux.
         ''
           cd /build/source
+          set -euo pipefail
+          find -iname '*.lst' -exec dos2unix {} \;
           chmod -R 777 .
           echo "Fixing shrshade.wad paths"
           sed -i 's\shrshadewad\ShrShadeWAD\g' shrshade.lst

@@ -1,7 +1,6 @@
 #!/usr/bin/awk -f
 
 BEGIN {
-	RS = "\r\n"
 	if (!prefix) {
 		print("Variable prefix not set, exiting...")
 		exit
