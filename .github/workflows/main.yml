@@ -65,8 +65,7 @@ jobs:
           echo "=== After pruning ==="
           df -h
       - name: Checkout the master branch
-        run: |
-          git clone https://github.com/${{ github.repository }} .
+        uses: actions/checkout@v4
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v30
         with:
