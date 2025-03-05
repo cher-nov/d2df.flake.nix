@@ -70,7 +70,6 @@ jobs:
       - name: Install Nix
         uses: nixbuild/nix-quick-install-action@v30
         with:
-          nix_version: "2.26.1"
           nix_conf: |
             require-sigs = false
       - name: Enter CI tailored shell

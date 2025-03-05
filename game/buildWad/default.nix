@@ -14,6 +14,7 @@ in {
     coreutils,
     util-linux,
     bash,
+    dos2unix,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -25,7 +26,7 @@ in {
       dontPatchELF = true;
       dontFixup = true;
 
-      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux];
+      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux dos2unix];
 
       src = DF-Assets;
 
@@ -44,7 +45,7 @@ in {
           mkdir -p temp
           chmod -R 777 temp
           echo "Moving files from ${lstPath} to dfwad suitable directory"
-          ${gawk}/bin/awk -f ${buildWadScript} -v RS='\r\n' -v prefix="temp" ${lstPath}
+          ${gawk}/bin/awk -f ${buildWadScript} -v RS=$'\r\n' -v prefix="temp" ${lstPath}
           # For some reason, this AWK script sets wrong perms
           chmod -R 777 temp
           echo "Converting win1251 names to UTF-8"

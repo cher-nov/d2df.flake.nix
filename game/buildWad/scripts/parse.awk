@@ -10,7 +10,6 @@ BEGIN {
 
 # When we encounter a section header (e.g., :FONTS), we set the current directory.
 /^:/ {
-  gsub("\r", "", $0)
 	currentDir = prefix "/" substr($0,2)
   print("Setting currentDir to " currentDir)
 	system("mkdir -p " currentDir)
@@ -18,12 +17,17 @@ BEGIN {
 
 # For each file entry, extract the source file and target filename, then copy.
 {
-  gsub("\r", "", $0)
+	# A section header like :FONTS
+  if (substr($1, 1, 1) == ":") next
+
+  print("Currently at " $0)
 	gsub(/\\/,"/",$0)
 	split($0, parts, "|")
+  print("split1 at " parts[1] "&" parts[2])
 	targetFile = parts[2]
 	sourceFile = parts[1]
 	split(sourceFile, sourceFileParts, "/")
+  print("split2 at " sourceFileParts[1] " &" sourceFileParts[2] "&" sourceFileParts[3])
 	# ex: StandartWAD
 	sourceBase = sourceFileParts[1]
 	# ex: STDANIMTEXTURES
@@ -31,15 +35,8 @@ BEGIN {
 	# ex: BARREL...
 	sourceBasename = sourceFileParts[3]
 
-	# A section header like :FONTS
-	if (targetFile == "") next
-
 	split(sourceBasename, sourceBasenameParts, ".")
-	if (sourceBasenameParts[2] == "") {
-		targetFileExtension = ""
-	} else {
-		targetFileExtension = "." sourceBasenameParts[2]
-	}
+  print("split 3 at " sourceBasenameParts[1] "&" sourceBasenameParts[2])
 
 	# This is a special case: a nested structure
 	if (match(tolower(sourceFile),"\\.wad$")) {
