@@ -13,6 +13,7 @@ in {
     convmv,
     coreutils,
     util-linux,
+    bash,
     dfwad,
     dfwadCompression ? "none",
   }:
@@ -25,7 +26,7 @@ in {
       dontPatchELF = true;
       dontFixup = true;
 
-      nativeBuildInputs = [gawk gnused convmv dfwad coreutils util-linux];
+      nativeBuildInputs = [bash gawk gnused convmv dfwad coreutils util-linux];
 
       buildPhase =
         # FIXME
@@ -47,11 +48,11 @@ in {
           # Convert win1251 names to UTF-8
           convmv -f CP1251 -t UTF-8 --notest -r temp
           # Remove extensions from nested wads
-          find temp -mindepth 4 -type f -exec sh -c '
+          find temp -mindepth 4 -type f -exec bash -c '
                      WITHOUT_EXT=$(basename $1 | rev | cut -f 2- -d '.' | rev);
-                     echo "moving $1 to $(dirname $1)/$WITHOUT_EXT";
+                     echo "moving $1 to $(dirname $1)/$WITHOUT_EXT" 1>&2;
                      mv "$1" "$(dirname $1)/$WITHOUT_EXT";
-                     ' sh {} \;
+                     ' bash {} \;
           dfwad -v -z "${dfwadCompression}" temp/ ${outName}.wad pack
         '';
 
