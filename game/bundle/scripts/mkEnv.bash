@@ -73,8 +73,8 @@ function print_info() {
     echo "$res"
 }
 printf '%s\n%s\n\n' \
-       "Build creation date: $(date '+%d %B %Y %H:%M %Z')" \
-       'Build info:' \
+       "Build date: $(date '+%d %B %Y %H:%M %Z')" \
+       'List of inputs:' \
        > release_body
 with_url=1
 "$(dirname "$0")/markdown-table" -2 \
