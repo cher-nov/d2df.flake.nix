@@ -266,14 +266,11 @@ in {
         drv;
       closeErrorWindowScript =
         pkgs.writeShellScript "close-d2dmp-error-window"
-        # 3 times sleep for 10s, see if there is a nag about audio devices, close it
         ''
-          sleep 20s;
-          for i in 1..3; do
-            sleep 5s;
-            ERROR_WINDOW=$(xwininfo -root -tree | grep "Error Messages" | awk '{print $1}')
-            xdotool key --window $ERROR_WINDOW enter
-            sleep 5s;
+          while true; do
+              sleep 10s;
+              xdotool key enter;
+              sleep 10s;
           done
         '';
     in
@@ -313,12 +310,13 @@ in {
         + ''
           (
           unset DISPLAY;
-          wineboot -i;
+          wineboot -i
           wine regedit ${pkgs.writeText "no-crashdialog.reg" ''
             [HKEY_CURRENT_USER\Software\Wine\WineDbg]
             "ShowCrashDialog"=dword:00000000
           ''};
-          wineserver -k;
+          wineboot -r -f
+          wineserver -k
           )
           ${closeErrorWindowScript} &
           ${launchCmd}
