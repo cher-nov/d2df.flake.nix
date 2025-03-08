@@ -14,7 +14,7 @@
       flake = false;
     };
     Doom2D-Forever = {
-      url = "git+https://github.com/Doom2D/Doom2D-Forever?submodules=1";
+      url = "git+https://github.com/Doom2D/Doom2D-Forever?submodules=1&ref=android_menu_reset";
       flake = false;
     };
     d2df-editor = {
