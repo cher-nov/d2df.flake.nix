@@ -65,6 +65,7 @@
     <application android:label="Doom2D Forever"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         android:hardwareAccelerated="true"
         android:debuggable="true" >
 
@@ -85,9 +86,8 @@
             android:alwaysRetainTaskState="true"
             android:launchMode="singleInstance"
             android:exported="true"
-            android:configChanges="mcc|mnc|layoutDirection|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode|screenSize|smallestScreenSize"
-            android:screenOrientation="landscape"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:configChanges="mcc|mnc|layoutDirection|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|screenSize|smallestScreenSize"
+            android:screenOrientation="sensorLandscape"
             >
         </activity>
     </application>
