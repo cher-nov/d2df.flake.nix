@@ -7,7 +7,7 @@
 
     <uses-sdk android:minSdkVersion="@androidMinSdkVersion@" android:targetSdkVersion="@androidTargetSdkVersion@" />
 
-    <!-- OpenGL ES 2.0 -->
+    <!-- OpenGL ES 1.1 -->
     <uses-feature android:glEsVersion="@androidGlEsVersion@" />
 
     <!-- Touchscreen support -->
@@ -65,7 +65,6 @@
     <application android:label="Doom2D Forever"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="true"
-        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
         android:hardwareAccelerated="true"
         android:debuggable="true" >
 
@@ -88,6 +87,7 @@
             android:exported="true"
             android:configChanges="mcc|mnc|layoutDirection|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale|uiMode|screenSize|smallestScreenSize"
             android:screenOrientation="landscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             >
         </activity>
     </application>
